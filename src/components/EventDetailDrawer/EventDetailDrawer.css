@@ -1,0 +1,267 @@
+/* =========================================================
+   EVENT DETAIL DRAWER STYLES (POLISHED & UNIFIED UI)
+   ========================================================= */
+
+.event-detail-drawer.p-sidebar {
+  background: #ffffff;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.12);
+}
+
+.event-detail-drawer .p-sidebar-header {
+  padding: 1.25rem 1.5rem 0.5rem;
+}
+
+.event-detail-drawer .p-sidebar-content {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-header {
+  padding-top: 0.25rem;
+}
+
+.drawer-header__id {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0284c7;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.drawer-header__couple {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.drawer-header__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── PrimeReact Tag Badge Fixes Inside Drawer ── */
+.event-detail-drawer .p-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0.35rem 0.75rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  border-radius: 50px !important;
+  white-space: nowrap !important;
+  height: auto !important;
+  box-shadow: none !important;
+}
+
+.event-detail-drawer .p-tag .p-tag-value {
+  line-height: 1.3 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  display: inline-block !important;
+}
+
+/* Modern Soft Color Palettes for Tags */
+.event-detail-drawer .p-tag.p-tag-success {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+.event-detail-drawer .p-tag.p-tag-info {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  border: 1px solid #bae6fd !important;
+}
+
+.event-detail-drawer .p-tag.p-tag-warning {
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+  border: 1px solid #fde68a !important;
+}
+
+.event-detail-drawer .p-tag.p-tag-danger {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fecaca !important;
+}
+
+/* Section Dividers */
+.event-detail-drawer .p-divider.p-divider-horizontal {
+  margin: 1.25rem 0;
+  border-color: #f1f5f9;
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+}
+
+.drawer-section {
+  margin-bottom: 0.5rem;
+}
+
+.drawer-section__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.drawer-icon {
+  color: #0284c7;
+  font-size: 1rem;
+}
+
+.drawer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.drawer-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.drawer-field.full-width {
+  grid-column: span 2;
+}
+
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.field-value {
+  font-size: 0.88rem;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  word-break: break-word;
+}
+
+.field-value.highlight {
+  color: #0284c7;
+  font-weight: 600;
+}
+
+.field-value.bold {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.field-value.price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #059669;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.35rem;
+}
+
+.progress-percent {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.event-detail-drawer .p-progressbar {
+  background: #e2e8f0;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.event-detail-drawer .p-progressbar-value {
+  background: #0284c7;
+  border-radius: 4px;
+}
+
+.crew-chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.drawer-crew-chip {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: #334155;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.deliverables-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.deliverable-item {
+  font-size: 0.82rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.deliverable-item.active {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.deliverable-item.active i {
+  color: #059669;
+}
+
+.drawer-notes-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.drawer-footer .p-button {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.55rem 1.15rem;
+  border-radius: 8px;
+}

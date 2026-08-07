@@ -1,0 +1,237 @@
+/* ── PrimeReact Uniform Input Control Styling ── */
+
+.event-form .p-inputtext,
+.event-form .p-dropdown,
+.event-form .p-calendar,
+.event-form .p-inputnumber {
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+/* Base InputText (used standalone or inside Calendar/InputNumber) */
+.event-form input.p-inputtext,
+.event-form textarea.p-inputtext {
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 0.85rem;
+  font-size: 0.85rem;
+  color: #1e293b;
+  background: #ffffff;
+  font-family: inherit;
+}
+
+.event-form textarea.p-inputtext {
+  height: auto;
+  padding: 0.65rem 0.85rem;
+}
+
+.event-form input.p-inputtext:hover,
+.event-form textarea.p-inputtext:hover,
+.event-form .p-dropdown:hover {
+  border-color: #94a3b8;
+}
+
+.event-form input.p-inputtext:focus,
+.event-form textarea.p-inputtext:focus,
+.event-form .p-dropdown.p-focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+  outline: none;
+}
+
+/* Dropdowns */
+.event-form .p-dropdown {
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+}
+
+.event-form .p-dropdown .p-dropdown-label {
+  font-size: 0.85rem;
+  color: #1e293b;
+  padding: 0 0.85rem;
+  line-height: 36px;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+}
+
+.event-form .p-dropdown .p-dropdown-label.p-placeholder {
+  color: #94a3b8;
+}
+
+.event-form .p-dropdown .p-dropdown-trigger {
+  width: 32px;
+  color: #94a3b8;
+}
+
+/* Calendar Controls */
+.event-form .p-calendar {
+  display: flex;
+  position: relative;
+  width: 100%;
+}
+
+.event-form .p-calendar .p-button {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  color: #64748b;
+  width: 38px;
+}
+
+.event-form .p-calendar .p-button:hover {
+  background: #f1f5f9;
+  color: #0284c7;
+}
+
+/* InputNumber Currency Controls */
+.event-form .p-inputnumber {
+  display: flex;
+  width: 100%;
+}
+
+.event-form .p-inputnumber input.p-inputtext {
+  width: 100%;
+}
+
+/* Validation Invalid State */
+.event-form .p-invalid input.p-inputtext,
+.event-form .p-dropdown.p-invalid,
+.event-form textarea.p-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+}
+
+.event-form-card .p-card-body {
+  padding: 1.75rem 2rem;
+}
+
+.event-form-card .p-card-content {
+  padding: 0;
+}
+
+.form-section {
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-icon {
+  color: #0284c7;
+  font-size: 1.1rem;
+}
+
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+}
+
+.field-col {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.4rem;
+}
+
+.req-star {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.field-hint {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.p-error {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+/* Balance Amount Readonly styling */
+.balance-input-readonly .p-inputnumber-input {
+  background: #f1f5f9 !important;
+  color: #059669 !important;
+  font-weight: 700 !important;
+  cursor: not-allowed;
+}
+
+/* Checkbox Grid */
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.checkbox-item label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+}
+
+/* Form Action Buttons at Bottom Right */
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1.5rem;
+}
+
+.form-actions .p-button {
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 8px;
+}
+
+/* 2-Column Responsive Layout */
+.col-12 {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .md\:col-6 {
+    width: 50%;
+  }
+
+  .md\:col-4 {
+    width: 33.3333%;
+  }
+}

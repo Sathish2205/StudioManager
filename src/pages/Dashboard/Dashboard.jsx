@@ -13,7 +13,7 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
 
       {/* Main Container */}
       <div className="portal-main">
-        <DashboardHeader />
+        <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <div className="portal-body">
           {/* Greeting Hero Section */}

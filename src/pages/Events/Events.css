@@ -243,10 +243,12 @@
 
 .events-datatable.p-datatable .p-datatable-tbody > tr {
   border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .events-datatable.p-datatable .p-datatable-tbody > tr:hover {
-  background: #f8fafc;
+  background: #f1f5f9;
 }
 
 .events-datatable.p-datatable .p-datatable-tbody > tr > td {

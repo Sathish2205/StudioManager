@@ -1,15 +1,59 @@
 import React from 'react'
 import './DashboardHeader.css'
 
-export default function DashboardHeader() {
+export default function DashboardHeader({ activeTab = 'home', setActiveTab }) {
+  const getBreadcrumbs = () => {
+    switch (activeTab) {
+      case 'events':
+        return [{ label: 'Events & Shoots', active: true }]
+      case 'add-event':
+        return [
+          { label: 'Events & Shoots', onClick: () => setActiveTab && setActiveTab('events') },
+          { label: 'Add Event', active: true }
+        ]
+      case 'calendar':
+        return [{ label: 'Shoot Calendar', active: true }]
+      case 'home':
+      default:
+        return [{ label: 'Studio Overview', active: true }]
+    }
+  }
+
+  const breadcrumbs = getBreadcrumbs()
+
   return (
     <header className="portal-header">
-      {/* Left Title / Breadcrumb */}
+      {/* Left Title / Interactive Breadcrumb with Home Button */}
       <div className="portal-header__left">
-        <div className="portal-header__icon-box">
-          <i className="pi pi-camera" />
+        <button
+          className="portal-header__home-btn"
+          onClick={() => setActiveTab && setActiveTab('home')}
+          title="Go to Home Overview"
+          aria-label="Home Overview"
+        >
+          <i className="pi pi-home" />
+        </button>
+
+        <div className="portal-header__breadcrumb">
+          <span
+            className="header-crumb-home"
+            onClick={() => setActiveTab && setActiveTab('home')}
+          >
+            Home
+          </span>
+
+          {breadcrumbs.map((crumb, idx) => (
+            <React.Fragment key={idx}>
+              <i className="pi pi-angle-right header-crumb-arrow" />
+              <span
+                className={`header-crumb-item ${crumb.active ? 'is-active' : 'is-link'}`}
+                onClick={crumb.onClick}
+              >
+                {crumb.label}
+              </span>
+            </React.Fragment>
+          ))}
         </div>
-        <h1 className="portal-header__title">PhotoStudio Events & Finance</h1>
       </div>
 
       {/* Right Controls */}

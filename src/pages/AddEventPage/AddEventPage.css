@@ -1,0 +1,84 @@
+/* =========================================================
+   ADD EVENT PAGE STYLES
+   ========================================================= */
+
+.add-event-page {
+  padding-bottom: 2.5rem;
+}
+
+.add-event-topbar {
+  margin-bottom: 1.5rem;
+}
+
+.add-event-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+}
+
+.crumb-link {
+  color: #0284c7;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.crumb-link:hover {
+  text-decoration: underline;
+}
+
+.crumb-separator {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+}
+
+.crumb-active {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.add-event-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-event-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.01em;
+}
+
+.add-event-subtitle {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.back-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.15s ease;
+}
+
+.back-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.add-event-container {
+  max-width: 1000px;
+}

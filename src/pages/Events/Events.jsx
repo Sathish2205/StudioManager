@@ -8,12 +8,15 @@ import { Button } from 'primereact/button'
 import { ProgressBar } from 'primereact/progressbar'
 import Sidebar from '../../components/Sidebar'
 import DashboardHeader from '../../components/DashboardHeader'
+import EventDetailDrawer from '../../components/EventDetailDrawer'
 import './Events.css'
 
-export default function Events({ activeTab, setActiveTab }) {
+export default function Events({ activeTab = 'events', setActiveTab }) {
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [selectedType, setSelectedType] = useState(null)
+  const [selectedDetailEvent, setSelectedDetailEvent] = useState(null)
+  const [drawerVisible, setDrawerVisible] = useState(false)
 
   // Comprehensive PhotoStudio Shoots & Events Dataset
   const initialEvents = [
@@ -168,6 +171,11 @@ export default function Events({ activeTab, setActiveTab }) {
     return matchesGlobal && matchesStatus && matchesType
   })
 
+  const handleRowSelect = (rowData) => {
+    setSelectedDetailEvent(rowData)
+    setDrawerVisible(true)
+  }
+
   // Column Templates
   const coupleBodyTemplate = (rowData) => (
     <div className="events-table__couple">
@@ -226,9 +234,9 @@ export default function Events({ activeTab, setActiveTab }) {
     </div>
   )
 
-  const actionBodyTemplate = () => (
-    <div className="events-table__actions">
-      <Button icon="pi pi-eye" rounded text severity="secondary" aria-label="View" />
+  const actionBodyTemplate = (rowData) => (
+    <div className="events-table__actions" onClick={(e) => e.stopPropagation()}>
+      <Button icon="pi pi-eye" rounded text severity="secondary" aria-label="View" onClick={() => handleRowSelect(rowData)} />
       <Button icon="pi pi-pencil" rounded text severity="info" aria-label="Edit" />
       <Button icon="pi pi-download" rounded text severity="success" aria-label="Invoice" />
     </div>
@@ -245,7 +253,7 @@ export default function Events({ activeTab, setActiveTab }) {
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div className="portal-main">
-        <DashboardHeader />
+        <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <div className="portal-body">
           {/* Header Banner */}
@@ -262,6 +270,7 @@ export default function Events({ activeTab, setActiveTab }) {
               icon="pi pi-plus"
               className="events-header__btn-add"
               rounded
+              onClick={() => setActiveTab('add-event')}
             />
           </div>
 
@@ -317,6 +326,8 @@ export default function Events({ activeTab, setActiveTab }) {
               stripedRows
               className="events-datatable"
               emptyMessage="No matching wedding events or shoots found."
+              onRowClick={(e) => handleRowSelect(e.data)}
+              selectionMode="single"
             >
               <Column field="couple" header="Couple & Event ID" body={coupleBodyTemplate} sortable style={{ minWidth: '180px' }} />
               <Column field="eventType" header="Event Type & Venue" body={eventVenueTemplate} sortable style={{ minWidth: '220px' }} />
@@ -330,6 +341,12 @@ export default function Events({ activeTab, setActiveTab }) {
           </div>
         </div>
       </div>
+      <EventDetailDrawer
+        event={selectedDetailEvent}
+        visible={drawerVisible}
+        onHide={() => setDrawerVisible(false)}
+        onEdit={() => setActiveTab('add-event')}
+      />
     </div>
   )
 }

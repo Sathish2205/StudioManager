@@ -1,57 +1,32 @@
 import React from 'react'
-import { Button } from 'primereact/button'
-import { Avatar } from 'primereact/avatar'
-import { Badge } from 'primereact/badge'
 import './DashboardHeader.css'
 
-export default function DashboardHeader({ onNewBooking }) {
+export default function DashboardHeader() {
   return (
-    <header className="dash-header">
-      {/* Search Input */}
-      <div className="dash-header__search">
-        <i className="pi pi-search dash-header__search-icon" />
-        <input
-          type="text"
-          placeholder="Search wedding, couple, venue, or crew..."
-          className="dash-header__search-input"
-        />
+    <header className="portal-header">
+      {/* Left Title / Breadcrumb */}
+      <div className="portal-header__left">
+        <div className="portal-header__icon-box">
+          <i className="pi pi-home" />
+        </div>
+        <h1 className="portal-header__title">Home</h1>
       </div>
 
-      {/* Header Actions */}
-      <div className="dash-header__actions">
-        {/* Quick Action Button */}
-        <Button
-          label="New Booking"
-          icon="pi pi-plus"
-          className="dash-header__btn-new"
-          rounded
-          onClick={onNewBooking}
-        />
+      {/* Right Controls */}
+      <div className="portal-header__right">
+        <div className="portal-header__dropdown">
+          <span>Quick Links</span>
+          <i className="pi pi-chevron-down" />
+        </div>
 
-        {/* Notifications Icon */}
-        <div className="dash-header__icon-btn">
+        <button className="portal-header__icon-btn" aria-label="Notifications">
           <i className="pi pi-bell" />
-          <Badge value="3" className="dash-header__bell-badge" />
-        </div>
+          <span className="portal-header__dot" />
+        </button>
 
-        {/* Calendar Quick Sync */}
-        <div className="dash-header__icon-btn">
-          <i className="pi pi-sync" />
-        </div>
-
-        {/* Studio Profile */}
-        <div className="dash-header__profile">
-          <Avatar
-            image="https://primefaces.org/cdn/primereact/images/avatar/amyelsner.png"
-            shape="circle"
-            size="normal"
-            className="dash-header__avatar"
-          />
-          <div className="dash-header__profile-text">
-            <span className="dash-header__user-name">Elena Rostova</span>
-            <span className="dash-header__user-role">Lead Studio Producer</span>
-          </div>
-        </div>
+        <button className="portal-header__icon-btn" aria-label="Logout">
+          <i className="pi pi-power-off" />
+        </button>
       </div>
     </header>
   )

@@ -1,554 +1,326 @@
 /* =========================================================
-   BLACK & WHITE MINIMALIST STUDIO DASHBOARD
+   PORTAL DASHBOARD STYLES (GREYTHR LAYOUT REPLICA)
    ========================================================= */
 
-.app-layout {
+.portal-layout {
   display: flex;
   min-height: 100vh;
-  background: #000000;
-  color: #ffffff;
+  background: #f8fafc;
+  color: #1e293b;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.app-main {
+.portal-main {
   flex: 1;
-  margin-left: 270px;
+  margin-left: 250px;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  background: #000000;
 }
 
-.dash-body {
-  padding: 2rem;
+.portal-body {
+  padding: 1.75rem 2.25rem;
   flex: 1;
 }
 
-/* ── Welcome Banner ── */
-.dash-welcome {
+/* ── Hero Greeting Section ── */
+.portal-hero {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.dash-welcome__title {
-  font-size: 1.7rem;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.25rem;
-}
-
-.dash-welcome__accent {
-  color: #a1a1aa;
-}
-
-.dash-welcome__subtitle {
-  font-size: 0.85rem;
-  color: #71717a;
-}
-
-.dash-welcome__quick-stats {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.quick-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 1rem;
-  background: #09090b;
-  border: 1px solid #27272a;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  color: #a1a1aa;
-  font-weight: 500;
-}
-
-.quick-chip i {
-  color: #ffffff;
-}
-
-/* ── Metric Cards Grid ── */
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 2rem;
-}
-
-.metric-card.p-card {
-  background: #09090b;
-  border: 1px solid #27272a;
-  border-radius: 12px;
-  box-shadow: none;
-  transition: all 0.2s ease;
-}
-
-.metric-card.p-card:hover {
-  background: #121215;
-  border-color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.05);
-}
-
-.metric-card .p-card-body {
-  padding: 1.25rem;
-}
-
-.metric-card .p-card-content {
-  padding: 0;
-}
-
-.metric-card__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.metric-card__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #71717a;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.35rem;
-  display: block;
-}
-
-.metric-card__value {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin-bottom: 0.2rem;
-}
-
-.metric-card__sub {
-  font-size: 0.75rem;
-  color: #a1a1aa;
-  font-weight: 500;
-}
-
-.metric-card__icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  background: #18181b;
-  border: 1px solid #27272a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15rem;
-  color: #ffffff;
-}
-
-/* ── Dashboard Grid Layout ── */
-.dash-grid {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 1.5rem;
-}
-
-.card-custom.p-card {
-  background: #09090b;
-  border: 1px solid #27272a;
-  border-radius: 12px;
-  box-shadow: none;
-}
-
-.card-custom .p-card-body {
-  padding: 1.5rem;
-}
-
-.card-custom .p-card-content {
-  padding: 0;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
-}
-
-.card-header__title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0;
-  letter-spacing: 0.02em;
-}
-
-.card-header__sub {
-  font-size: 0.8rem;
-  color: #71717a;
-  margin-top: 0.2rem;
-}
-
-.btn-mono-text {
-  color: #a1a1aa !important;
-}
-
-.btn-mono-text:hover {
-  color: #ffffff !important;
-}
-
-/* ── DataTable Custom Styles ── */
-.custom-datatable.p-datatable {
-  background: transparent;
-}
-
-.custom-datatable .p-datatable-thead > tr > th {
-  background: #121215;
-  color: #a1a1aa;
-  border-bottom: 1px solid #27272a;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 0.85rem 1rem;
-}
-
-.custom-datatable .p-datatable-tbody > tr {
-  background: #09090b;
-  color: #ffffff;
-  border-bottom: 1px solid #18181b;
-}
-
-.custom-datatable .p-datatable-tbody > tr:hover {
-  background: #18181b;
-}
-
-.custom-datatable .p-datatable-tbody > tr > td {
-  padding: 0.9rem 1rem;
-  font-size: 0.88rem;
-}
-
-.table__couple-cell {
-  display: flex;
-  flex-direction: column;
-}
-
-.table__couple-name {
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.table__event-type {
-  font-size: 0.78rem;
-  color: #71717a;
-}
-
-.table__venue-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.table__date {
-  font-size: 0.82rem;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.table__date i {
-  margin-right: 4px;
-  color: #a1a1aa;
-}
-
-.table__venue {
-  font-size: 0.78rem;
-  color: #71717a;
-}
-
-.table__crew-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.table__crew-chip {
-  font-size: 0.7rem;
-  background: #18181b;
-  border: 1px solid #27272a;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  color: #a1a1aa;
-}
-
-.tag-mono.p-tag {
-  background: #18181b;
-  color: #e4e4e7;
-  border: 1px solid #3f3f46;
-  font-size: 0.75rem;
-}
-
-.tag-mono--active.p-tag {
-  background: #ffffff;
-  color: #000000;
-  font-weight: 700;
-}
-
-.table__status-cell .p-progressbar {
-  background: #27272a;
-  border-radius: 2px;
-}
-
-.table__status-cell .p-progressbar-value {
-  background: #ffffff;
-  border-radius: 2px;
-}
-
-.btn-icon-mono.p-button {
-  color: #71717a !important;
-}
-
-.btn-icon-mono.p-button:hover {
-  color: #ffffff !important;
-  background: #18181b !important;
-}
-
-/* ── Deliverables Pipeline ── */
-.pipeline-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.pipeline-item {
-  background: #121215;
-  border: 1px solid #27272a;
-  border-radius: 10px;
-  padding: 1.1rem;
-}
-
-.pipeline-item__top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 0.85rem;
-}
-
-.pipeline-item__title-group {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.pipeline-item__icon {
-  font-size: 1.1rem;
-  color: #ffffff;
-  margin-top: 2px;
-}
-
-.pipeline-item__title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 0.2rem;
-}
-
-.pipeline-item__stage {
-  font-size: 0.78rem;
-  color: #71717a;
-}
-
-.pipeline-item__stage strong {
-  color: #e4e4e7;
-}
-
-.pipeline-item__deadline {
-  font-size: 0.75rem;
-  color: #a1a1aa;
-  background: #18181b;
-  border: 1px solid #27272a;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.pipeline-item__bar-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.pipeline-item__bar-group .p-progressbar {
-  flex: 1;
-  background: #27272a;
-  border-radius: 3px;
-}
-
-.pipeline-item__bar-group .p-progressbar-value {
-  background: #ffffff;
-  border-radius: 3px;
-}
-
-.pipeline-item__pct {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #ffffff;
-  min-width: 95px;
-  text-align: right;
-}
-
-/* ── Timeline Widget ── */
-.timeline-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.timeline-item {
-  display: flex;
-  gap: 1rem;
-  position: relative;
   padding-bottom: 1rem;
 }
 
-.timeline-item:not(:last-child)::before {
-  content: '';
-  position: absolute;
-  left: 38px;
-  top: 36px;
-  bottom: 0;
-  width: 1px;
-  background: #27272a;
+.portal-hero__text {
+  max-width: 500px;
 }
 
-.timeline-item__time-box {
-  width: 76px;
-  height: 32px;
-  border-radius: 6px;
+.portal-hero__greeting {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.portal-hero__quote {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 0.25rem;
+}
+
+.portal-hero__author {
+  font-size: 0.88rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.portal-hero__graphic {
+  width: 400px;
+  height: 120px;
+}
+
+.portal-hero__svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Grid Layout ── */
+.portal-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Base Portal Card */
+.portal-card {
   background: #ffffff;
-  border: 1px solid #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+}
+
+.portal-card--wide {
+  grid-column: span 2;
+  min-height: 140px;
+}
+
+.portal-card__title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 1rem;
+}
+
+.portal-card__header-link {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.portal-card__arrow {
+  color: #0284c7;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.portal-card__center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  text-align: center;
 }
 
-.timeline-item__time {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: #000000;
+.portal-card__icon-wrap {
+  margin-bottom: 0.75rem;
 }
 
-.timeline-item__content {
+.portal-card__empty-text {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ── Payslip Card ── */
+.payslip-body {
+  display: flex;
+  flex-direction: column;
   flex: 1;
 }
 
-.timeline-item__title {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 0.15rem;
+.payslip-chart-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.timeline-item__couple {
-  font-size: 0.78rem;
-  color: #a1a1aa;
-  display: block;
-  margin-bottom: 0.35rem;
+.payslip-chart {
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.timeline-item__meta {
+.payslip-days {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  font-size: 0.72rem;
-  color: #71717a;
+  align-items: flex-end;
+  flex: 1;
 }
 
-.timeline-item__meta i {
-  margin-right: 4px;
-  color: #ffffff;
-}
-
-/* ── Equipment Widget ── */
-.gear-status-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.gear-status-item {
-  background: #121215;
-  border-radius: 8px;
-  padding: 0.75rem 0.9rem;
-  border: 1px solid #27272a;
-}
-
-.gear-status-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.7rem;
-}
-
-.gear-status-icon {
-  font-size: 1.1rem;
-  margin-top: 2px;
-  color: #ffffff;
-}
-
-.gear-status-info strong {
-  display: block;
-  font-size: 0.82rem;
-  color: #ffffff;
-}
-
-.gear-status-info span {
-  font-size: 0.75rem;
-  color: #71717a;
-}
-
-/* ── Custom Dialog Monochrome ── */
-.custom-dialog-mono .p-dialog-header {
-  background: #09090b;
-  color: #ffffff;
-  border-bottom: 1px solid #27272a;
-}
-
-.custom-dialog-mono .p-dialog-content {
-  background: #09090b;
-  color: #ffffff;
-  padding: 1.5rem;
-}
-
-.dialog-form label {
-  display: block;
+.payslip-month {
   font-size: 0.85rem;
-  font-weight: 600;
-  color: #a1a1aa;
-  margin-bottom: 0.4rem;
+  color: #475569;
+  margin-bottom: 0.2rem;
 }
 
-.dialog-form .p-inputtext,
-.dialog-form .p-dropdown,
-.dialog-form .p-calendar {
-  background: #121215;
-  border: 1px solid #27272a;
-  color: #ffffff;
+.payslip-count {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.payslip-label {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.payslip-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.payslip-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.payslip-item__bar {
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  margin-right: 0.6rem;
+}
+
+.payslip-item__bar--black {
+  background: #0f172a;
+}
+
+.payslip-item__bar--green {
+  background: #6ee7b7;
+}
+
+.payslip-item__bar--blue {
+  background: #0891b2;
+}
+
+.payslip-item__name {
+  color: #475569;
+  flex: 1;
+}
+
+.payslip-item__value {
+  color: #1e293b;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.payslip-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.payslip-link {
+  font-size: 0.82rem;
+  color: #0284c7;
+  font-weight: 500;
+}
+
+.payslip-link:hover {
+  text-decoration: underline;
+}
+
+.payslip-btn-show {
+  background: transparent;
+  border: none;
+  font-size: 0.82rem;
+  color: #0284c7;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.payslip-btn-show:hover {
+  text-decoration: underline;
+}
+
+/* ── Quick Access Card ── */
+.quick-access-body {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  gap: 1rem;
+  align-items: center;
+}
+
+.quick-access-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.quick-access-item {
+  font-size: 0.85rem;
+  color: #475569;
+  transition: color 0.15s ease;
+}
+
+.quick-access-item:hover {
+  color: #0284c7;
+  text-decoration: underline;
+}
+
+.quick-access-note {
+  background: #fffbebfb;
+  border: 1px solid #fef3c7;
   border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  color: #92400e;
+  line-height: 1.4;
+}
+
+/* ── IT Declaration Card ── */
+.it-declaration-body {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.it-declaration-text {
+  font-size: 0.88rem;
+  color: #475569;
+  line-height: 1.5;
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
-  .dash-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 1100px) {
+  .portal-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .app-main {
+  .portal-main {
     margin-left: 0;
   }
 
-  .sidebar {
+  .portal-sidebar {
     display: none;
+  }
+
+  .portal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-hero {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

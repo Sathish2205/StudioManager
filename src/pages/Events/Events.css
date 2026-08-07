@@ -1,0 +1,258 @@
+/* =========================================================
+   EVENTS & SHOOTS DIRECTORY LIST PAGE STYLES
+   ========================================================= */
+
+.events-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.events-header__title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 0.25rem;
+}
+
+.events-header__sub {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.events-header__btn-add.p-button {
+  background: #0284c7 !important;
+  border: none !important;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.events-header__btn-add.p-button:hover {
+  background: #0369a1 !important;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
+}
+
+/* ── Toolbar & Filter Bar ── */
+.events-toolbar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  flex-wrap: wrap;
+}
+
+.events-toolbar__left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.events-search {
+  position: relative;
+  width: 320px;
+}
+
+.events-search__icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.events-search__clear {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.events-search__input.p-inputtext {
+  width: 100%;
+  padding: 0.55rem 2.2rem 0.55rem 2.4rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #1e293b;
+}
+
+.events-search__input.p-inputtext:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+}
+
+.events-filter__dropdown.p-dropdown {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  min-width: 200px;
+}
+
+.events-toolbar__count {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+/* ── DataTable Card ── */
+.events-table-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.events-datatable.p-datatable .p-datatable-thead > tr > th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.events-datatable.p-datatable .p-datatable-tbody > tr {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.events-datatable.p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.9rem 1rem;
+  font-size: 0.88rem;
+}
+
+/* Table Cells */
+.events-table__couple {
+  display: flex;
+  flex-direction: column;
+}
+
+.events-table__id {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.events-table__name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.events-table__venue-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.events-table__type {
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.82rem;
+}
+
+.events-table__venue {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.events-table__venue i {
+  color: #0284c7;
+  margin-right: 3px;
+}
+
+.events-table__date-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.events-table__date {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.events-table__date i {
+  color: #64748b;
+  margin-right: 4px;
+}
+
+.events-table__time {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.events-table__pkg-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.events-table__pkg {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.82rem;
+}
+
+.events-table__amount {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #059669;
+}
+
+.events-table__crew-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.events-table__crew-chip {
+  font-size: 0.7rem;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  color: #475569;
+}
+
+.events-table__status-box .p-progressbar {
+  background: #e2e8f0;
+  border-radius: 3px;
+}
+
+.events-table__status-box .p-progressbar-value {
+  background: #0284c7;
+  border-radius: 3px;
+}
+
+.events-table__actions {
+  display: flex;
+  gap: 0.15rem;
+}
+
+/* Paginator Styling */
+.events-datatable .p-paginator {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+}
+
+.events-datatable .p-paginator .p-paginator-page.p-highlight {
+  background: #e0f2fe;
+  color: #0284c7;
+  font-weight: 700;
+}

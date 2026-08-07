@@ -3,8 +3,7 @@ import Sidebar from '../../components/Sidebar'
 import DashboardHeader from '../../components/DashboardHeader'
 import './Dashboard.css'
 
-export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState('home')
+export default function Dashboard({ activeTab = 'home', setActiveTab }) {
   const [showFinancials, setShowFinancials] = useState(false)
 
   return (

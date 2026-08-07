@@ -21,7 +21,7 @@ export default function DashboardHeader({ onNewBooking }) {
       <div className="dash-header__actions">
         {/* Quick Action Button */}
         <Button
-          label="New Wedding Booking"
+          label="New Booking"
           icon="pi pi-plus"
           className="dash-header__btn-new"
           rounded
@@ -31,7 +31,7 @@ export default function DashboardHeader({ onNewBooking }) {
         {/* Notifications Icon */}
         <div className="dash-header__icon-btn">
           <i className="pi pi-bell" />
-          <Badge value="3" severity="danger" className="dash-header__bell-badge" />
+          <Badge value="3" className="dash-header__bell-badge" />
         </div>
 
         {/* Calendar Quick Sync */}

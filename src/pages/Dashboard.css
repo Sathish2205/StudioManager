@@ -1,12 +1,12 @@
 /* =========================================================
-   WEDDING STUDIO DASHBOARD STYLES
+   BLACK & WHITE MINIMALIST STUDIO DASHBOARD
    ========================================================= */
 
 .app-layout {
   display: flex;
   min-height: 100vh;
-  background: #0a0a14;
-  color: #fff;
+  background: #000000;
+  color: #ffffff;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -16,6 +16,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  background: #000000;
 }
 
 .dash-body {
@@ -34,23 +35,20 @@
 }
 
 .dash-welcome__title {
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.02em;
+  color: #ffffff;
+  letter-spacing: 0.04em;
   margin-bottom: 0.25rem;
 }
 
 .dash-welcome__accent {
-  background: linear-gradient(135deg, #ec4899, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #a1a1aa;
 }
 
 .dash-welcome__subtitle {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  color: #71717a;
 }
 
 .dash-welcome__quick-stats {
@@ -63,20 +61,16 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.45rem 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 50px;
+  background: #09090b;
+  border: 1px solid #27272a;
+  border-radius: 8px;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: #a1a1aa;
   font-weight: 500;
 }
 
 .quick-chip i {
-  color: #fbbf24;
-}
-
-.quick-chip--purple i {
-  color: #a855f7;
+  color: #ffffff;
 }
 
 /* ── Metric Cards Grid ── */
@@ -88,18 +82,18 @@
 }
 
 .metric-card.p-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 18px;
+  background: #09090b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
   box-shadow: none;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .metric-card.p-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  background: #121215;
+  border-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.05);
 }
 
 .metric-card .p-card-body {
@@ -117,11 +111,11 @@
 }
 
 .metric-card__label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #71717a;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   margin-bottom: 0.35rem;
   display: block;
 }
@@ -129,44 +123,27 @@
 .metric-card__value {
   font-size: 1.6rem;
   font-weight: 800;
-  color: #fff;
+  color: #ffffff;
   margin-bottom: 0.2rem;
 }
 
 .metric-card__sub {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: #a1a1aa;
   font-weight: 500;
 }
 
 .metric-card__icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: #18181b;
+  border: 1px solid #27272a;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
-}
-
-.metric-card--pink .metric-card__icon {
-  background: rgba(236, 72, 153, 0.15);
-  color: #ec4899;
-}
-
-.metric-card--purple .metric-card__icon {
-  background: rgba(139, 92, 246, 0.15);
-  color: #8b5cf6;
-}
-
-.metric-card--blue .metric-card__icon {
-  background: rgba(99, 102, 241, 0.15);
-  color: #6366f1;
-}
-
-.metric-card--amber .metric-card__icon {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  font-size: 1.15rem;
+  color: #ffffff;
 }
 
 /* ── Dashboard Grid Layout ── */
@@ -177,9 +154,9 @@
 }
 
 .card-custom.p-card {
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 20px;
+  background: #09090b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
   box-shadow: none;
 }
 
@@ -199,16 +176,25 @@
 }
 
 .card-header__title {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #fff;
+  color: #ffffff;
   margin: 0;
+  letter-spacing: 0.02em;
 }
 
 .card-header__sub {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: #71717a;
   margin-top: 0.2rem;
+}
+
+.btn-mono-text {
+  color: #a1a1aa !important;
+}
+
+.btn-mono-text:hover {
+  color: #ffffff !important;
 }
 
 /* ── DataTable Custom Styles ── */
@@ -217,23 +203,23 @@
 }
 
 .custom-datatable .p-datatable-thead > tr > th {
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.78rem;
+  background: #121215;
+  color: #a1a1aa;
+  border-bottom: 1px solid #27272a;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   padding: 0.85rem 1rem;
 }
 
 .custom-datatable .p-datatable-tbody > tr {
-  background: transparent;
-  color: #fff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: #09090b;
+  color: #ffffff;
+  border-bottom: 1px solid #18181b;
 }
 
 .custom-datatable .p-datatable-tbody > tr:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: #18181b;
 }
 
 .custom-datatable .p-datatable-tbody > tr > td {
@@ -248,12 +234,12 @@
 
 .table__couple-name {
   font-weight: 700;
-  color: #fff;
+  color: #ffffff;
 }
 
 .table__event-type {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: #71717a;
 }
 
 .table__venue-cell {
@@ -264,17 +250,18 @@
 
 .table__date {
   font-size: 0.82rem;
-  color: #ec4899;
+  color: #ffffff;
   font-weight: 600;
 }
 
 .table__date i {
   margin-right: 4px;
+  color: #a1a1aa;
 }
 
 .table__venue {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #71717a;
 }
 
 .table__crew-tags {
@@ -285,29 +272,56 @@
 
 .table__crew-chip {
   font-size: 0.7rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #18181b;
+  border: 1px solid #27272a;
   padding: 0.15rem 0.5rem;
-  border-radius: 6px;
-  color: rgba(255, 255, 255, 0.75);
+  border-radius: 4px;
+  color: #a1a1aa;
 }
 
-.table__actions {
-  display: flex;
-  gap: 0.2rem;
+.tag-mono.p-tag {
+  background: #18181b;
+  color: #e4e4e7;
+  border: 1px solid #3f3f46;
+  font-size: 0.75rem;
+}
+
+.tag-mono--active.p-tag {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 700;
+}
+
+.table__status-cell .p-progressbar {
+  background: #27272a;
+  border-radius: 2px;
+}
+
+.table__status-cell .p-progressbar-value {
+  background: #ffffff;
+  border-radius: 2px;
+}
+
+.btn-icon-mono.p-button {
+  color: #71717a !important;
+}
+
+.btn-icon-mono.p-button:hover {
+  color: #ffffff !important;
+  background: #18181b !important;
 }
 
 /* ── Deliverables Pipeline ── */
 .pipeline-list {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
 .pipeline-item {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  background: #121215;
+  border: 1px solid #27272a;
+  border-radius: 10px;
   padding: 1.1rem;
 }
 
@@ -324,31 +338,32 @@
 }
 
 .pipeline-item__icon {
-  font-size: 1.2rem;
-  color: #a855f7;
+  font-size: 1.1rem;
+  color: #ffffff;
   margin-top: 2px;
 }
 
 .pipeline-item__title {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: #fff;
+  color: #ffffff;
   margin-bottom: 0.2rem;
 }
 
 .pipeline-item__stage {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: #71717a;
 }
 
 .pipeline-item__stage strong {
-  color: #ec4899;
+  color: #e4e4e7;
 }
 
 .pipeline-item__deadline {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.05);
+  color: #a1a1aa;
+  background: #18181b;
+  border: 1px solid #27272a;
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
   display: flex;
@@ -364,19 +379,19 @@
 
 .pipeline-item__bar-group .p-progressbar {
   flex: 1;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
+  background: #27272a;
+  border-radius: 3px;
 }
 
 .pipeline-item__bar-group .p-progressbar-value {
-  background: linear-gradient(90deg, #ec4899, #8b5cf6);
-  border-radius: 4px;
+  background: #ffffff;
+  border-radius: 3px;
 }
 
 .pipeline-item__pct {
   font-size: 0.78rem;
   font-weight: 700;
-  color: #c084fc;
+  color: #ffffff;
   min-width: 95px;
   text-align: right;
 }
@@ -401,16 +416,16 @@
   left: 38px;
   top: 36px;
   bottom: 0;
-  width: 2px;
-  background: rgba(255, 255, 255, 0.08);
+  width: 1px;
+  background: #27272a;
 }
 
 .timeline-item__time-box {
   width: 76px;
   height: 32px;
-  border-radius: 8px;
-  background: rgba(236, 72, 153, 0.12);
-  border: 1px solid rgba(236, 72, 153, 0.3);
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -419,8 +434,8 @@
 
 .timeline-item__time {
   font-size: 0.72rem;
-  font-weight: 700;
-  color: #ec4899;
+  font-weight: 800;
+  color: #000000;
 }
 
 .timeline-item__content {
@@ -430,13 +445,13 @@
 .timeline-item__title {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #fff;
+  color: #ffffff;
   margin-bottom: 0.15rem;
 }
 
 .timeline-item__couple {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #a1a1aa;
   display: block;
   margin-bottom: 0.35rem;
 }
@@ -446,12 +461,12 @@
   flex-direction: column;
   gap: 0.2rem;
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: #71717a;
 }
 
 .timeline-item__meta i {
   margin-right: 4px;
-  color: #8b5cf6;
+  color: #ffffff;
 }
 
 /* ── Equipment Widget ── */
@@ -462,10 +477,10 @@
 }
 
 .gear-status-item {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
+  background: #121215;
+  border-radius: 8px;
   padding: 0.75rem 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid #27272a;
 }
 
 .gear-status-info {
@@ -477,37 +492,30 @@
 .gear-status-icon {
   font-size: 1.1rem;
   margin-top: 2px;
-}
-
-.gear-status-icon--ok {
-  color: #10b981;
-}
-
-.gear-status-icon--warn {
-  color: #f59e0b;
+  color: #ffffff;
 }
 
 .gear-status-info strong {
   display: block;
   font-size: 0.82rem;
-  color: #fff;
+  color: #ffffff;
 }
 
 .gear-status-info span {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: #71717a;
 }
 
-/* ── Custom Dialog ── */
-.custom-dialog .p-dialog-header {
-  background: #151528;
-  color: #fff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+/* ── Custom Dialog Monochrome ── */
+.custom-dialog-mono .p-dialog-header {
+  background: #09090b;
+  color: #ffffff;
+  border-bottom: 1px solid #27272a;
 }
 
-.custom-dialog .p-dialog-content {
-  background: #151528;
-  color: #fff;
+.custom-dialog-mono .p-dialog-content {
+  background: #09090b;
+  color: #ffffff;
   padding: 1.5rem;
 }
 
@@ -515,17 +523,17 @@
   display: block;
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
+  color: #a1a1aa;
   margin-bottom: 0.4rem;
 }
 
 .dialog-form .p-inputtext,
 .dialog-form .p-dropdown,
 .dialog-form .p-calendar {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border-radius: 10px;
+  background: #121215;
+  border: 1px solid #27272a;
+  color: #ffffff;
+  border-radius: 8px;
 }
 
 /* Responsive */

@@ -33,9 +33,7 @@ export default function Dashboard() {
       package: 'Royal Cinematic 4K',
       crew: ['Alex V. (Lead)', 'Marco K. (Drone)', 'Maya S. (Second)'],
       payment: 'Paid in Full',
-      paymentSeverity: 'success',
       status: 'Shooting Next',
-      statusSeverity: 'warning',
       progress: 0
     },
     {
@@ -47,9 +45,7 @@ export default function Dashboard() {
       package: 'Heritage Multi-Day Gold',
       crew: ['Elena R. (Lead)', 'David P. (Video)'],
       payment: 'Deposit Paid ($4,500)',
-      paymentSeverity: 'info',
       status: 'Confirmed',
-      statusSeverity: 'info',
       progress: 20
     },
     {
@@ -61,9 +57,7 @@ export default function Dashboard() {
       package: 'Destination Luxe Film',
       crew: ['Alex V. (Lead)', 'Sarah L. (Culling)'],
       payment: 'Paid in Full',
-      paymentSeverity: 'success',
       status: 'In Post-Production',
-      statusSeverity: 'warning',
       progress: 68
     },
     {
@@ -75,9 +69,7 @@ export default function Dashboard() {
       package: 'Classic Memories Package',
       crew: ['Maya S. (Lead)'],
       payment: 'Paid in Full',
-      paymentSeverity: 'success',
       status: 'Delivered',
-      statusSeverity: 'success',
       progress: 100
     },
     {
@@ -89,9 +81,7 @@ export default function Dashboard() {
       package: 'Signature Cinema + Album',
       crew: ['Elena R. (Lead)', 'Marco K. (Drone)'],
       payment: 'Deposit Due ($2,000)',
-      paymentSeverity: 'danger',
       status: 'Pending Deposit',
-      statusSeverity: 'danger',
       progress: 10
     }
   ]
@@ -174,12 +164,12 @@ export default function Dashboard() {
   )
 
   const paymentBodyTemplate = (rowData) => (
-    <Tag value={rowData.payment} severity={rowData.paymentSeverity} rounded />
+    <Tag value={rowData.payment} className="tag-mono" />
   )
 
   const statusBodyTemplate = (rowData) => (
     <div className="table__status-cell">
-      <Tag value={rowData.status} severity={rowData.statusSeverity} />
+      <Tag value={rowData.status} className="tag-mono tag-mono--active" />
       <ProgressBar
         value={rowData.progress}
         showValue={false}
@@ -188,11 +178,10 @@ export default function Dashboard() {
     </div>
   )
 
-  const actionBodyTemplate = (rowData) => (
+  const actionBodyTemplate = () => (
     <div className="table__actions">
-      <Button icon="pi pi-eye" rounded text severity="secondary" aria-label="View" />
-      <Button icon="pi pi-pencil" rounded text severity="info" aria-label="Edit" />
-      <Button icon="pi pi-ellipsis-v" rounded text severity="secondary" aria-label="More" />
+      <Button icon="pi pi-eye" rounded text className="btn-icon-mono" aria-label="View" />
+      <Button icon="pi pi-pencil" rounded text className="btn-icon-mono" aria-label="Edit" />
     </div>
   )
 
@@ -217,10 +206,10 @@ export default function Dashboard() {
           <div className="dash-welcome">
             <div>
               <h1 className="dash-welcome__title">
-                Wedding Studio <span className="dash-welcome__accent">Control Center</span>
+                STUDIO MANAGER <span className="dash-welcome__accent">DASHBOARD</span>
               </h1>
               <p className="dash-welcome__subtitle">
-                Peak Wedding Season 2026 — 38 Confirmed Bookings • 6 Shoots This Week
+                Black & White Minimalist Edition • 38 Confirmed Weddings
               </p>
             </div>
             <div className="dash-welcome__quick-stats">
@@ -228,19 +217,19 @@ export default function Dashboard() {
                 <i className="pi pi-sun" />
                 <span>Weather: Clear Skies, 26°C</span>
               </div>
-              <div className="quick-chip quick-chip--purple">
+              <div className="quick-chip">
                 <i className="pi pi-check-circle" />
-                <span>3 Drone Licenses Verified</span>
+                <span>3 Drones Ready</span>
               </div>
             </div>
           </div>
 
           {/* ─── Metric Cards Grid ─── */}
           <div className="metrics-grid">
-            <Card className="metric-card metric-card--pink">
+            <Card className="metric-card">
               <div className="metric-card__inner">
                 <div className="metric-card__info">
-                  <span className="metric-card__label">Total Wedding Bookings</span>
+                  <span className="metric-card__label">Total Weddings</span>
                   <h3 className="metric-card__value">38 Weddings</h3>
                   <span className="metric-card__sub">+12% vs last season</span>
                 </div>
@@ -250,7 +239,7 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            <Card className="metric-card metric-card--purple">
+            <Card className="metric-card">
               <div className="metric-card__inner">
                 <div className="metric-card__info">
                   <span className="metric-card__label">Season Revenue</span>
@@ -263,7 +252,7 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            <Card className="metric-card metric-card--blue">
+            <Card className="metric-card">
               <div className="metric-card__inner">
                 <div className="metric-card__info">
                   <span className="metric-card__label">Upcoming Shoots</span>
@@ -276,12 +265,12 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            <Card className="metric-card metric-card--amber">
+            <Card className="metric-card">
               <div className="metric-card__inner">
                 <div className="metric-card__info">
-                  <span className="metric-card__label">Post-Production Queue</span>
+                  <span className="metric-card__label">Editing Queue</span>
                   <h3 className="metric-card__value">14 Projects</h3>
-                  <span className="metric-card__sub">8 Photo Albums • 6 Films</span>
+                  <span className="metric-card__sub">8 Albums • 6 Films</span>
                 </div>
                 <div className="metric-card__icon">
                   <i className="pi pi-sliders-h" />
@@ -306,7 +295,7 @@ export default function Dashboard() {
                     label="View All Events"
                     icon="pi pi-arrow-right"
                     iconPos="right"
-                    className="p-button-text p-button-sm"
+                    className="p-button-text p-button-sm btn-mono-text"
                   />
                 </div>
 
@@ -322,7 +311,7 @@ export default function Dashboard() {
                   <Column field="crew" header="Assigned Crew" body={crewBodyTemplate} />
                   <Column field="payment" header="Payment" body={paymentBodyTemplate} />
                   <Column field="status" header="Shoot & Editing Status" body={statusBodyTemplate} />
-                  <Column body={actionBodyTemplate} exportable={false} style={{ width: '100px' }} />
+                  <Column body={actionBodyTemplate} exportable={false} style={{ width: '80px' }} />
                 </DataTable>
               </Card>
 
@@ -356,7 +345,7 @@ export default function Dashboard() {
                       </div>
 
                       <div className="pipeline-item__bar-group">
-                        <ProgressBar value={item.progress} style={{ height: '8px' }} />
+                        <ProgressBar value={item.progress} showValue={false} style={{ height: '6px' }} />
                         <span className="pipeline-item__pct">{item.progress}% Completed</span>
                       </div>
                     </div>
@@ -371,7 +360,7 @@ export default function Dashboard() {
               <Card className="card-custom">
                 <div className="card-header">
                   <h3 className="card-header__title">
-                    <i className="pi pi-calendar-plus" style={{ color: '#ec4899', marginRight: '8px' }} />
+                    <i className="pi pi-calendar-plus" style={{ color: '#ffffff', marginRight: '8px' }} />
                     Today's Shoot Timeline
                   </h3>
                 </div>
@@ -403,7 +392,7 @@ export default function Dashboard() {
               <Card className="card-custom" style={{ marginTop: '1.5rem' }}>
                 <div className="card-header">
                   <h3 className="card-header__title">
-                    <i className="pi pi-camera" style={{ color: '#a855f7', marginRight: '8px' }} />
+                    <i className="pi pi-camera" style={{ color: '#ffffff', marginRight: '8px' }} />
                     Equipment Check
                   </h3>
                 </div>
@@ -411,7 +400,7 @@ export default function Dashboard() {
                 <div className="gear-status-list">
                   <div className="gear-status-item">
                     <div className="gear-status-info">
-                      <i className="pi pi-check-circle gear-status-icon gear-status-icon--ok" />
+                      <i className="pi pi-check-circle gear-status-icon" />
                       <div>
                         <strong>Sony A7IV & FX3 Rigs</strong>
                         <span>6/6 Camera Bodies prepped & battery 100%</span>
@@ -421,7 +410,7 @@ export default function Dashboard() {
 
                   <div className="gear-status-item">
                     <div className="gear-status-info">
-                      <i className="pi pi-check-circle gear-status-icon gear-status-icon--ok" />
+                      <i className="pi pi-check-circle gear-status-icon" />
                       <div>
                         <strong>DJI Mavic 3 Pro Drone</strong>
                         <span>Firmware updated • 4 Batteries charged</span>
@@ -431,7 +420,7 @@ export default function Dashboard() {
 
                   <div className="gear-status-item">
                     <div className="gear-status-info">
-                      <i className="pi pi-exclamation-circle gear-status-icon gear-status-icon--warn" />
+                      <i className="pi pi-circle gear-status-icon" />
                       <div>
                         <strong>Godox AD600 Lighting Kit</strong>
                         <span>Stand #2 replacement pending in Van B</span>
@@ -447,11 +436,11 @@ export default function Dashboard() {
 
       {/* ─── New Booking Dialog ─── */}
       <Dialog
-        header="✨ Book New Wedding Event"
+        header="Book New Wedding Event"
         visible={newBookingVisible}
         style={{ width: '500px' }}
         onHide={() => setNewBookingVisible(false)}
-        className="custom-dialog"
+        className="custom-dialog-mono"
       >
         <div className="dialog-form">
           <div className="p-field">
@@ -493,7 +482,7 @@ export default function Dashboard() {
             <Button
               label="Cancel"
               icon="pi pi-times"
-              className="p-button-text"
+              className="p-button-text btn-mono-text"
               onClick={() => setNewBookingVisible(false)}
             />
             <Button

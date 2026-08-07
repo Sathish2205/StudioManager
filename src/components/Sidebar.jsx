@@ -18,11 +18,11 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       {/* Studio Brand */}
       <div className="sidebar__brand">
         <div className="sidebar__logo">
-          <i className="pi pi-heart-fill" />
+          <i className="pi pi-camera" />
         </div>
         <div className="sidebar__brand-info">
-          <span className="sidebar__title">Vows & Lenses</span>
-          <span className="sidebar__subtitle">Wedding Studio Pro</span>
+          <span className="sidebar__title">STUDIO MANAGER</span>
+          <span className="sidebar__subtitle">Black & White Edition</span>
         </div>
       </div>
 
@@ -42,7 +42,6 @@ export default function Sidebar({ activeTab, setActiveTab }) {
             {item.badge && (
               <Badge
                 value={item.badge}
-                severity={item.id === 'events' ? 'danger' : 'info'}
                 className="sidebar__badge"
               />
             )}
@@ -54,10 +53,10 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       <div className="sidebar__footer">
         <div className="sidebar__gear-card">
           <div className="sidebar__gear-header">
-            <i className="pi pi-bolt" />
-            <span>Peak Season Status</span>
+            <i className="pi pi-shield" />
+            <span>Studio Capacity</span>
           </div>
-          <p>8 Shoots scheduled for this weekend. All gear checked.</p>
+          <p>8 Shoots scheduled for this weekend. All equipment prepped.</p>
           <div className="sidebar__season-progress">
             <div className="sidebar__season-bar" style={{ width: '85%' }} />
           </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import Sidebar from '../components/Sidebar'
-import DashboardHeader from '../components/DashboardHeader'
+import Sidebar from '../../components/Sidebar'
+import DashboardHeader from '../../components/DashboardHeader'
 import './Dashboard.css'
 
 export default function Dashboard() {

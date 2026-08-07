@@ -234,6 +234,12 @@ export default function Events({ activeTab, setActiveTab }) {
     </div>
   )
 
+  const paginatorLeftTemplate = (
+    <span className="events-paginator__count">
+      Showing <strong>{filteredEvents.length}</strong> of {initialEvents.length} Shoots
+    </span>
+  )
+
   return (
     <div className="portal-layout">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -297,19 +303,14 @@ export default function Events({ activeTab, setActiveTab }) {
                 className="events-filter__dropdown"
               />
             </div>
-
-            <div className="events-toolbar__right">
-              <span className="events-toolbar__count">
-                Showing <strong>{filteredEvents.length}</strong> of {initialEvents.length} Shoots
-              </span>
-            </div>
           </div>
 
-          {/* ─── PrimeReact DataTable with Paginator ─── */}
+          {/* ─── PrimeReact DataTable with Sticky Bottom Paginator ─── */}
           <div className="events-table-card">
             <DataTable
               value={filteredEvents}
               paginator
+              paginatorLeft={paginatorLeftTemplate}
               rows={5}
               rowsPerPageOptions={[5, 10, 20]}
               responsiveLayout="scroll"

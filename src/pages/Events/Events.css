@@ -309,15 +309,56 @@
   gap: 0.15rem;
 }
 
-/* Paginator Styling */
+/* Paginator Styling (Aligned to Bottom Right) */
 .events-datatable .p-paginator {
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.events-datatable .p-paginator .p-paginator-first,
+.events-datatable .p-paginator .p-paginator-prev,
+.events-datatable .p-paginator .p-paginator-next,
+.events-datatable .p-paginator .p-paginator-last,
+.events-datatable .p-paginator .p-paginator-page {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.82rem;
+  transition: all 0.15s ease;
 }
 
 .events-datatable .p-paginator .p-paginator-page.p-highlight {
-  background: #e0f2fe;
-  color: #0284c7;
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
   font-weight: 700;
+}
+
+.events-datatable .p-paginator .p-paginator-page:not(.p-highlight):hover,
+.events-datatable .p-paginator .p-paginator-first:hover,
+.events-datatable .p-paginator .p-paginator-prev:hover,
+.events-datatable .p-paginator .p-paginator-next:hover,
+.events-datatable .p-paginator .p-paginator-last:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.events-datatable .p-paginator .p-dropdown {
+  height: 32px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-left: 0.5rem;
+}
+
+.events-datatable .p-paginator .p-dropdown .p-dropdown-label {
+  line-height: 30px;
+  font-size: 0.82rem;
+  padding: 0 0.6rem;
 }

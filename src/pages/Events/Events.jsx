@@ -318,14 +318,14 @@ export default function Events({ activeTab, setActiveTab }) {
               className="events-datatable"
               emptyMessage="No matching wedding events or shoots found."
             >
-              <Column field="couple" header="Couple & Event ID" body={coupleBodyTemplate} sortable />
-              <Column field="eventType" header="Event Type & Venue" body={eventVenueTemplate} sortable />
-              <Column field="date" header="Date & Time" body={dateBodyTemplate} sortable />
-              <Column field="package" header="Package & Quote" body={packageBodyTemplate} sortable />
-              <Column field="crew" header="Assigned Crew" body={crewBodyTemplate} />
-              <Column field="payment" header="Payment" body={paymentBodyTemplate} sortable />
-              <Column field="status" header="Status & Progress" body={statusBodyTemplate} sortable />
-              <Column body={actionBodyTemplate} exportable={false} style={{ width: '110px' }} />
+              <Column field="couple" header="Couple & Event ID" body={coupleBodyTemplate} sortable style={{ minWidth: '180px' }} />
+              <Column field="eventType" header="Event Type & Venue" body={eventVenueTemplate} sortable style={{ minWidth: '220px' }} />
+              <Column field="date" header="Date & Time" body={dateBodyTemplate} sortable style={{ minWidth: '150px' }} />
+              <Column field="package" header="Package & Quote" body={packageBodyTemplate} sortable style={{ minWidth: '170px' }} />
+              <Column field="crew" header="Assigned Crew" body={crewBodyTemplate} style={{ minWidth: '170px' }} />
+              <Column field="payment" header="Payment" body={paymentBodyTemplate} sortable style={{ minWidth: '140px' }} />
+              <Column field="status" header="Status & Progress" body={statusBodyTemplate} sortable style={{ minWidth: '160px' }} />
+              <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '110px' }} />
             </DataTable>
           </div>
         </div>

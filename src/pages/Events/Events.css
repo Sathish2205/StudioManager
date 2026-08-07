@@ -116,7 +116,7 @@
   outline: none;
 }
 
-/* Dropdown Uniform Controls */
+/* Dropdown Uniform Controls & Panel Overlay */
 .events-filter__dropdown.p-dropdown {
   height: 38px;
   border: 1px solid #cbd5e1;
@@ -141,7 +141,8 @@
   font-size: 0.85rem;
   color: #1e293b;
   padding: 0 0.85rem;
-  line-height: 36px;
+  display: flex;
+  align-items: center;
   font-family: inherit;
 }
 
@@ -152,6 +153,43 @@
 .events-filter__dropdown .p-dropdown-trigger {
   width: 32px;
   color: #94a3b8;
+}
+
+/* PrimeReact Dropdown Panel Overlay Styling */
+.p-dropdown-panel {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+}
+
+.p-dropdown-panel .p-dropdown-items {
+  padding: 0.35rem 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+
+.p-dropdown-panel .p-dropdown-item {
+  padding: 0.55rem 0.85rem !important;
+  font-size: 0.85rem !important;
+  color: #334155 !important;
+  border-radius: 6px !important;
+  margin: 0.1rem 0.35rem !important;
+  transition: all 0.12s ease !important;
+  cursor: pointer !important;
+}
+
+.p-dropdown-panel .p-dropdown-item:hover {
+  background: #f1f5f9 !important;
+  color: #0284c7 !important;
+}
+
+.p-dropdown-panel .p-dropdown-item.p-highlight {
+  background: #e0f2fe !important;
+  color: #0284c7 !important;
+  font-weight: 700 !important;
 }
 
 .events-toolbar__right {

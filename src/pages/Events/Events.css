@@ -349,14 +349,69 @@
   color: #475569;
 }
 
+.events-table__status-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
 .events-table__status-box .p-progressbar {
   background: #e2e8f0;
   border-radius: 3px;
+  width: 100%;
 }
 
 .events-table__status-box .p-progressbar-value {
   background: #0284c7;
   border-radius: 3px;
+}
+
+/* ── PrimeReact Tag & Badge Label Fixes ── */
+.events-datatable .p-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0.35rem 0.75rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  border-radius: 50px !important;
+  white-space: nowrap !important;
+  height: auto !important;
+  box-shadow: none !important;
+}
+
+.events-datatable .p-tag .p-tag-value {
+  line-height: 1.3 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  display: inline-block !important;
+}
+
+/* Modern Soft Color Palettes for Tags */
+.events-datatable .p-tag.p-tag-success {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+.events-datatable .p-tag.p-tag-info {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  border: 1px solid #bae6fd !important;
+}
+
+.events-datatable .p-tag.p-tag-warning {
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+  border: 1px solid #fde68a !important;
+}
+
+.events-datatable .p-tag.p-tag-danger {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fecaca !important;
 }
 
 .events-table__actions {

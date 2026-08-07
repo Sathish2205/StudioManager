@@ -309,7 +309,7 @@
   gap: 0.15rem;
 }
 
-/* Paginator Styling (Sticky Bottom Viewport & Grouped Right Controls) */
+/* Paginator Styling (Left Text on Far Left, All Controls Clustered on Far Right) */
 .events-datatable .p-paginator {
   position: sticky;
   bottom: 0;
@@ -323,7 +323,13 @@
   align-items: center;
 }
 
-/* Left Count Element */
+/* Far Left Container */
+.events-datatable .p-paginator .p-paginator-left-content {
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+}
+
 .events-paginator__count {
   font-size: 0.85rem;
   color: #64748b;
@@ -333,12 +339,7 @@
   color: #0f172a;
 }
 
-/* Push navigation controls to the far right as a single group */
-.events-datatable .p-paginator .p-paginator-first {
-  margin-left: auto;
-}
-
-/* Group buttons side by side */
+/* Far Right Navigation Controls */
 .events-datatable .p-paginator .p-paginator-first,
 .events-datatable .p-paginator .p-paginator-prev,
 .events-datatable .p-paginator .p-paginator-next,
@@ -377,7 +378,7 @@
   height: 32px;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
-  margin-left: 0.75rem;
+  margin-left: 0.6rem;
 }
 
 .events-datatable .p-paginator .p-dropdown .p-dropdown-label {

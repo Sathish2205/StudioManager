@@ -21,10 +21,8 @@ import './EventForm.css'
 
 export default function EventForm({ onSuccess, onCancel }) {
   const toastRef = useRef(null)
-  const clientDropdownRef = useRef(null)
 
   // API Data States
-  const [clients, setClients] = useState([])
   const [packages, setPackages] = useState([])
   const [staff, setStaff] = useState({ photographers: [], videographers: [] })
   const [loadingData, setLoadingData] = useState(true)
@@ -62,7 +60,7 @@ export default function EventForm({ onSuccess, onCancel }) {
     resolver: yupResolver(eventSchema),
     mode: 'onChange',
     defaultValues: {
-      clientId: '',
+      clientName: '',
       eventName: '',
       eventType: '',
       eventDate: null,
@@ -187,33 +185,27 @@ export default function EventForm({ onSuccess, onCancel }) {
 
           <div className="grid form-grid">
             {/* Client Name (Searchable Dropdown) */}
+            {/* Client Name InputText */}
             <div className="col-12 md:col-6 field-col">
               <label className="field-label">
                 Client Name <span className="req-star">*</span>
               </label>
               <Controller
-                name="clientId"
+                name="clientName"
                 control={control}
                 render={({ field }) => (
-                  <Dropdown
-                    ref={clientDropdownRef}
+                  <InputText
                     id={field.name}
-                    value={field.value}
-                    options={clients}
-                    optionLabel="label"
-                    optionValue="id"
-                    onChange={(e) => field.onChange(e.value)}
-                    placeholder={loadingData ? 'Loading Clients...' : 'Select Client (Searchable)'}
-                    filter
-                    filterBy="name,mobile"
-                    className={`w-full ${errors.clientId ? 'p-invalid' : ''}`}
-                    disabled={loadingData}
+                    value={field.value || ''}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    placeholder="Enter Client / Couple Name (e.g. Anand & Priya)"
+                    className={`w-full p-inputtext ${errors.clientName ? 'p-invalid' : ''}`}
                     autoFocus
                   />
                 )}
               />
-              {errors.clientId && (
-                <small className="p-error">{errors.clientId.message}</small>
+              {errors.clientName && (
+                <small className="p-error">{errors.clientName.message}</small>
               )}
             </div>
 

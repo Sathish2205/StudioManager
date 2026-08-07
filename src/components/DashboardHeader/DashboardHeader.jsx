@@ -11,8 +11,18 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab }) {
           { label: 'Events & Shoots', onClick: () => setActiveTab && setActiveTab('events') },
           { label: 'Add Event', active: true }
         ]
+      case 'invoice':
+        return [
+          { label: 'Events & Shoots', onClick: () => setActiveTab && setActiveTab('events') },
+          { label: 'Print Invoice', active: true }
+        ]
       case 'calendar':
         return [{ label: 'Shoot Calendar', active: true }]
+      case 'crm':
+        return [{ label: 'Customer CRM', active: true }]
+      case 'workflow':
+      case 'tasks':
+        return [{ label: 'Workflow Management', active: true }]
       case 'home':
       default:
         return [{ label: 'Studio Overview', active: true }]
@@ -23,24 +33,14 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab }) {
 
   return (
     <header className="portal-header">
-      {/* Left Title / Interactive Breadcrumb with Home Button */}
+      {/* Left Title / Interactive Breadcrumb with Home Icon Only */}
       <div className="portal-header__left">
-        <button
-          className="portal-header__home-btn"
-          onClick={() => setActiveTab && setActiveTab('home')}
-          title="Go to Home Overview"
-          aria-label="Home Overview"
-        >
-          <i className="pi pi-home" />
-        </button>
-
         <div className="portal-header__breadcrumb">
-          <span
-            className="header-crumb-home"
+          <i
+            className="pi pi-home header-crumb-home-icon"
             onClick={() => setActiveTab && setActiveTab('home')}
-          >
-            Home
-          </span>
+            title="Go to Home Overview"
+          />
 
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={idx}>

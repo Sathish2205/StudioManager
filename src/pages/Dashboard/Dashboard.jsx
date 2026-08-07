@@ -6,6 +6,36 @@ import './Dashboard.css'
 export default function Dashboard({ activeTab = 'home', setActiveTab }) {
   const [showFinancials, setShowFinancials] = useState(false)
 
+  const upcomingShoots = [
+    {
+      id: 'EVT-2026-001',
+      couple: 'Sophia & James Sterling',
+      eventType: 'Wedding & Reception',
+      date: 'Aug 12, 2026',
+      venue: 'The Grand Chateau, Napa Valley',
+      status: 'Shooting Today',
+      statusColor: '#dc2626'
+    },
+    {
+      id: 'EVT-2026-002',
+      couple: 'Priya & Rohan Sharma',
+      eventType: 'Sangeet & Mehendi',
+      date: 'Aug 15, 2026',
+      venue: 'The Ritz Carlton, Mumbai',
+      status: 'Confirmed',
+      statusColor: '#0284c7'
+    },
+    {
+      id: 'EVT-2026-003',
+      couple: 'Olivia & Liam Vance',
+      eventType: 'Destination Wedding',
+      date: 'Aug 20, 2026',
+      venue: 'Sunset Cove Resort, Miami',
+      status: 'In Post-Production',
+      statusColor: '#d97706'
+    }
+  ]
+
   return (
     <div className="portal-layout">
       {/* Left Sidebar */}
@@ -19,188 +49,223 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
           {/* Greeting Hero Section */}
           <div className="portal-hero">
             <div className="portal-hero__text">
+              <div className="portal-hero__date-badge">
+                <i className="pi pi-calendar" /> Saturday, 08 Aug 2026 | Peak Wedding Season
+              </div>
               <h1 className="portal-hero__greeting">Good Evening, Sathish</h1>
               <p className="portal-hero__quote">
-                Capturing timeless moments & managing studio financial growth.
+                Capturing timeless memories, tracking editing workflows & accelerating studio revenue.
               </p>
-              <span className="portal-hero__author">- PhotoStudio Pro Management</span>
+              <div className="portal-hero__actions">
+                <button
+                  className="portal-hero__btn portal-hero__btn--primary"
+                  onClick={() => setActiveTab('add-event')}
+                >
+                  <i className="pi pi-plus" /> Book New Event
+                </button>
+                <button
+                  className="portal-hero__btn portal-hero__btn--outline"
+                  onClick={() => setActiveTab('workflow')}
+                >
+                  <i className="pi pi-sitemap" /> Workflow List
+                </button>
+              </div>
             </div>
 
             {/* Photography & Event Vector Graphic */}
             <div className="portal-hero__graphic">
               <svg viewBox="0 0 450 140" fill="none" xmlns="http://www.w3.org/2000/svg" className="portal-hero__svg">
-                {/* Studio Flash Light */}
                 <circle cx="390" cy="45" r="28" fill="#38bdf8" opacity="0.8" />
-                {/* Camera Lens Lines */}
                 <circle cx="390" cy="45" r="18" fill="#0284c7" />
                 <circle cx="390" cy="45" r="8" fill="#ffffff" />
-                {/* Film Strip Path */}
-                <path d="M0 115 C 150 115, 250 75, 450 35" stroke="#0284c7" strokeWidth="6" strokeDasharray="8 4" fill="none" />
-                <path d="M0 130 C 150 130, 260 90, 450 50" stroke="#1e293b" strokeWidth="10" fill="none" />
-                {/* Camera Body Vector */}
-                <rect x="330" y="60" width="55" height="32" rx="6" fill="#0f172a" transform="rotate(-6 330 60)" />
-                <circle cx="355" cy="74" r="10" fill="#38bdf8" />
+                <path d="M0 115 C 150 115, 250 75, 450 35" stroke="#38bdf8" strokeWidth="6" strokeDasharray="8 4" fill="none" />
+                <path d="M0 130 C 150 130, 260 90, 450 50" stroke="#ffffff" strokeWidth="10" opacity="0.2" fill="none" />
+                <rect x="330" y="60" width="55" height="32" rx="6" fill="#ffffff" opacity="0.9" transform="rotate(-6 330 60)" />
+                <circle cx="355" cy="74" r="10" fill="#0284c7" />
                 <rect x="345" y="54" width="16" height="8" rx="2" fill="#64748b" transform="rotate(-6 345 54)" />
               </svg>
             </div>
           </div>
 
-          {/* ─── Grid Section ─── */}
-          <div className="portal-grid">
-            {/* 1. Pending Approvals & Edits Card */}
-            <div className="portal-card">
-              <h3 className="portal-card__title">Pending Client Approvals</h3>
-              <div className="portal-card__center">
-                <div className="portal-card__icon-wrap">
-                  {/* Photo Album / Camera Proofing Graphic */}
-                  <svg width="60" height="70" viewBox="0 0 60 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="10" y="10" width="40" height="52" rx="4" stroke="#0284c7" strokeWidth="2.5" fill="#ffffff" />
-                    <rect x="18" y="18" width="24" height="18" rx="2" fill="#e0f2fe" />
-                    <circle cx="26" cy="24" r="3" fill="#0284c7" />
-                    <path d="M18 34 L26 28 L32 34 H18 Z" fill="#0369a1" />
-                    <line x1="18" y1="44" x2="38" y2="44" stroke="#64748b" strokeWidth="2" strokeLinecap="round" />
-                    <line x1="18" y1="50" x2="30" y2="50" stroke="#0284c7" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
+          {/* ── Executive Studio Metrics Grid ── */}
+          <div className="home-metrics-grid">
+            <div className="home-metric-card">
+              <div>
+                <div className="home-metric__title">Total Shoots Booked</div>
+                <div className="home-metric__val">38</div>
+                <div className="home-metric__sub">
+                  <i className="pi pi-arrow-up-right mr-1" /> +12% this month
                 </div>
-                <p className="portal-card__empty-text">Hurrah! All client photo albums reviewed & approved.</p>
+              </div>
+              <div className="home-metric__icon-wrap home-metric__icon-wrap--blue">
+                <i className="pi pi-calendar-plus" />
               </div>
             </div>
 
-            {/* 2. Upcoming Shoots & Events Card */}
-            <div className="portal-card">
-              <h3 className="portal-card__title">Upcoming Studio Events</h3>
-              <div className="portal-card__center">
-                <div className="portal-card__icon-wrap">
-                  {/* Event Calendar & Wedding Ring Graphic */}
-                  <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="15" y="15" width="40" height="42" rx="6" fill="#ffffff" stroke="#0f172a" strokeWidth="2" />
-                    <path d="M15 25 H55" stroke="#0284c7" strokeWidth="3" />
-                    <circle cx="25" cy="10" r="3" fill="#0f172a" />
-                    <circle cx="45" cy="10" r="3" fill="#0f172a" />
-                    {/* Interlocking Rings */}
-                    <circle cx="30" cy="40" r="7" stroke="#fbbf24" strokeWidth="2" fill="none" />
-                    <circle cx="38" cy="40" r="7" stroke="#fbbf24" strokeWidth="2" fill="none" />
-                  </svg>
+            <div className="home-metric-card">
+              <div>
+                <div className="home-metric__title">Gross Revenue</div>
+                <div className="home-metric__val">₹24.5L</div>
+                <div className="home-metric__sub">
+                  <i className="pi pi-check-circle mr-1" /> ₹14.2L Collected
                 </div>
-                <p className="portal-card__empty-text">Next: Sophia & James Wedding (Aug 12)</p>
+              </div>
+              <div className="home-metric__icon-wrap home-metric__icon-wrap--green">
+                <i className="pi pi-wallet" />
               </div>
             </div>
 
-            {/* 3. Event Finance & Revenue Summary Card */}
-            <div className="portal-card">
-              <div className="portal-card__header-link">
-                <h3 className="portal-card__title">Event Financials</h3>
-                <i className="pi pi-arrow-right portal-card__arrow" />
+            <div className="home-metric-card">
+              <div>
+                <div className="home-metric__title">Edits In Progress</div>
+                <div className="home-metric__val">14</div>
+                <div className="home-metric__sub text-amber-600">
+                  <i className="pi pi-spin pi-spinner mr-1" /> 4 Pending Review
+                </div>
+              </div>
+              <div className="home-metric__icon-wrap home-metric__icon-wrap--amber">
+                <i className="pi pi-images" />
+              </div>
+            </div>
+
+            <div className="home-metric-card">
+              <div>
+                <div className="home-metric__title">Albums Delivered</div>
+                <div className="home-metric__val">22</div>
+                <div className="home-metric__sub">
+                  <i className="pi pi-box mr-1" /> 6 Ready Today
+                </div>
+              </div>
+              <div className="home-metric__icon-wrap home-metric__icon-wrap--purple">
+                <i className="pi pi-check-circle" />
+              </div>
+            </div>
+          </div>
+
+          {/* ── Main Dashboard Layout Columns ── */}
+          <div className="home-main-grid">
+            {/* Left Column: Upcoming Shoots & Events Directory */}
+            <div className="home-card">
+              <div className="home-card__header">
+                <h3 className="home-card__title">
+                  <i className="pi pi-camera" /> Upcoming Confirmed Shoots
+                </h3>
+                <span className="home-card__link" onClick={() => setActiveTab('events')}>
+                  View All Events ({upcomingShoots.length}) &rarr;
+                </span>
               </div>
 
-              <div className="payslip-body">
-                {/* Donut Chart & Days Info */}
-                <div className="payslip-chart-row">
-                  <div className="payslip-chart">
-                    <svg width="90" height="90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="38" stroke="#e2e8f0" strokeWidth="14" fill="none" />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="38"
-                        stroke="#0891b2"
-                        strokeWidth="14"
-                        fill="none"
-                        strokeDasharray="238"
-                        strokeDashoffset="55"
-                        strokeLinecap="round"
-                        transform="rotate(-90 50 50)"
-                      />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="38"
-                        stroke="#a7f3d0"
-                        strokeWidth="14"
-                        fill="none"
-                        strokeDasharray="238"
-                        strokeDashoffset="195"
-                        transform="rotate(-90 50 50)"
-                      />
-                    </svg>
-                  </div>
-                  <div className="payslip-days">
-                    <span className="payslip-month">Jul 2026</span>
-                    <span className="payslip-count">38</span>
-                    <span className="payslip-label">Booked Events</span>
-                  </div>
-                </div>
-
-                {/* Event Financial Breakdown */}
-                <div className="payslip-details">
-                  <div className="payslip-item">
-                    <span className="payslip-item__bar payslip-item__bar--black" />
-                    <span className="payslip-item__name">Gross Event Revenue</span>
-                    <span className="payslip-item__value">
-                      {showFinancials ? '₹4,85,000' : '*****'}
+              <div className="home-shoots-list">
+                {upcomingShoots.map((shoot) => (
+                  <div key={shoot.id} className="home-shoot-item">
+                    <div className="home-shoot__info">
+                      <span className="home-shoot__couple">{shoot.couple}</span>
+                      <div className="home-shoot__meta">
+                        <span><i className="pi pi-tag" /> {shoot.eventType}</span>
+                        <span><i className="pi pi-calendar" /> {shoot.date}</span>
+                        <span><i className="pi pi-map-marker" /> {shoot.venue}</span>
+                      </div>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: '0.725rem',
+                        fontWeight: 700,
+                        color: shoot.statusColor,
+                        background: '#f1f5f9',
+                        padding: '0.35rem 0.75rem',
+                        borderRadius: '50px',
+                        border: '1px solid #e2e8f0'
+                      }}
+                    >
+                      {shoot.status}
                     </span>
                   </div>
-
-                  <div className="payslip-item">
-                    <span className="payslip-item__bar payslip-item__bar--green" />
-                    <span className="payslip-item__name">Crew & Gear Expenses</span>
-                    <span className="payslip-item__value">
-                      {showFinancials ? '₹1,20,000' : '*****'}
-                    </span>
-                  </div>
-
-                  <div className="payslip-item">
-                    <span className="payslip-item__bar payslip-item__bar--blue" />
-                    <span className="payslip-item__name">Net Studio Profit</span>
-                    <span className="payslip-item__value">
-                      {showFinancials ? '₹3,65,000' : '*****'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Card Actions Footer */}
-                <div className="payslip-footer">
-                  <a href="#download" className="payslip-link">Download P&L Statement</a>
-                  <button
-                    className="payslip-btn-show"
-                    onClick={() => setShowFinancials(!showFinancials)}
-                  >
-                    {showFinancials ? 'Hide Figures' : 'Show Figures'}
-                  </button>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* 4. Quick Access Links Card */}
-            <div className="portal-card">
-              <h3 className="portal-card__title">Quick Access</h3>
-              <div className="quick-access-body">
-                <div className="quick-access-links">
-                  <a href="#booking" className="quick-access-item">Create Event Invoice</a>
-                  <a href="#contract" className="quick-access-item">Wedding Booking Contract</a>
-                  <a href="#gear" className="quick-access-item">Gear Maintenance Log</a>
-                  <a href="#proofing" className="quick-access-item">Client Proofing Portal</a>
+            {/* Right Column: Financial Summary & Quick Access */}
+            <div className="flex flex-column gap-3">
+              {/* Event Financials Card */}
+              <div className="home-card">
+                <div className="home-card__header">
+                  <h3 className="home-card__title">
+                    <i className="pi pi-chart-line" /> Financial Overview
+                  </h3>
                 </div>
-                <div className="quick-access-note">
-                  <p>Use quick access to generate invoices & booking quotes instantly.</p>
+
+                <div className="payslip-body">
+                  <div className="payslip-chart-row">
+                    <div className="payslip-days">
+                      <span className="payslip-month">Aug 2026</span>
+                      <span className="payslip-count">38</span>
+                      <span className="payslip-label">Active Event Bookings</span>
+                    </div>
+                  </div>
+
+                  <div className="payslip-details">
+                    <div className="payslip-item">
+                      <span className="payslip-item__bar payslip-item__bar--black" />
+                      <span className="payslip-item__name">Gross Contract Value</span>
+                      <span className="payslip-item__value">
+                        {showFinancials ? '₹24,50,000' : '*****'}
+                      </span>
+                    </div>
+
+                    <div className="payslip-item">
+                      <span className="payslip-item__bar payslip-item__bar--green" />
+                      <span className="payslip-item__name">Advances Received</span>
+                      <span className="payslip-item__value">
+                        {showFinancials ? '₹14,20,000' : '*****'}
+                      </span>
+                    </div>
+
+                    <div className="payslip-item">
+                      <span className="payslip-item__bar payslip-item__bar--blue" />
+                      <span className="payslip-item__name">Net Pending Balance</span>
+                      <span className="payslip-item__value">
+                        {showFinancials ? '₹10,30,000' : '*****'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="payslip-footer">
+                    <button
+                      className="payslip-btn-show"
+                      onClick={() => setShowFinancials(!showFinancials)}
+                    >
+                      {showFinancials ? 'Hide Figures' : 'Show Figures'}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* 5. Studio Announcement / Alert Card */}
-            <div className="portal-card portal-card--wide">
-              <h3 className="portal-card__title">Peak Season Studio Alert</h3>
-              <div className="it-declaration-body">
-                <div className="it-declaration-icon">
-                  <svg width="45" height="45" viewBox="0 0 50 50" fill="none">
-                    <rect x="5" y="10" width="40" height="30" rx="4" fill="#0284c7" />
-                    <circle cx="25" cy="25" r="8" fill="#ffffff" />
-                    <circle cx="25" cy="25" r="4" fill="#0f172a" />
-                  </svg>
+              {/* Quick Actions Card */}
+              <div className="home-card">
+                <div className="home-card__header">
+                  <h3 className="home-card__title">
+                    <i className="pi pi-bolt" /> Studio Quick Tools
+                  </h3>
                 </div>
-                <p className="it-declaration-text">
-                  Peak Wedding Season 2026 is live! 38 Confirmed Events. Ensure all camera rigs & drone batteries are fully charged prior to shoot dates.
-                </p>
+
+                <div className="home-quick-grid">
+                  <div className="home-quick-btn" onClick={() => setActiveTab('add-event')}>
+                    <i className="pi pi-plus-circle" />
+                    <span>Book New Shoot</span>
+                  </div>
+                  <div className="home-quick-btn" onClick={() => setActiveTab('workflow')}>
+                    <i className="pi pi-sitemap" />
+                    <span>Workflow Stages</span>
+                  </div>
+                  <div className="home-quick-btn" onClick={() => setActiveTab('events')}>
+                    <i className="pi pi-calendar" />
+                    <span>Events Directory</span>
+                  </div>
+                  <div className="home-quick-btn" onClick={() => setActiveTab('invoice')}>
+                    <i className="pi pi-print" />
+                    <span>Tax Invoice</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

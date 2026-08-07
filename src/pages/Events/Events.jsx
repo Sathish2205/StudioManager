@@ -11,7 +11,7 @@ import DashboardHeader from '../../components/DashboardHeader'
 import EventDetailDrawer from '../../components/EventDetailDrawer'
 import './Events.css'
 
-export default function Events({ activeTab = 'events', setActiveTab }) {
+export default function Events({ activeTab = 'events', setActiveTab, onNavigateInvoice }) {
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [selectedType, setSelectedType] = useState(null)
@@ -238,7 +238,15 @@ export default function Events({ activeTab = 'events', setActiveTab }) {
     <div className="events-table__actions" onClick={(e) => e.stopPropagation()}>
       <Button icon="pi pi-eye" rounded text severity="secondary" aria-label="View" onClick={() => handleRowSelect(rowData)} />
       <Button icon="pi pi-pencil" rounded text severity="info" aria-label="Edit" />
-      <Button icon="pi pi-download" rounded text severity="success" aria-label="Invoice" />
+      <Button
+        icon="pi pi-download"
+        rounded
+        text
+        severity="success"
+        aria-label="Invoice"
+        tooltip="Print Invoice"
+        onClick={() => onNavigateInvoice && onNavigateInvoice(rowData)}
+      />
     </div>
   )
 

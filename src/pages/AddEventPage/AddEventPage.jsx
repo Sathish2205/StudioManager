@@ -2,7 +2,7 @@ import React from 'react'
 import EventForm from '../../components/EventForm'
 import './AddEventPage.css'
 
-export default function AddEventPage({ onNavigateEvents, onNavigateDashboard }) {
+export default function AddEventPage({ onNavigateEvents, onNavigateDashboard, onNavigateInvoice }) {
   return (
     <div className="add-event-page">
       {/* ── Breadcrumb & Top Bar ── */}
@@ -36,7 +36,13 @@ export default function AddEventPage({ onNavigateEvents, onNavigateDashboard }) 
       {/* ── Event Form Inside Card ── */}
       <div className="add-event-container">
         <EventForm
-          onSuccess={() => onNavigateEvents && onNavigateEvents()}
+          onSuccess={(createdEvent) => {
+            if (onNavigateInvoice) {
+              onNavigateInvoice(createdEvent)
+            } else if (onNavigateEvents) {
+              onNavigateEvents()
+            }
+          }}
           onCancel={() => onNavigateEvents && onNavigateEvents()}
         />
       </div>

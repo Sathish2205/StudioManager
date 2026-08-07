@@ -1,0 +1,609 @@
+/* =========================================================
+   WORKFLOW MANAGEMENT DIRECTORY LIST PAGE STYLES (UNIFIED PREMIUM UI)
+   Uses Exact Events Directory Table Card & Paginator System
+   ========================================================= */
+
+.wf-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0;
+}
+
+.wf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.wf-header__title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.01em;
+}
+
+.wf-header__sub {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+/* Dashboard Summary Cards Grid */
+.wf-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.wf-metric-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.15s ease;
+}
+
+.wf-metric-box:hover {
+  border-color: #0284c7;
+}
+
+.wf-metric-num {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.wf-metric-label {
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.2rem;
+}
+
+.wf-metric-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+
+/* ── Unified Toolbar & Filter Bar ── */
+.events-toolbar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  flex-wrap: wrap;
+}
+
+.events-toolbar__left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+/* Search Input Container - Exact Events Page Search */
+.events-search {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  max-width: 440px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.events-search__icon {
+  position: absolute;
+  left: 0.9rem;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.events-search__clear {
+  position: absolute;
+  right: 0.9rem;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.events-search__clear:hover {
+  color: #475569;
+}
+
+.events-search__input.p-inputtext {
+  width: 100%;
+  height: 40px;
+  padding: 0 2.4rem 0 2.5rem !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
+  color: #1e293b !important;
+  background: #ffffff !important;
+  transition: all 0.15s ease;
+}
+
+.events-search__input.p-inputtext::placeholder {
+  color: #94a3b8 !important;
+}
+
+.events-search__input.p-inputtext:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+  outline: none !important;
+}
+
+/* ── Uniform Polished PrimeReact Dropdowns Everywhere ── */
+.p-dropdown {
+  height: 40px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.p-dropdown:hover {
+  border-color: #94a3b8 !important;
+}
+
+.p-dropdown.p-focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+}
+
+.p-dropdown .p-dropdown-label {
+  font-size: 0.875rem !important;
+  color: #1e293b !important;
+  padding: 0 0.85rem !important;
+  display: flex !important;
+  align-items: center !important;
+  font-family: inherit !important;
+}
+
+.p-dropdown .p-dropdown-label.p-placeholder {
+  color: #94a3b8 !important;
+}
+
+.p-dropdown .p-dropdown-trigger {
+  width: 36px !important;
+  color: #64748b !important;
+}
+
+.events-filter__dropdown.p-dropdown {
+  min-width: 210px !important;
+}
+
+/* Dropdown Panel Overlay Styling (High Z-Index Overlay Fix) */
+.p-dropdown-panel {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+  z-index: 99999 !important;
+}
+
+.p-dropdown-panel .p-dropdown-items {
+  padding: 0.35rem 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+  max-height: 220px !important;
+  overflow-y: auto !important;
+}
+
+.p-dropdown-panel .p-dropdown-item {
+  padding: 0.6rem 0.9rem !important;
+  font-size: 0.85rem !important;
+  color: #334155 !important;
+  border-radius: 6px !important;
+  margin: 0.1rem 0.35rem !important;
+  transition: all 0.12s ease !important;
+  cursor: pointer !important;
+}
+
+.p-dropdown-panel .p-dropdown-item:hover {
+  background: #f1f5f9 !important;
+  color: #0284c7 !important;
+}
+
+.p-dropdown-panel .p-dropdown-item.p-highlight {
+  background: #e0f2fe !important;
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+/* InputText Fields in Dialog Form */
+.p-dialog .p-inputtext {
+  height: 40px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  padding: 0 0.85rem !important;
+  font-size: 0.875rem !important;
+  color: #1e293b !important;
+  background: #ffffff !important;
+  transition: all 0.15s ease !important;
+}
+
+.p-dialog .p-inputtext:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+  outline: none !important;
+}
+
+/* Reset Button */
+.wf-btn-reset.p-button {
+  height: 40px !important;
+  border-radius: 8px !important;
+  font-size: 0.82rem !important;
+  padding: 0 1rem !important;
+}
+
+/* ── EXACT EVENTS PAGE DATATABLE CARD & STICKY PAGINATOR ── */
+.events-table-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.events-datatable.p-datatable {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.events-datatable.p-datatable .p-datatable-wrapper {
+  flex: 1;
+}
+
+.events-datatable.p-datatable .p-datatable-thead > tr > th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.events-datatable.p-datatable .p-datatable-thead > tr > th .p-sortable-column-icon,
+.events-datatable.p-datatable .p-datatable-thead > tr > th .p-sortable-column-icon svg,
+.events-datatable.p-datatable .p-datatable-thead > tr > th i.p-sortable-column-icon {
+  font-size: 0.68rem !important;
+  width: 10px !important;
+  height: 10px !important;
+  margin-left: 0.3rem !important;
+  color: #94a3b8 !important;
+  vertical-align: middle !important;
+}
+
+.events-datatable.p-datatable .p-datatable-thead > tr > th.p-highlight .p-sortable-column-icon,
+.events-datatable.p-datatable .p-datatable-thead > tr > th.p-highlight .p-sortable-column-icon svg {
+  color: #0284c7 !important;
+}
+
+.events-datatable.p-datatable .p-datatable-tbody > tr {
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.events-datatable.p-datatable .p-datatable-tbody > tr:hover {
+  background: #f1f5f9;
+}
+
+.events-datatable.p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.85rem 1.25rem;
+  font-size: 0.88rem;
+  vertical-align: middle;
+}
+
+/* Table Cells */
+.wf-table__id-badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  font-size: 0.75rem;
+  background: #f1f5f9;
+  color: #0284c7;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.wf-table__client {
+  display: flex;
+  flex-direction: column;
+}
+
+.wf-table__name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.wf-table__phone {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.wf-table__phone i {
+  color: #0284c7;
+  margin-right: 3px;
+}
+
+.wf-table__event-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.wf-table__event-title {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.85rem;
+}
+
+.wf-table__event-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.wf-table__staff-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.8rem;
+}
+
+.wf-table__progress-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 150px;
+}
+
+.wf-table__progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.wf-table__progress-box .p-progressbar {
+  background: #e2e8f0;
+  border-radius: 3px;
+  height: 6px;
+}
+
+.wf-table__progress-box .p-progressbar-value {
+  background: #0284c7;
+  border-radius: 3px;
+}
+
+/* Tag & Badge Styles */
+.events-datatable .p-tag,
+.p-dialog .p-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+
+.wf-table__actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* ── EXACT EVENTS PAGE PAGINATOR (Compact Viewport Footer) ── */
+.events-datatable .p-paginator {
+  position: sticky;
+  bottom: 0;
+  z-index: 90;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 0;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.04);
+  padding: 0.4rem 1.25rem;
+  margin-left: -1.5rem;
+  margin-right: -1.5rem;
+  width: calc(100% + 3rem);
+  display: flex;
+  align-items: center;
+}
+
+.events-datatable .p-paginator .p-paginator-left-content {
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+}
+
+.events-paginator__count {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.events-paginator__count strong {
+  color: #0f172a;
+}
+
+.events-datatable .p-paginator .p-paginator-first,
+.events-datatable .p-paginator .p-paginator-prev,
+.events-datatable .p-paginator .p-paginator-next,
+.events-datatable .p-paginator .p-paginator-last,
+.events-datatable .p-paginator .p-paginator-page {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.78rem;
+  margin: 0 0.12rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.events-datatable .p-paginator .p-paginator-page.p-highlight {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  font-weight: 700;
+}
+
+.events-datatable .p-paginator .p-paginator-page:not(.p-highlight):hover,
+.events-datatable .p-paginator .p-paginator-first:hover,
+.events-datatable .p-paginator .p-paginator-prev:hover,
+.events-datatable .p-paginator .p-paginator-next:hover,
+.events-datatable .p-paginator .p-paginator-last:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.events-datatable .p-paginator .p-dropdown {
+  height: 28px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 5px !important;
+  margin-left: 0.5rem;
+}
+
+.events-datatable .p-paginator .p-dropdown .p-dropdown-label {
+  line-height: 26px !important;
+  font-size: 0.78rem !important;
+  padding: 0 0.5rem !important;
+}
+
+/* ── ELEGANT DIALOG MODAL STYLING & FOOTER BUTTONS ── */
+.p-dialog {
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  max-height: 90vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.p-dialog .p-dialog-header {
+  padding: 1.25rem 1.75rem !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  flex-shrink: 0 !important;
+}
+
+.p-dialog .p-dialog-title {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+}
+
+.p-dialog .p-dialog-content {
+  padding: 1.5rem 1.75rem !important;
+  background: #ffffff !important;
+  overflow-y: auto !important;
+  max-height: calc(90vh - 140px) !important;
+}
+
+/* Polished Dialog Footer & Action Buttons */
+.p-dialog .p-dialog-footer {
+  padding: 1.1rem 1.75rem !important;
+  background: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0.85rem !important;
+  flex-shrink: 0 !important;
+}
+
+/* Executive Footer Buttons */
+.wf-dialog-btn-save.p-button {
+  background: #0284c7 !important;
+  border: 1px solid #0284c7 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  height: 42px !important;
+  padding: 0 1.5rem !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25) !important;
+  transition: all 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.wf-dialog-btn-save.p-button:hover {
+  background: #0369a1 !important;
+  border-color: #0369a1 !important;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35) !important;
+}
+
+.wf-dialog-btn-cancel.p-button {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  height: 42px !important;
+  padding: 0 1.25rem !important;
+  border-radius: 8px !important;
+  transition: all 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+.wf-dialog-btn-cancel.p-button:hover {
+  background: #f1f5f9 !important;
+  color: #1e293b !important;
+  border-color: #94a3b8 !important;
+}

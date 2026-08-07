@@ -5,6 +5,8 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   const menuItems = [
     { id: 'home', label: 'Studio Overview', icon: 'pi pi-home' },
     { id: 'events', label: 'Events & Shoots', icon: 'pi pi-calendar' },
+    { id: 'workflow', label: 'Workflow Management', icon: 'pi pi-sitemap' },
+    { id: 'crm', label: 'Customer CRM', icon: 'pi pi-id-card' },
     { id: 'calendar', label: 'Shoot Calendar', icon: 'pi pi-calendar-plus', hasSub: true },
     { id: 'tasks', label: 'Editing & Deliverables', icon: 'pi pi-images', hasSub: true },
     { id: 'finance', label: 'Finance & Invoices', icon: 'pi pi-wallet', hasSub: true },

@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
 export const eventSchema = yup.object().shape({
-  clientId: yup.string().required('Client Name is required'),
+  clientName: yup.string().required('Client Name is required'),
   eventName: yup.string().required('Event Name is required'),
   eventType: yup.string().required('Event Type is required'),
   eventDate: yup.date().nullable().required('Event Date is required'),

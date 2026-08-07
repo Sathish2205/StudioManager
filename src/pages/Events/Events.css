@@ -241,6 +241,22 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
+.events-datatable.p-datatable .p-datatable-thead > tr > th .p-sortable-column-icon,
+.events-datatable.p-datatable .p-datatable-thead > tr > th .p-sortable-column-icon svg,
+.events-datatable.p-datatable .p-datatable-thead > tr > th i.p-sortable-column-icon {
+  font-size: 0.68rem !important;
+  width: 10px !important;
+  height: 10px !important;
+  margin-left: 0.3rem !important;
+  color: #94a3b8 !important;
+  vertical-align: middle !important;
+}
+
+.events-datatable.p-datatable .p-datatable-thead > tr > th.p-highlight .p-sortable-column-icon,
+.events-datatable.p-datatable .p-datatable-thead > tr > th.p-highlight .p-sortable-column-icon svg {
+  color: #0284c7 !important;
+}
+
 .events-datatable.p-datatable .p-datatable-tbody > tr {
   border-bottom: 1px solid #f1f5f9;
   cursor: pointer;
@@ -421,7 +437,7 @@
   gap: 0.15rem;
 }
 
-/* Paginator Styling (Flush Bottom Viewport Footer) */
+/* Paginator Styling (Compact Viewport Footer) */
 .events-datatable .p-paginator {
   position: sticky;
   bottom: 0;
@@ -432,8 +448,8 @@
   border-right: none;
   border-bottom: none;
   border-radius: 0;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-  padding: 0.75rem 1.5rem;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.04);
+  padding: 0.4rem 1.25rem;
   margin-left: -1.5rem;
   margin-right: -1.5rem;
   width: calc(100% + 3rem);
@@ -449,7 +465,7 @@
 }
 
 .events-paginator__count {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   color: #64748b;
 }
 
@@ -463,13 +479,13 @@
 .events-datatable .p-paginator .p-paginator-next,
 .events-datatable .p-paginator .p-paginator-last,
 .events-datatable .p-paginator .p-paginator-page {
-  min-width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 5px;
   border: 1px solid #e2e8f0;
   color: #475569;
-  font-size: 0.82rem;
-  margin: 0 0.15rem;
+  font-size: 0.78rem;
+  margin: 0 0.12rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -493,14 +509,14 @@
 }
 
 .events-datatable .p-paginator .p-dropdown {
-  height: 32px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  margin-left: 0.6rem;
+  height: 28px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 5px !important;
+  margin-left: 0.5rem;
 }
 
 .events-datatable .p-paginator .p-dropdown .p-dropdown-label {
-  line-height: 30px;
-  font-size: 0.82rem;
-  padding: 0 0.6rem;
+  line-height: 26px !important;
+  font-size: 0.78rem !important;
+  padding: 0 0.5rem !important;
 }

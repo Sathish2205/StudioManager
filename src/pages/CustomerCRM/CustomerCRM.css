@@ -1,0 +1,252 @@
+/* =========================================================
+   CUSTOMER CRM MODULE STYLES (SALESFORCE / HUBSPOT STYLE)
+   Primary Theme: #2563EB / #0284c7 | Slate Background #F8FAFC
+   ========================================================= */
+
+.crm-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0;
+}
+
+/* Header Banner */
+.crm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.crm-header__title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.2rem;
+}
+
+.crm-header__sub {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.crm-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Notifications Alert Bar */
+.crm-alerts-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 0.75rem 1.25rem;
+  overflow-x: auto;
+}
+
+.crm-alert-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1e40af;
+  white-space: nowrap;
+}
+
+.crm-alert-item i {
+  font-size: 0.95rem;
+}
+
+/* Metrics Dashboard Cards Grid */
+.crm-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.crm-metric-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
+}
+
+.crm-metric-card:hover {
+  border-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.crm-metric__val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.crm-metric__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.2rem;
+}
+
+.crm-metric__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.crm-metric__icon--blue { background: #dbeafe; color: #2563eb; }
+.crm-metric__icon--green { background: #dcfce7; color: #16a34a; }
+.crm-metric__icon--amber { background: #fef3c7; color: #d97706; }
+.crm-metric__icon--purple { background: #f3e8ff; color: #9333ea; }
+.crm-metric__icon--pink { background: #fce7f3; color: #db2777; }
+
+/* ── Customer List Table & Card ── */
+.crm-table-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.crm-datatable.p-datatable .p-datatable-thead > tr > th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.crm-datatable.p-datatable .p-datatable-tbody > tr {
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.crm-datatable.p-datatable .p-datatable-tbody > tr:hover {
+  background: #f1f5f9;
+}
+
+.crm-datatable.p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.85rem 1.25rem;
+  font-size: 0.88rem;
+}
+
+/* Customer Table Cells */
+.crm-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.crm-user__name {
+  font-weight: 700;
+  color: #0f172a;
+  display: block;
+}
+
+.crm-user__id {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-family: monospace;
+}
+
+/* Loyalty Badges */
+.loyalty-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 50px;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.loyalty-badge--platinum { background: #f3e8ff; color: #7e22ce; border: 1px solid #d8b4fe; }
+.loyalty-badge--gold { background: #fef9c3; color: #a16207; border: 1px solid #fef08a; }
+.loyalty-badge--silver { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.loyalty-badge--bronze { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+
+/* ── Customer Profile Detail Dialog ── */
+.crm-profile-dialog .p-dialog-content {
+  padding: 0 !important;
+  background: #f8fafc !important;
+}
+
+.crm-profile-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+  padding: 1.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.crm-profile-avatar-box {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.crm-profile-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.crm-profile-sub {
+  font-size: 0.85rem;
+  color: #bfdbfe;
+  margin-top: 0.25rem;
+}
+
+.crm-tab-panel {
+  padding: 1.5rem;
+}
+
+/* Preferences Chips */
+.pref-chip {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pref-chip--inactive {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+}

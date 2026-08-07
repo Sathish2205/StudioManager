@@ -7,15 +7,15 @@ export default function DashboardHeader() {
       {/* Left Title / Breadcrumb */}
       <div className="portal-header__left">
         <div className="portal-header__icon-box">
-          <i className="pi pi-home" />
+          <i className="pi pi-camera" />
         </div>
-        <h1 className="portal-header__title">Home</h1>
+        <h1 className="portal-header__title">PhotoStudio Events & Finance</h1>
       </div>
 
       {/* Right Controls */}
       <div className="portal-header__right">
         <div className="portal-header__dropdown">
-          <span>Quick Links</span>
+          <span>Quick Actions</span>
           <i className="pi pi-chevron-down" />
         </div>
 

@@ -3,17 +3,17 @@ import './Sidebar.css'
 
 export default function Sidebar({ activeTab, setActiveTab }) {
   const menuItems = [
-    { id: 'home', label: 'Home', icon: 'pi pi-home', active: true },
-    { id: 'engage', label: 'Engage', icon: 'pi pi-wifi' },
-    { id: 'worklife', label: 'My Worklife', icon: 'pi pi-th-large', hasSub: true },
-    { id: 'todo', label: 'To do', icon: 'pi pi-clipboard', hasSub: true },
-    { id: 'salary', label: 'Salary & Earnings', icon: 'pi pi-wallet', hasSub: true },
-    { id: 'leave', label: 'Events & Leave', icon: 'pi pi-calendar', hasSub: true },
-    { id: 'documents', label: 'Document Center', icon: 'pi pi-file' },
-    { id: 'people', label: 'Studio Crew & People', icon: 'pi pi-users' },
-    { id: 'helpdesk', label: 'Helpdesk', icon: 'pi pi-info-circle' },
-    { id: 'requests', label: 'Request Hub', icon: 'pi pi-layers' },
-    { id: 'workflow', label: 'Workflow Delegates', icon: 'pi pi-sitemap' }
+    { id: 'home', label: 'Studio Overview', icon: 'pi pi-home' },
+    { id: 'events', label: 'Events & Shoots', icon: 'pi pi-calendar' },
+    { id: 'calendar', label: 'Shoot Calendar', icon: 'pi pi-calendar-plus', hasSub: true },
+    { id: 'tasks', label: 'Editing & Deliverables', icon: 'pi pi-images', hasSub: true },
+    { id: 'finance', label: 'Finance & Invoices', icon: 'pi pi-wallet', hasSub: true },
+    { id: 'packages', label: 'Packages & Quotes', icon: 'pi pi-tag', hasSub: true },
+    { id: 'contracts', label: 'Contracts & Docs', icon: 'pi pi-file' },
+    { id: 'crew', label: 'Crew & Photographers', icon: 'pi pi-users' },
+    { id: 'equipment', label: 'Equipment Tracker', icon: 'pi pi-camera' },
+    { id: 'helpdesk', label: 'Studio Helpdesk', icon: 'pi pi-info-circle' },
+    { id: 'requests', label: 'Client Requests', icon: 'pi pi-layers' }
   ]
 
   return (
@@ -22,20 +22,20 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       <div className="portal-sidebar__brand">
         <div className="portal-sidebar__logo-wrap">
           <span className="portal-sidebar__brand-name">
-            IT<span className="portal-sidebar__brand-dot">⊙</span>rizon<sup>®</sup>
+            PhotoStudio<span className="portal-sidebar__brand-dot">⊙</span>PRO<sup>®</sup>
           </span>
-          <span className="portal-sidebar__brand-sub">STUDIO MANAGEMENT SERVICES</span>
+          <span className="portal-sidebar__brand-sub">EVENT & FINANCE MANAGEMENT</span>
         </div>
       </div>
 
       {/* Profile Snippet Box */}
       <div className="portal-sidebar__profile">
         <div className="portal-sidebar__avatar-wrap">
-          <i className="pi pi-user portal-sidebar__avatar-icon" />
+          <i className="pi pi-camera portal-sidebar__avatar-icon" />
         </div>
         <div className="portal-sidebar__user-details">
           <span className="portal-sidebar__greeting">Hi SATHISH</span>
-          <a href="#info" className="portal-sidebar__view-link">View My Info</a>
+          <a href="#info" className="portal-sidebar__view-link">Lead Studio Manager</a>
         </div>
         <button className="portal-sidebar__settings-btn" aria-label="Settings">
           <i className="pi pi-cog" />

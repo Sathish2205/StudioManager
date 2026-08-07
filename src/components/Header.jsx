@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Button } from 'primereact/button'
 import './Header.css'
 
 export default function Header() {
@@ -45,15 +46,27 @@ export default function Header() {
 
         {/* Actions */}
         <div className="header__actions">
-          <button className="header__icon-btn" aria-label="Search">
-            <i className="pi pi-search" />
-          </button>
-          <button className="header__icon-btn" aria-label="Notifications">
-            <i className="pi pi-bell" />
-          </button>
-          <button className="header__cta-btn">
-            Get Started <i className="pi pi-arrow-right" />
-          </button>
+          <Button
+            icon="pi pi-search"
+            rounded
+            text
+            className="header__icon-btn"
+            aria-label="Search"
+          />
+          <Button
+            icon="pi pi-bell"
+            rounded
+            text
+            className="header__icon-btn"
+            aria-label="Notifications"
+          />
+          <Button
+            label="Get Started"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            className="header__cta-btn"
+            rounded
+          />
         </div>
 
         {/* Mobile Toggle */}
@@ -82,9 +95,13 @@ export default function Header() {
           </a>
         ))}
         <div className="header__mobile-actions">
-          <button className="header__cta-btn header__cta-btn--full">
-            Get Started <i className="pi pi-arrow-right" />
-          </button>
+          <Button
+            label="Get Started"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            className="header__cta-btn header__cta-btn--full"
+            rounded
+          />
         </div>
       </div>
     </header>

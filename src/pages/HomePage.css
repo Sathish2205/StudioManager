@@ -10,54 +10,8 @@
   overflow-x: hidden;
 }
 
-/* ── Reusable Button Styles ── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border: none;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: 0.65rem 1.6rem;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn--primary {
-  background: linear-gradient(135deg, #6366f1, #a855f7);
-  color: #fff;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
-}
-
-.btn--primary:hover {
-  box-shadow: 0 8px 35px rgba(99, 102, 241, 0.55);
-  transform: translateY(-2px);
-}
-
-.btn--outline {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.85);
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn--outline:hover {
-  border-color: rgba(168, 85, 247, 0.5);
-  background: rgba(168, 85, 247, 0.08);
-  color: #fff;
-}
-
-.btn--lg {
-  font-size: 0.95rem;
-  padding: 0.75rem 2rem;
-}
-
-/* ── Section Badge (reusable) ── */
-.section__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
+/* ── Section Badge (PrimeReact Chip) ── */
+.section__badge.p-chip {
   background: rgba(168, 85, 247, 0.1);
   border: 1px solid rgba(168, 85, 247, 0.2);
   color: #c084fc;
@@ -68,8 +22,9 @@
   font-weight: 600;
 }
 
-.section__badge i {
+.section__badge.p-chip .p-chip-icon {
   font-size: 0.8rem;
+  color: #c084fc;
 }
 
 /* ════════════════════════
@@ -150,17 +105,19 @@
   max-width: 720px;
 }
 
-.hero__badge {
-  display: inline-block;
+.hero__badge.p-chip {
   background: rgba(168, 85, 247, 0.15);
   border: 1px solid rgba(168, 85, 247, 0.3);
   color: #c084fc;
   padding: 0.4rem 1rem;
   border-radius: 50px;
   margin-bottom: 1.5rem;
+  animation: badgePulse 3s ease-in-out infinite;
+}
+
+.hero__badge .p-chip-text {
   font-size: 0.85rem;
   font-weight: 600;
-  animation: badgePulse 3s ease-in-out infinite;
 }
 
 @keyframes badgePulse {
@@ -201,6 +158,35 @@
   gap: 1rem;
   margin-bottom: 3.5rem;
   flex-wrap: wrap;
+}
+
+.hero__btn-primary.p-button {
+  background: linear-gradient(135deg, #6366f1, #a855f7) !important;
+  border: none !important;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  transition: all 0.3s ease;
+}
+
+.hero__btn-primary.p-button:hover {
+  box-shadow: 0 8px 35px rgba(99, 102, 241, 0.55);
+  transform: translateY(-2px);
+}
+
+.hero__btn-secondary.p-button {
+  color: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: transparent !important;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.hero__btn-secondary.p-button:hover {
+  border-color: rgba(168, 85, 247, 0.5) !important;
+  background: rgba(168, 85, 247, 0.08) !important;
+  color: #fff !important;
 }
 
 /* Stats */

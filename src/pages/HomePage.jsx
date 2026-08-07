@@ -1,3 +1,5 @@
+import { Button } from 'primereact/button'
+import { Chip } from 'primereact/chip'
 import './HomePage.css'
 
 export default function HomePage() {
@@ -84,7 +86,7 @@ export default function HomePage() {
         </div>
 
         <div className="hero__content">
-          <span className="hero__badge">✨ #1 Photo Editor of 2026</span>
+          <Chip label="✨ #1 Photo Editor of 2026" className="hero__badge" />
 
           <h1 className="hero__title">
             Capture Moments,
@@ -98,12 +100,22 @@ export default function HomePage() {
           </p>
 
           <div className="hero__actions">
-            <button className="btn btn--primary btn--lg">
-              Start Editing Free <i className="pi pi-arrow-right" />
-            </button>
-            <button className="btn btn--outline btn--lg">
-              <i className="pi pi-play" /> Watch Demo
-            </button>
+            <Button
+              label="Start Editing Free"
+              icon="pi pi-arrow-right"
+              iconPos="right"
+              className="hero__btn-primary"
+              rounded
+              size="large"
+            />
+            <Button
+              label="Watch Demo"
+              icon="pi pi-play"
+              className="hero__btn-secondary"
+              rounded
+              outlined
+              size="large"
+            />
           </div>
 
           <div className="hero__stats">
@@ -144,7 +156,7 @@ export default function HomePage() {
       {/* ─── Features Section ─── */}
       <section className="features" id="features">
         <div className="features__inner">
-          <span className="section__badge"><i className="pi pi-star" /> Features</span>
+          <Chip label="Features" icon="pi pi-star" className="section__badge" />
           <h2 className="features__heading">
             Why <span className="features__heading-accent">PhotoStudio Pro</span>?
           </h2>
@@ -170,7 +182,7 @@ export default function HomePage() {
       {/* ─── How It Works Section ─── */}
       <section className="workflow" id="workflow">
         <div className="workflow__inner">
-          <span className="section__badge"><i className="pi pi-sync" /> How It Works</span>
+          <Chip label="How It Works" icon="pi pi-sync" className="section__badge" />
           <h2 className="workflow__heading">
             From Photo to <span className="workflow__heading-accent">Perfection</span>
           </h2>
@@ -196,7 +208,7 @@ export default function HomePage() {
       {/* ─── Testimonials Section ─── */}
       <section className="testimonials" id="testimonials">
         <div className="testimonials__inner">
-          <span className="section__badge"><i className="pi pi-heart" /> Testimonials</span>
+          <Chip label="Testimonials" icon="pi pi-heart" className="section__badge" />
           <h2 className="testimonials__heading">
             Loved by <span className="testimonials__heading-accent">Creators</span>
           </h2>
@@ -241,12 +253,22 @@ export default function HomePage() {
               for their creative work. Start for free — no credit card required.
             </p>
             <div className="cta__actions">
-              <button className="btn btn--primary btn--lg">
-                Get Started Free <i className="pi pi-arrow-right" />
-              </button>
-              <button className="btn btn--outline btn--lg">
-                <i className="pi pi-tag" /> View Pricing
-              </button>
+              <Button
+                label="Get Started Free"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                className="hero__btn-primary"
+                rounded
+                size="large"
+              />
+              <Button
+                label="View Pricing"
+                icon="pi pi-tag"
+                className="hero__btn-secondary"
+                rounded
+                outlined
+                size="large"
+              />
             </div>
           </div>
         </div>

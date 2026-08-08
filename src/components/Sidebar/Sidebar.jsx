@@ -7,10 +7,10 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     { id: 'events', label: 'Events & Shoots', icon: 'pi pi-calendar' },
     { id: 'workflow', label: 'Workflow Management', icon: 'pi pi-sitemap' },
     { id: 'crm', label: 'Customer CRM', icon: 'pi pi-id-card' },
-    { id: 'calendar', label: 'Shoot Calendar', icon: 'pi pi-calendar-plus', hasSub: true },
-    { id: 'tasks', label: 'Editing & Deliverables', icon: 'pi pi-images', hasSub: true },
-    { id: 'finance', label: 'Finance & Invoices', icon: 'pi pi-wallet', hasSub: true },
-    { id: 'packages', label: 'Packages & Quotes', icon: 'pi pi-tag', hasSub: true },
+    { id: 'calendar', label: 'Shoot Calendar', icon: 'pi pi-calendar-plus' },
+    { id: 'tasks', label: 'Editing & Deliverables', icon: 'pi pi-images' },
+    { id: 'finance', label: 'Finance & Invoices', icon: 'pi pi-wallet' },
+    { id: 'packages', label: 'Packages & Quotes', icon: 'pi pi-tag' },
     { id: 'contracts', label: 'Contracts & Docs', icon: 'pi pi-file' },
     { id: 'crew', label: 'Crew & Photographers', icon: 'pi pi-users' },
     { id: 'equipment', label: 'Equipment Tracker', icon: 'pi pi-camera' },
@@ -56,9 +56,6 @@ export default function Sidebar({ activeTab, setActiveTab }) {
               <i className={`${item.icon} portal-sidebar__icon`} />
               <span>{item.label}</span>
             </div>
-            {item.hasSub && (
-              <i className="pi pi-chevron-down portal-sidebar__caret" />
-            )}
           </button>
         ))}
       </nav>

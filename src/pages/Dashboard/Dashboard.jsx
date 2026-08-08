@@ -1,10 +1,17 @@
 import React, { useState } from 'react'
 import Sidebar from '../../components/Sidebar'
 import DashboardHeader from '../../components/DashboardHeader'
+import SmartReminders from '../../components/SmartReminders/SmartReminders'
 import './Dashboard.css'
 
 export default function Dashboard({ activeTab = 'home', setActiveTab }) {
   const [showFinancials, setShowFinancials] = useState(false)
+  const [toastMsg, setToastMsg] = useState(null)
+
+  const showToast = (msg) => {
+    setToastMsg(msg)
+    setTimeout(() => setToastMsg(null), 3000)
+  }
 
   const upcomingShoots = [
     {
@@ -46,6 +53,31 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
         <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
         <div className="portal-body">
+          {/* Toast Notification Banner */}
+          {toastMsg && (
+            <div
+              style={{
+                position: 'fixed',
+                bottom: '24px',
+                right: '24px',
+                zIndex: 99999,
+                background: '#2563eb',
+                color: '#ffffff',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                fontWeight: 600,
+                fontSize: '0.875rem'
+              }}
+            >
+              <i className="pi pi-check-circle" />
+              <span>{toastMsg}</span>
+            </div>
+          )}
+
           {/* Greeting Hero Section */}
           <div className="portal-hero">
             <div className="portal-hero__text">
@@ -141,6 +173,9 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
               </div>
             </div>
           </div>
+
+          {/* ── Smart Reminders & Studio Alerts Widget ── */}
+          <SmartReminders onShowToast={showToast} />
 
           {/* ── Main Dashboard Layout Columns ── */}
           <div className="home-main-grid">

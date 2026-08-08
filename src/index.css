@@ -71,3 +71,66 @@ img {
 .p-datatable .p-sortable-column.p-highlight .p-sortable-column-icon svg {
   color: #0284c7 !important;
 }
+
+/* ── PrimeReact Toast Formatting & Icon Alignment Fix ── */
+.p-toast {
+  opacity: 0.98 !important;
+}
+
+.p-toast .p-toast-message {
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.p-toast .p-toast-message .p-toast-message-content {
+  padding: 0.85rem 1rem !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 0.75rem !important;
+}
+
+.p-toast .p-toast-message .p-toast-message-icon,
+.p-toast .p-toast-message .p-toast-message-icon svg,
+.p-toast .p-toast-message i.p-toast-message-icon {
+  font-size: 1.2rem !important;
+  width: 1.2rem !important;
+  height: 1.2rem !important;
+  margin-top: 2px !important;
+  margin-right: 0.4rem !important;
+  flex-shrink: 0 !important;
+}
+
+.p-toast .p-toast-message .p-toast-summary {
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+.p-toast .p-toast-message .p-toast-detail {
+  font-size: 0.8rem !important;
+  margin-top: 0.25rem !important;
+  line-height: 1.3 !important;
+}
+
+/* ── PrimeReact Dropdown Clear Selection X Button Styling ── */
+.p-dropdown {
+  position: relative !important;
+}
+
+.p-dropdown .p-dropdown-clear-icon {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  right: 2.2rem !important;
+  margin: 0 !important;
+  color: #94a3b8 !important;
+  font-size: 0.8rem !important;
+  cursor: pointer !important;
+  transition: color 0.15s ease !important;
+  z-index: 2 !important;
+}
+
+.p-dropdown .p-dropdown-clear-icon:hover {
+  color: #ef4444 !important;
+}

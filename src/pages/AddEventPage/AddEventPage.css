@@ -10,35 +10,6 @@
   margin-bottom: 1.5rem;
 }
 
-.add-event-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.82rem;
-  color: #64748b;
-  margin-bottom: 0.75rem;
-}
-
-.crumb-link {
-  color: #0284c7;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.crumb-link:hover {
-  text-decoration: underline;
-}
-
-.crumb-separator {
-  font-size: 0.75rem;
-  color: #cbd5e1;
-}
-
-.crumb-active {
-  color: #1e293b;
-  font-weight: 600;
-}
-
 .add-event-header {
   display: flex;
   align-items: center;

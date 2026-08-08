@@ -518,7 +518,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         </div>
       )}
 
-      {/* ── FULL CUSTOMER PROFILE DETAIL MODAL (HUBSPOT STYLE) ── */}
+      {/* ── FULL CUSTOMER PROFILE DETAIL MODAL (PREMIUM DESIGN) ── */}
       {selectedCustomer && (
         <Dialog
           visible={isProfileOpen}
@@ -527,46 +527,73 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
           className="crm-profile-dialog"
           dismissableMask
         >
-          {/* Header Card */}
+          {/* ── Profile Header Card ── */}
           <div className="crm-profile-header">
+            <button
+              className="crm-profile-close"
+              onClick={() => setIsProfileOpen(false)}
+              aria-label="Close"
+            >
+              <i className="pi pi-times" />
+            </button>
+
             <div className="crm-profile-avatar-box">
-              <Avatar image={selectedCustomer.avatar} size="xlarge" shape="circle" style={{ border: '3px solid #ffffff' }} />
+              <Avatar image={selectedCustomer.avatar} size="xlarge" shape="circle" />
               <div>
                 <h2 className="crm-profile-name">{selectedCustomer.name}</h2>
                 <p className="crm-profile-sub">
-                  {selectedCustomer.id} | {selectedCustomer.city}, {selectedCustomer.state} | Client Since {selectedCustomer.customerSince}
+                  <i className="pi pi-id-card" style={{ marginRight: '4px' }} />
+                  {selectedCustomer.id}
+                  <span className="crm-profile-dot">•</span>
+                  <i className="pi pi-map-marker" style={{ marginRight: '3px' }} />
+                  {selectedCustomer.city}, {selectedCustomer.state}
+                  <span className="crm-profile-dot">•</span>
+                  Client Since {selectedCustomer.customerSince}
                 </p>
-                <div className="flex align-items-center gap-2 mt-2">
+                <div className="crm-profile-badges">
                   <span className={`loyalty-badge loyalty-badge--${selectedCustomer.loyaltyLevel.toLowerCase()}`}>
-                    <i className="pi pi-star-fill" /> {selectedCustomer.loyaltyLevel} Member
+                    <i className="pi pi-star-fill" /> {selectedCustomer.loyaltyLevel}
                   </span>
-                  <Tag value={`${selectedCustomer.rewardPoints} Reward Points`} severity="warning" />
-                  <Tag value={selectedCustomer.status} severity="success" />
+                  <span className="crm-badge crm-badge--points">
+                    <i className="pi pi-bolt" /> {selectedCustomer.rewardPoints} Points
+                  </span>
+                  <span className="crm-badge crm-badge--active">
+                    <i className="pi pi-circle-fill" style={{ fontSize: '0.5rem' }} /> {selectedCustomer.status}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-column gap-2">
-              <Button
-                label="Book Event"
-                icon="pi pi-plus"
-                className="p-button-light p-button-sm font-bold"
+            <div className="crm-profile-actions">
+              <button
+                className="crm-action-btn crm-action-btn--book"
                 onClick={() => {
                   setIsProfileOpen(false)
                   if (onNavigateAddEvent) onNavigateAddEvent()
                 }}
-              />
-              <Button
-                label="WhatsApp Message"
-                icon="pi pi-whatsapp"
-                className="p-button-success p-button-sm"
+              >
+                <i className="pi pi-calendar-plus" />
+                <span>Book Event</span>
+              </button>
+              <button
+                className="crm-action-btn crm-action-btn--whatsapp"
                 onClick={() => showToast(`WhatsApp opened for ${selectedCustomer.mobile}`)}
-              />
+              >
+                <i className="pi pi-whatsapp" />
+                <span>WhatsApp</span>
+              </button>
+              <button
+                className="crm-action-btn crm-action-btn--call"
+                onClick={() => showToast(`Calling ${selectedCustomer.mobile}...`)}
+              >
+                <i className="pi pi-phone" />
+                <span>Call</span>
+              </button>
             </div>
           </div>
 
-          {/* Profile Inner Navigation Tabs */}
-          <div className="flex border-bottom-1 surface-border bg-white px-4">
+          {/* ── Profile Inner Navigation Tabs ── */}
+          <div className="crm-profile-tabs">
             {[
               { id: 'overview', label: 'Overview & Family', icon: 'pi pi-user' },
               { id: 'events', label: `Event History (${selectedCustomer.eventsHistory.length})`, icon: 'pi pi-calendar' },
@@ -576,11 +603,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
             ].map((tab) => (
               <button
                 key={tab.id}
-                className={`p-3 font-semibold text-xs border-none bg-transparent cursor-pointer flex align-items-center gap-2 ${
-                  activeProfileTab === tab.id
-                    ? 'border-bottom-2 border-primary text-primary font-bold'
-                    : 'text-600 hover:text-900'
-                }`}
+                className={`crm-profile-tab ${activeProfileTab === tab.id ? 'crm-profile-tab--active' : ''}`}
                 onClick={() => setActiveProfileTab(tab.id)}
               >
                 <i className={tab.icon} />

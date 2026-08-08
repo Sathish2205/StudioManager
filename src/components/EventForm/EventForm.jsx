@@ -23,6 +23,7 @@ export default function EventForm({ onSuccess, onCancel }) {
   const toastRef = useRef(null)
 
   // API Data States
+  const [clients, setClients] = useState([])
   const [packages, setPackages] = useState([])
   const [staff, setStaff] = useState({ photographers: [], videographers: [] })
   const [loadingData, setLoadingData] = useState(true)
@@ -91,30 +92,32 @@ export default function EventForm({ onSuccess, onCancel }) {
   const watchAdvancePaid = watch('advancePaid') || 0
   const balanceAmount = Math.max(0, watchPackagePrice - watchAdvancePaid)
 
-  // Fetch API Options on Mount
+  // Fetch API Options on Mount safely
   useEffect(() => {
+    let isMounted = true
     const fetchData = async () => {
       try {
         setLoadingData(true)
         const [clientsRes, packagesRes, staffRes] = await Promise.all([
-          getClients(),
-          getPackages(),
-          getStaff()
+          getClients().catch(() => []),
+          getPackages().catch(() => []),
+          getStaff().catch(() => ({ photographers: [], videographers: [] }))
         ])
-        setClients(clientsRes)
-        setPackages(packagesRes)
-        setStaff(staffRes)
+        if (isMounted) {
+          setClients(clientsRes || [])
+          setPackages(packagesRes || [])
+          setStaff(staffRes || { photographers: [], videographers: [] })
+        }
       } catch (err) {
-        toastRef.current?.show({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load options from API'
-        })
+        console.error('Error fetching event options:', err)
       } finally {
-        setLoadingData(false)
+        if (isMounted) setLoadingData(false)
       }
     }
     fetchData()
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   // Auto-fill Package Price when Package is selected
@@ -243,6 +246,7 @@ export default function EventForm({ onSuccess, onCancel }) {
                     {...field}
                     options={eventTypeOptions}
                     placeholder="Select Event Type"
+                    showClear
                     className={`w-full ${errors.eventType ? 'p-invalid' : ''}`}
                   />
                 )}
@@ -398,6 +402,7 @@ export default function EventForm({ onSuccess, onCancel }) {
                     optionLabel="name"
                     optionValue="id"
                     placeholder="Select Photographer"
+                    showClear
                     className="w-full"
                     disabled={loadingData}
                   />
@@ -418,6 +423,7 @@ export default function EventForm({ onSuccess, onCancel }) {
                     optionLabel="name"
                     optionValue="id"
                     placeholder="Select Videographer"
+                    showClear
                     className="w-full"
                     disabled={loadingData}
                   />
@@ -545,6 +551,7 @@ export default function EventForm({ onSuccess, onCancel }) {
                     optionValue="id"
                     onChange={(e) => handlePackageChange(e.value, field.onChange)}
                     placeholder={loadingData ? 'Loading Packages...' : 'Select Package'}
+                    showClear
                     className={`w-full ${errors.packageId ? 'p-invalid' : ''}`}
                     disabled={loadingData}
                   />
@@ -645,6 +652,7 @@ export default function EventForm({ onSuccess, onCancel }) {
                     {...field}
                     options={statusOptions}
                     placeholder="Select Status"
+                    showClear
                     className="w-full"
                   />
                 )}

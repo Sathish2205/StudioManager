@@ -16,14 +16,18 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .portal-body {
-  padding: 1.5rem 1.5rem 2.5rem;
+  padding: 1.5rem 1.5rem 0.5rem;
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* ── Hero Greeting Section ── */
@@ -38,6 +42,8 @@
   box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.25);
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
+  min-height: fit-content;
 }
 
 .portal-hero::before {
@@ -141,6 +147,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.25rem;
+  flex-shrink: 0;
 }
 
 .home-metric-card {
@@ -194,25 +201,10 @@
   font-size: 1.35rem;
 }
 
-.home-metric__icon-wrap--blue {
-  background: #e0f2fe;
-  color: #0284c7;
-}
-
-.home-metric__icon-wrap--green {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-.home-metric__icon-wrap--amber {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.home-metric__icon-wrap--purple {
-  background: #f3e8ff;
-  color: #9333ea;
-}
+.home-metric__icon-wrap--blue { background: #e0f2fe; color: #0284c7; }
+.home-metric__icon-wrap--green { background: #dcfce7; color: #16a34a; }
+.home-metric__icon-wrap--amber { background: #fef3c7; color: #d97706; }
+.home-metric__icon-wrap--purple { background: #f3e8ff; color: #9333ea; }
 
 /* ── Main Dashboard Layout Columns ── */
 .home-main-grid {
@@ -401,22 +393,22 @@
 }
 
 .payslip-btn-show {
-  background: #f1f5f9;
+  background: transparent;
   border: 1px solid #cbd5e1;
-  color: #475569;
-  padding: 0.3rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.78rem;
+  color: #0284c7;
   font-weight: 600;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .payslip-btn-show:hover {
-  background: #e2e8f0;
-  color: #0f172a;
+  background: #f1f5f9;
 }
 
-/* Quick Links Grid */
+/* Quick Tools Grid */
 .home-quick-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -430,17 +422,18 @@
   padding: 0.85rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   cursor: pointer;
   transition: all 0.15s ease;
-  text-decoration: none;
-  color: inherit;
 }
 
 .home-quick-btn:hover {
   background: #ffffff;
   border-color: #0284c7;
   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
+  transform: translateY(-2px);
 }
 
 .home-quick-btn i {
@@ -452,39 +445,4 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: #1e293b;
-}
-
-/* ── FLOATING ACTION BUTTON (ROUND FAB - BOTTOM RIGHT) ── */
-.fab-add-event {
-  position: fixed;
-  bottom: 28px;
-  right: 28px;
-  z-index: 9999;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #0284c7;
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.fab-add-event:hover {
-  background: #0369a1;
-  transform: scale(1.08) translateY(-2px);
-  box-shadow: 0 12px 28px rgba(2, 132, 199, 0.55);
-}
-
-.fab-add-event:active {
-  transform: scale(0.96);
-}
-
-.fab-add-event i {
-  font-size: 1.4rem;
-  font-weight: bold;
 }

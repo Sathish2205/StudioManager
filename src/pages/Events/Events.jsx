@@ -11,6 +11,8 @@ import DashboardHeader from '../../components/DashboardHeader'
 import EventDetailDrawer from '../../components/EventDetailDrawer'
 import './Events.css'
 
+import { SHARED_EVENTS } from '../../services/sharedEventsData'
+
 export default function Events({ activeTab = 'events', setActiveTab, onNavigateInvoice }) {
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedStatus, setSelectedStatus] = useState(null)
@@ -19,124 +21,11 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
   const [drawerVisible, setDrawerVisible] = useState(false)
 
   // Comprehensive PhotoStudio Shoots & Events Dataset
-  const initialEvents = [
-    {
-      id: 'EVT-2026-001',
-      couple: 'Sophia & James Sterling',
-      eventType: 'Wedding & Reception',
-      date: '2026-08-12',
-      time: '08:00 AM - 11:00 PM',
-      venue: 'The Grand Chateau, Napa Valley',
-      package: 'Royal Cinematic 4K',
-      amount: '₹8,50,000',
-      crew: ['Alex V. (Lead)', 'Marco K. (Drone)', 'Maya S. (2nd)'],
-      payment: 'Paid in Full',
-      paymentSeverity: 'success',
-      status: 'Shooting Today',
-      statusSeverity: 'danger',
-      progress: 10
-    },
-    {
-      id: 'EVT-2026-002',
-      couple: 'Priya & Rohan Sharma',
-      eventType: 'Sangeet & Mehendi',
-      date: '2026-08-15',
-      time: '04:00 PM - 01:00 AM',
-      venue: 'The Ritz Carlton Ballroom, Mumbai',
-      package: 'Heritage Multi-Day Gold',
-      amount: '₹6,20,000',
-      crew: ['Elena R. (Lead)', 'David P. (Video)'],
-      payment: 'Deposit Paid (50%)',
-      paymentSeverity: 'info',
-      status: 'Confirmed',
-      statusSeverity: 'info',
-      progress: 20
-    },
-    {
-      id: 'EVT-2026-003',
-      couple: 'Olivia & Liam Vance',
-      eventType: 'Destination Wedding',
-      date: '2026-08-04',
-      time: '10:00 AM - 10:00 PM',
-      venue: 'Sunset Cove Resort, Miami',
-      package: 'Destination Luxe Film',
-      amount: '₹12,00,000',
-      crew: ['Alex V. (Lead)', 'Sarah L. (Colorist)'],
-      payment: 'Paid in Full',
-      paymentSeverity: 'success',
-      status: 'In Post-Production',
-      statusSeverity: 'warning',
-      progress: 75
-    },
-    {
-      id: 'EVT-2026-004',
-      couple: 'Emma & Benjamin Hayes',
-      eventType: 'Pre-Wedding Shoot',
-      date: '2026-07-28',
-      time: '06:00 AM - 02:00 PM',
-      venue: 'Royal Botanical Gardens',
-      package: 'Classic Memories',
-      amount: '₹3,50,000',
-      crew: ['Maya S. (Lead)'],
-      payment: 'Paid in Full',
-      paymentSeverity: 'success',
-      status: 'Delivered',
-      statusSeverity: 'success',
-      progress: 100
-    },
-    {
-      id: 'EVT-2026-005',
-      couple: 'Chloe & Nathaniel Dupont',
-      eventType: 'Gala Dinner & Cocktail',
-      date: '2026-08-22',
-      time: '06:00 PM - 12:00 AM',
-      venue: 'Belmond Villa San Michele',
-      package: 'Signature Cinema + Album',
-      amount: '₹5,80,000',
-      crew: ['Elena R. (Lead)', 'Marco K. (Drone)'],
-      payment: 'Deposit Due',
-      paymentSeverity: 'danger',
-      status: 'Pending Deposit',
-      statusSeverity: 'danger',
-      progress: 0
-    },
-    {
-      id: 'EVT-2026-006',
-      couple: 'Aarav & Ananya Mehta',
-      eventType: 'Haldi & Wedding Ceremony',
-      date: '2026-08-28',
-      time: '07:00 AM - 09:00 PM',
-      venue: 'Umaid Bhawan Palace, Jodhpur',
-      package: 'Royal Cinematic 4K',
-      amount: '₹14,50,000',
-      crew: ['Alex V. (Lead)', 'David P. (Video)', 'Marco K. (Drone)'],
-      payment: 'Deposit Paid (60%)',
-      paymentSeverity: 'info',
-      status: 'Confirmed',
-      statusSeverity: 'info',
-      progress: 30
-    },
-    {
-      id: 'EVT-2026-007',
-      couple: 'Isabella & Lucas Rossi',
-      eventType: 'Engagement & Couple Portraits',
-      date: '2026-09-02',
-      time: '03:00 PM - 08:00 PM',
-      venue: 'Lake Como Villa D\'Este',
-      package: 'Classic Memories',
-      amount: '₹4,00,000',
-      crew: ['Maya S. (Lead)'],
-      payment: 'Paid in Full',
-      paymentSeverity: 'success',
-      status: 'Confirmed',
-      statusSeverity: 'info',
-      progress: 15
-    }
-  ]
+  const initialEvents = SHARED_EVENTS
 
   // Status Filter Options
   const statusOptions = [
-    { label: 'All Statuses', value: null },
+    { label: 'All Statuses', value: 'All Statuses' },
     { label: 'Shooting Today', value: 'Shooting Today' },
     { label: 'Confirmed', value: 'Confirmed' },
     { label: 'In Post-Production', value: 'In Post-Production' },
@@ -146,7 +35,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
 
   // Event Type Filter Options
   const typeOptions = [
-    { label: 'All Event Types', value: null },
+    { label: 'All Event Types', value: 'All Event Types' },
     { label: 'Wedding & Reception', value: 'Wedding & Reception' },
     { label: 'Sangeet & Mehendi', value: 'Sangeet & Mehendi' },
     { label: 'Destination Wedding', value: 'Destination Wedding' },
@@ -165,8 +54,8 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
       item.package.toLowerCase().includes(globalFilter.toLowerCase()) ||
       item.crew.some((c) => c.toLowerCase().includes(globalFilter.toLowerCase()))
 
-    const matchesStatus = !selectedStatus || item.status === selectedStatus
-    const matchesType = !selectedType || item.eventType === selectedType
+    const matchesStatus = !selectedStatus || selectedStatus === 'All Statuses' || item.status === selectedStatus
+    const matchesType = !selectedType || selectedType === 'All Event Types' || item.eventType === selectedType
 
     return matchesGlobal && matchesStatus && matchesType
   })
@@ -308,6 +197,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
                 options={statusOptions}
                 onChange={(e) => setSelectedStatus(e.value)}
                 placeholder="Filter by Status"
+                showClear
                 className="events-filter__dropdown"
               />
 
@@ -317,6 +207,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
                 options={typeOptions}
                 onChange={(e) => setSelectedType(e.value)}
                 placeholder="Filter by Event Type"
+                showClear
                 className="events-filter__dropdown"
               />
             </div>

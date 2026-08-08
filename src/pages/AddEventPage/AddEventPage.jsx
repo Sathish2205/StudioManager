@@ -5,20 +5,8 @@ import './AddEventPage.css'
 export default function AddEventPage({ onNavigateEvents, onNavigateDashboard, onNavigateInvoice }) {
   return (
     <div className="add-event-page">
-      {/* ── Breadcrumb & Top Bar ── */}
+      {/* ── Top Bar ── */}
       <div className="add-event-topbar">
-        <div className="add-event-breadcrumb">
-          <span className="crumb-link" onClick={onNavigateDashboard}>
-            Dashboard
-          </span>
-          <i className="pi pi-angle-right crumb-separator" />
-          <span className="crumb-link" onClick={onNavigateEvents}>
-            Events
-          </span>
-          <i className="pi pi-angle-right crumb-separator" />
-          <span className="crumb-active">Add Event</span>
-        </div>
-
         <div className="add-event-header">
           <div className="add-event-header__title-box">
             <h1 className="add-event-title">Add New Event</h1>

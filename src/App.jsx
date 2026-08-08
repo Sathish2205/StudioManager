@@ -5,13 +5,31 @@ import AddEventPage from './pages/AddEventPage'
 import WorkflowManagement from './pages/WorkflowManagement'
 import InvoicePage from './pages/InvoicePage'
 import CustomerCRM from './pages/CustomerCRM'
+
+// New 9 Modules
+import ShootCalendar from './pages/ShootCalendar/ShootCalendar'
+import EditingDeliverables from './pages/EditingDeliverables/EditingDeliverables'
+import FinanceInvoices from './pages/FinanceInvoices/FinanceInvoices'
+import PackagesQuotes from './pages/PackagesQuotes/PackagesQuotes'
+import ContractsDocs from './pages/ContractsDocs/ContractsDocs'
+import CrewManagement from './pages/CrewManagement/CrewManagement'
+import EquipmentTracker from './pages/EquipmentTracker/EquipmentTracker'
+import StudioHelpdesk from './pages/StudioHelpdesk/StudioHelpdesk'
+import ClientRequests from './pages/ClientRequests/ClientRequests'
+
 import Sidebar from './components/Sidebar'
 import DashboardHeader from './components/DashboardHeader'
 import './App.css'
 
 function App() {
-  const [activeTab, setActiveTab] = useState('workflow')
+  const [activeTab, setActiveTab] = useState('home')
   const [selectedInvoiceEvent, setSelectedInvoiceEvent] = useState(null)
+  const [globalToastMsg, setGlobalToastMsg] = useState(null)
+
+  const showGlobalToast = (msg) => {
+    setGlobalToastMsg(msg)
+    setTimeout(() => setGlobalToastMsg(null), 3000)
+  }
 
   const handleNavigateInvoice = (eventData) => {
     setSelectedInvoiceEvent(eventData)
@@ -20,6 +38,59 @@ function App() {
 
   return (
     <>
+      {/* Global Toast Banner */}
+      {globalToastMsg && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 99999,
+            background: '#2563eb',
+            color: '#ffffff',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            fontWeight: 600,
+            fontSize: '0.875rem'
+          }}
+        >
+          <i className="pi pi-check-circle" />
+          <span>{globalToastMsg}</span>
+        </div>
+      )}
+
+      {/* ── HOME DASHBOARD ── */}
+      {activeTab === 'home' && (
+        <Dashboard activeTab={activeTab} setActiveTab={setActiveTab} />
+      )}
+
+      {/* ── EVENTS & SHOOTS ── */}
+      {activeTab === 'events' && (
+        <Events
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onNavigateInvoice={handleNavigateInvoice}
+        />
+      )}
+
+      {/* ── WORKFLOW MANAGEMENT ── */}
+      {activeTab === 'workflow' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <WorkflowManagement />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CUSTOMER CRM ── */}
       {activeTab === 'crm' && (
         <div className="portal-layout">
           <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -32,34 +103,7 @@ function App() {
         </div>
       )}
 
-      {activeTab === 'invoice' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-            <div className="portal-body">
-              <InvoicePage
-                event={selectedInvoiceEvent}
-                onNavigateEvents={() => setActiveTab('events')}
-                onNavigateWorkflow={() => setActiveTab('workflow')}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {(activeTab === 'workflow' || activeTab === 'tasks') && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-            <div className="portal-body">
-              <WorkflowManagement />
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* ── ADD EVENT PAGE ── */}
       {activeTab === 'add-event' && (
         <div className="portal-layout">
           <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -76,28 +120,144 @@ function App() {
         </div>
       )}
 
-      {(activeTab === 'events' || activeTab === 'calendar') && (
-        <Events
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          onNavigateInvoice={handleNavigateInvoice}
-        />
+      {/* ── INVOICE PAGE ── */}
+      {activeTab === 'invoice' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <InvoicePage
+                event={selectedInvoiceEvent}
+                onNavigateEvents={() => setActiveTab('events')}
+                onNavigateWorkflow={() => setActiveTab('workflow')}
+              />
+            </div>
+          </div>
+        </div>
       )}
 
-      {activeTab === 'home' && (
-        <Dashboard activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* ── MODULE 1: SHOOT CALENDAR ── */}
+      {activeTab === 'calendar' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <ShootCalendar
+                onShowToast={showGlobalToast}
+                onNavigateAddEvent={() => setActiveTab('add-event')}
+              />
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* ── Round Floating Action Button (FAB) - Bottom Right Corner ── */}
-      {activeTab !== 'add-event' && (
-        <button
-          className="fab-add-event"
-          onClick={() => setActiveTab('add-event')}
-          title="Add New Event"
-          aria-label="Add New Event"
-        >
-          <i className="pi pi-plus" />
-        </button>
+      {/* ── MODULE 2: EDITING & DELIVERABLES ── */}
+      {activeTab === 'tasks' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <EditingDeliverables onShowToast={showGlobalToast} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODULE 3: FINANCE & INVOICES ── */}
+      {activeTab === 'finance' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <FinanceInvoices onShowToast={showGlobalToast} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODULE 4: PACKAGES & QUOTES ── */}
+      {activeTab === 'packages' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <PackagesQuotes
+                onShowToast={showGlobalToast}
+                onNavigateAddEvent={() => setActiveTab('add-event')}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODULE 5: CONTRACTS & DOCS ── */}
+      {activeTab === 'contracts' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <ContractsDocs onShowToast={showGlobalToast} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODULE 6: CREW & PHOTOGRAPHERS ── */}
+      {activeTab === 'crew' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <CrewManagement onShowToast={showGlobalToast} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODULE 7: EQUIPMENT TRACKER ── */}
+      {activeTab === 'equipment' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <EquipmentTracker onShowToast={showGlobalToast} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODULE 8: STUDIO HELPDESK ── */}
+      {activeTab === 'helpdesk' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <StudioHelpdesk onShowToast={showGlobalToast} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODULE 9: CLIENT REQUESTS ── */}
+      {activeTab === 'requests' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="portal-body">
+              <ClientRequests onShowToast={showGlobalToast} />
+            </div>
+          </div>
+        </div>
       )}
     </>
   )

@@ -279,6 +279,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-bottom: 46px;
 }
 
 .events-datatable.p-datatable {
@@ -440,11 +441,13 @@
   align-items: center;
 }
 
-/* ── EXACT EVENTS PAGE PAGINATOR (Compact Viewport Footer) ── */
+/* ── EXACT EVENTS PAGE PAGINATOR (Fixed Bottom Bar) ── */
 .events-datatable .p-paginator {
-  position: sticky;
+  position: fixed;
   bottom: 0;
-  z-index: 90;
+  left: 250px;
+  right: 0;
+  z-index: 100;
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
   border-left: none;
@@ -453,9 +456,6 @@
   border-radius: 0;
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.04);
   padding: 0.4rem 1.25rem;
-  margin-left: -1.5rem;
-  margin-right: -1.5rem;
-  width: calc(100% + 3rem);
   display: flex;
   align-items: center;
 }

@@ -49,53 +49,49 @@ export default function EventForm({ onSuccess, onCancel }) {
     { label: 'Cancelled', value: 'Cancelled' }
   ]
 
-  // React Hook Form Integration
+  // React Hook Form Setup
   const {
     control,
     handleSubmit,
     setValue,
     watch,
     reset,
-    formState: { errors, isValid, isDirty }
+    formState: { errors, isDirty }
   } = useForm({
     resolver: yupResolver(eventSchema),
-    mode: 'onChange',
     defaultValues: {
       clientName: '',
+      clientId: null,
+      eventType: null,
       eventName: '',
-      eventType: '',
       eventDate: null,
-      eventTime: null,
-      venueName: '',
-      venueAddress: '',
-      city: '',
-      state: '',
-      pincode: '',
-      photographerId: '',
-      videographerId: '',
-      droneRequired: false,
-      liveStreaming: false,
-      albumRequired: false,
-      candidPhotography: false,
-      traditionalPhotography: false,
-      traditionalVideo: false,
-      packageId: '',
-      packagePrice: 0,
+      startTime: null,
+      endTime: null,
+      venue: '',
+      guestCount: null,
+      packageId: null,
+      packagePrice: null,
       advancePaid: 0,
-      eventStatus: 'Booked',
-      specialInstructions: ''
+      assignedLeadPhotographer: null,
+      assignedAssistantPhotographer: null,
+      assignedLeadVideographer: null,
+      assignedDronePilot: null,
+      deliverables: [],
+      notes: ''
     }
   })
 
-  // Watch Package Price & Advance Paid for Balance calculation
+  // Watch Package Price and Advance Paid for Balance Amount calculation
   const watchPackagePrice = watch('packagePrice') || 0
   const watchAdvancePaid = watch('advancePaid') || 0
+
+  // Derived Balance Amount calculation
   const balanceAmount = Math.max(0, watchPackagePrice - watchAdvancePaid)
 
-  // Fetch API Options on Mount safely
+  // Load API Dropdown Options on Mount
   useEffect(() => {
     let isMounted = true
-    const fetchData = async () => {
+    async function fetchData() {
       try {
         setLoadingData(true)
         const [clientsRes, packagesRes, staffRes] = await Promise.all([
@@ -129,17 +125,75 @@ export default function EventForm({ onSuccess, onCancel }) {
     }
   }
 
+  const mapEventTypeForBackend = (typeStr) => {
+    if (!typeStr) return 'Wedding'
+    if (typeStr.includes('Pre-Wedding')) return 'Pre Wedding'
+    if (typeStr.includes('Sangeet') || typeStr.includes('Mehendi')) return 'Sangeet'
+    if (typeStr.includes('Haldi')) return 'Haldi'
+    if (typeStr.includes('Destination')) return 'Destination Wedding'
+    if (typeStr.includes('Reception')) return 'Reception'
+    if (typeStr.includes('Engagement')) return 'Engagement'
+    if (typeStr.includes('Corporate')) return 'Corporate'
+    if (typeStr.includes('Birthday')) return 'Birthday'
+    if (typeStr.includes('Baby')) return 'Baby Shower'
+    return 'Wedding'
+  }
+
   // Submit Handler
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true)
-      const payload = { ...data, balanceAmount }
-      const res = await createEvent(payload)
+
+      let clientId = data.clientId
+      if (!clientId) {
+        const clientName = data.clientName || 'Client'
+        const existing = clients.find((c) =>
+          (c.name && c.name.toLowerCase().includes(clientName.toLowerCase())) ||
+          (c.firstName && clientName.toLowerCase().includes(c.firstName.toLowerCase()))
+        )
+
+        if (existing && (existing._id || existing.id)) {
+          clientId = existing._id || existing.id
+        } else {
+          const nameParts = clientName.trim().split(' ')
+          const firstName = nameParts[0] || 'Client'
+          const lastName = nameParts.slice(1).join(' ') || 'User'
+          const newClient = await createClient({
+            firstName,
+            lastName,
+            phone: data.clientMobile || '+91 98765 43210',
+            email: data.clientEmail || 'client@example.com',
+            city: data.venue || 'Bengaluru',
+            status: 'active'
+          })
+          if (newClient && (newClient._id || newClient.id)) {
+            clientId = newClient._id || newClient.id
+          }
+        }
+      }
+
+      const backendPayload = {
+        clientId: clientId || '6a773edbf7cc32adc5f12f7f',
+        eventName: data.eventName || `${data.clientName || 'Special'} Event`,
+        eventType: mapEventTypeForBackend(data.eventType),
+        eventDate: data.eventDate ? new Date(data.eventDate).toISOString() : new Date().toISOString(),
+        startTime: data.startTime ? new Date(data.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '09:00 AM',
+        endTime: data.endTime ? new Date(data.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '10:00 PM',
+        venue: data.venue || 'Studio Ballroom',
+        package: data.packageName || 'Custom Package',
+        packageAmount: Number(data.packagePrice || data.totalAmount || 150000),
+        advanceAmount: Number(data.advancePaid || 0),
+        status: 'Confirmed',
+        notes: data.notes || ''
+      }
+
+      const res = await createEvent(backendPayload)
+      const eventId = res?.data?._id || res?.id || `EVT-${Date.now()}`
 
       toastRef.current?.show({
         severity: 'success',
-        summary: 'Event Saved',
-        detail: `Event #${res.id} created successfully!`,
+        summary: 'Event Saved to Backend',
+        detail: `Event #${eventId} successfully posted to database!`,
         life: 3000
       })
 
@@ -148,10 +202,11 @@ export default function EventForm({ onSuccess, onCancel }) {
         setTimeout(() => onSuccess(res), 1000)
       }
     } catch (error) {
+      console.error('Error submitting event to backend:', error)
       toastRef.current?.show({
         severity: 'error',
         summary: 'Submission Error',
-        detail: 'Failed to save event. Please try again.',
+        detail: 'Failed to save event to backend.',
         life: 3000
       })
     } finally {

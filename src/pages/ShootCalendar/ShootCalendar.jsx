@@ -4,6 +4,7 @@ import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
 import { Dialog } from 'primereact/dialog'
 import { Tooltip } from 'primereact/tooltip'
+import { Tag } from 'primereact/tag'
 import EventDetailDrawer from '../../components/EventDetailDrawer/EventDetailDrawer'
 import { SHARED_EVENTS } from '../../services/sharedEventsData'
 import './ShootCalendar.css'
@@ -55,6 +56,18 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
 
   const handleToday = () => {
     setCurrentDate(new Date(2026, 7, 12)) // Aug 12, 2026 (Today reference)
+  }
+
+  // Event Status Badge Helper Function
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'Shooting Today': return 'cal-status-badge--today'
+      case 'Confirmed': return 'cal-status-badge--confirmed'
+      case 'In Post-Production': return 'cal-status-badge--editing'
+      case 'Delivered': return 'cal-status-badge--delivered'
+      case 'Pending Deposit': return 'cal-status-badge--pending'
+      default: return 'cal-status-badge--default'
+    }
   }
 
   // Filtered Events
@@ -219,9 +232,10 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
           </div>
 
           <Button
-            label="+ New Event"
+            label="New Event"
             icon="pi pi-plus"
-            className="p-button-primary p-button-raised"
+            className="events-header__btn-add"
+            rounded
             onClick={() => handleTriggerNewEvent(null)}
           />
         </div>
@@ -308,148 +322,171 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
         </div>
       </div>
 
-      {/* ── CALENDAR NAVIGATION & MONTH TITLE BAR ── */}
-      <div className="calendar-nav-bar">
-        <div className="calendar-nav-title">
-          <h2>{monthNames[month]} {year}</h2>
+      {/* ── CALENDAR VIEW CONTAINER WITH ATTACHED NAV BAR ── */}
+      <div className="month-calendar-wrapper">
+        {/* ── CALENDAR NAVIGATION & MONTH TITLE BAR ATTACHED ── */}
+        <div className="calendar-nav-bar">
+          <div className="calendar-nav-title">
+            <h2>{monthNames[month]} {year} <span className="text-xs text-500 font-normal ml-2">({calendarView.toUpperCase()} VIEW)</span></h2>
+          </div>
+
+          <div className="calendar-nav-controls">
+            <button
+              className="calendar-nav-btn"
+              onClick={handlePrevMonth}
+              title="Previous Month"
+            >
+              <i className="pi pi-chevron-left" />
+            </button>
+            <button
+              className="calendar-nav-btn calendar-nav-btn--today"
+              onClick={handleToday}
+            >
+              Today
+            </button>
+            <button
+              className="calendar-nav-btn"
+              onClick={handleNextMonth}
+              title="Next Month"
+            >
+              <i className="pi pi-chevron-right" />
+            </button>
+          </div>
         </div>
 
-        <div className="calendar-nav-controls">
-          <Button
-            icon="pi pi-chevron-left"
-            className="p-button-outlined p-button-secondary p-button-sm"
-            onClick={handlePrevMonth}
-            tooltip="Previous Month"
-          />
-          <Button
-            label="Today"
-            className="p-button-outlined p-button-info p-button-sm"
-            onClick={handleToday}
-          />
-          <Button
-            icon="pi pi-chevron-right"
-            className="p-button-outlined p-button-secondary p-button-sm"
-            onClick={handleNextMonth}
-            tooltip="Next Month"
-          />
-        </div>
+        {/* ── MONTH CALENDAR GRID ── */}
+        {calendarView === 'month' && (
+          <>
+            {/* Days of Week Header */}
+            <div className="calendar-week-header">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
+                <div key={d} className="calendar-week-day">
+                  {d}
+                </div>
+              ))}
+            </div>
+
+            {/* Calendar Date Grid Cells */}
+            <div className="calendar-grid-cells">
+              {calendarDays.map((cell, idx) => {
+                const dayEvents = getEventsForDate(cell.dateStr)
+                const maxDisplay = 2
+                const hasOverflow = dayEvents.length > maxDisplay
+                const visibleEvents = dayEvents.slice(0, maxDisplay)
+                const overflowCount = dayEvents.length - maxDisplay
+
+                return (
+                  <div
+                    key={idx}
+                    className={`calendar-date-cell ${!cell.isCurrentMonth ? 'is-other-month' : ''} ${
+                      cell.isToday ? 'is-today' : ''
+                    }`}
+                    onClick={() => handleDateCellClick(cell)}
+                  >
+                    {/* Date Number Header */}
+                    <div className="date-cell-header">
+                      <span className={`date-number ${cell.isToday ? 'today-badge' : ''}`}>
+                        {cell.dayNum}
+                      </span>
+                      {dayEvents.length > 0 && (
+                        <span className="day-count-indicator">{dayEvents.length} shoots</span>
+                      )}
+                    </div>
+
+                    {/* Event Labels List */}
+                    <div className="date-cell-events">
+                      {visibleEvents.map((evt) => (
+                        <div
+                          key={evt.id}
+                          className={`cal-event-chip ${getEventBadgeClass(evt.status)}`}
+                          onClick={(e) => handleEventClick(e, evt)}
+                          data-pr-tooltip={`${evt.eventName} | Client: ${evt.couple} | Venue: ${evt.venue} | Status: ${evt.status}`}
+                        >
+                          <div className="cal-event-chip__title">
+                            {evt.eventType ? `${evt.eventType.split(' ')[0]} - ` : ''}{evt.couple}
+                          </div>
+                          <div className="cal-event-chip__time">
+                            <i className="pi pi-clock mr-1" />
+                            {evt.startTime || evt.time?.split('-')[0] || 'All Day'}
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Overflow Chip */}
+                      {hasOverflow && (
+                        <div
+                          className="cal-overflow-chip"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setOverflowDate(cell.dateStr)
+                            setOverflowEvents(dayEvents)
+                            setIsOverflowOpen(true)
+                          }}
+                        >
+                          + {overflowCount} more events
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        )}
+
+        {/* ── WEEK & DAY VIEWS ── */}
+        {calendarView !== 'month' && (
+          <div className="p-4">
+            <div className="flex justify-content-between align-items-center mb-3 pb-2 border-bottom-1 surface-border">
+              <span className="text-xs font-bold uppercase text-700">
+                {calendarView === 'week' ? 'Weekly Shoot Schedule Roster' : 'Daily Event Timeline'}
+              </span>
+              <span className="text-xs font-semibold text-primary">{filteredEvents.length} Total Shoots</span>
+            </div>
+
+            <div className="grid">
+              {filteredEvents.map((s) => (
+                <div key={s.id} className="col-12 md:col-6 lg:col-4">
+                  <div className="cal-alt-card p-3 border-round-xl border-1 surface-border bg-surface-card shadow-1 flex flex-column justify-content-between h-full">
+                    <div>
+                      <div className="flex justify-content-between align-items-center mb-2">
+                        <span className="text-xs font-bold text-primary bg-blue-50 px-2 py-1 border-round">
+                          <i className="pi pi-calendar mr-1" />{s.date}
+                        </span>
+                        <span className={`cal-status-badge ${getStatusBadgeClass(s.status)}`}>
+                          {s.status}
+                        </span>
+                      </div>
+
+                      <h4 className="text-sm font-bold text-900 mb-1">{s.eventName}</h4>
+                      <p className="text-xs text-700 font-semibold mb-2">Couple: {s.couple}</p>
+                      
+                      <div className="text-xs text-500 mb-3 flex align-items-center gap-1">
+                        <i className="pi pi-map-marker text-blue-600" />
+                        <span className="text-overflow-ellipsis overflow-hidden white-space-nowrap">{s.venue}</span>
+                      </div>
+                    </div>
+
+                    <div className="border-top-1 surface-border pt-2 flex justify-content-between align-items-center">
+                      <span className="text-xs text-600 font-semibold">
+                        <i className="pi pi-clock text-amber-600 mr-1" />
+                        {s.startTime || s.time?.split('-')[0] || '09:00 AM'}
+                      </span>
+
+                      <button
+                        className="cal-card-action-btn"
+                        onClick={(e) => handleEventClick(e, s)}
+                      >
+                        <i className="pi pi-eye" /> View Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* ── MONTH CALENDAR GRID ── */}
-      {calendarView === 'month' && (
-        <div className="month-calendar-wrapper">
-          {/* Days of Week Header */}
-          <div className="calendar-week-header">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-              <div key={d} className="calendar-week-day">
-                {d}
-              </div>
-            ))}
-          </div>
-
-          {/* Calendar Date Grid Cells */}
-          <div className="calendar-grid-cells">
-            {calendarDays.map((cell, idx) => {
-              const dayEvents = getEventsForDate(cell.dateStr)
-              const maxDisplay = 2
-              const hasOverflow = dayEvents.length > maxDisplay
-              const visibleEvents = dayEvents.slice(0, maxDisplay)
-              const overflowCount = dayEvents.length - maxDisplay
-
-              return (
-                <div
-                  key={idx}
-                  className={`calendar-date-cell ${!cell.isCurrentMonth ? 'is-other-month' : ''} ${
-                    cell.isToday ? 'is-today' : ''
-                  }`}
-                  onClick={() => handleDateCellClick(cell)}
-                >
-                  {/* Date Number Header */}
-                  <div className="date-cell-header">
-                    <span className={`date-number ${cell.isToday ? 'today-badge' : ''}`}>
-                      {cell.dayNum}
-                    </span>
-                    {dayEvents.length > 0 && (
-                      <span className="day-count-indicator">{dayEvents.length} shoots</span>
-                    )}
-                  </div>
-
-                  {/* Event Labels List */}
-                  <div className="date-cell-events">
-                    {visibleEvents.map((evt) => (
-                      <div
-                        key={evt.id}
-                        className={`cal-event-chip ${getEventBadgeClass(evt.status)}`}
-                        onClick={(e) => handleEventClick(e, evt)}
-                        data-pr-tooltip={`${evt.eventName} | Client: ${evt.couple} | Venue: ${evt.venue} | Status: ${evt.status}`}
-                      >
-                        <div className="cal-event-chip__title">
-                          {evt.eventType ? `${evt.eventType.split(' ')[0]} - ` : ''}{evt.couple}
-                        </div>
-                        <div className="cal-event-chip__time">
-                          <i className="pi pi-clock mr-1" />
-                          {evt.startTime || evt.time?.split('-')[0] || 'All Day'}
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Overflow Chip */}
-                    {hasOverflow && (
-                      <div
-                        className="cal-overflow-chip"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setOverflowDate(cell.dateStr)
-                          setOverflowEvents(dayEvents)
-                          setIsOverflowOpen(true)
-                        }}
-                      >
-                        + {overflowCount} more events
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── WEEK & DAY PLACEHOLDER VIEWS ── */}
-      {calendarView !== 'month' && (
-        <div className="calendar-alt-view p-4 bg-surface-card border-round-xl border-1 surface-border">
-          <div className="flex justify-content-between align-items-center mb-3">
-            <h3 className="text-base font-bold text-900 uppercase">
-              {calendarView} View - {monthNames[month]} {year}
-            </h3>
-            <span className="text-xs text-500">Showing {filteredEvents.length} Total Bookings</span>
-          </div>
-
-          <div className="grid">
-            {filteredEvents.map((s) => (
-              <div key={s.id} className="col-12 md:col-6 lg:col-4">
-                <div className="cal-alt-card p-3 border-round-lg border-1 surface-border bg-surface-ground">
-                  <div className="flex justify-content-between align-items-center mb-2">
-                    <span className="text-xs font-bold text-primary">{s.date}</span>
-                    <span className="text-xs font-semibold text-600">{s.status}</span>
-                  </div>
-                  <h4 className="text-sm font-bold text-900 mb-1">{s.eventName}</h4>
-                  <p className="text-xs text-600 mb-2">Client: {s.couple}</p>
-                  <div className="text-xs text-500 mb-3">
-                    <i className="pi pi-map-marker text-blue-600 mr-1" /> {s.venue}
-                  </div>
-                  <Button
-                    label="View Full Details"
-                    icon="pi pi-eye"
-                    className="p-button-outlined p-button-sm w-full"
-                    onClick={(e) => handleEventClick(e, s)}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* ── EVENT DETAILS DRAWER (REUSED FROM EVENTS MODULE) ── */}
       {selectedEventForDetail && (

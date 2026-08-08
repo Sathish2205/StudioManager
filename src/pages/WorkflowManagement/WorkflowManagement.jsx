@@ -613,27 +613,27 @@ export default function WorkflowManagement() {
                     Quick Stage Actions
                   </label>
                   <div className="flex flex-column gap-2">
-                    <Button
-                      label="Advance to Next Stage"
-                      icon="pi pi-step-forward"
-                      className="p-button-outlined p-button-sm w-full"
+                    <button
+                      className="wf-btn-advance w-full"
                       onClick={() => {
                         if (editingStageIndex < ALL_STAGES.length - 1) {
                           setEditingStageIndex((prev) => prev + 1)
                           showToast('Advanced to next workflow stage!')
                         }
                       }}
-                    />
-                    <Button
-                      label="Mark Delivered & Completed"
-                      icon="pi pi-check-circle"
-                      className="p-button-outlined p-button-success p-button-sm w-full"
+                    >
+                      <i className="pi pi-step-forward" /> Advance to Next Stage
+                    </button>
+                    <button
+                      className="wf-btn-complete w-full"
                       onClick={() => {
                         setEditingStageIndex(19)
                         setEditingStatus('Completed')
                         showToast('Workflow set to Completed & Delivered!')
                       }}
-                    />
+                    >
+                      <i className="pi pi-check-circle" /> Mark Delivered & Completed
+                    </button>
                   </div>
                 </div>
               </div>

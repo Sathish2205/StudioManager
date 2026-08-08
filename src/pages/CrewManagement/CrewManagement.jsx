@@ -70,9 +70,18 @@ export default function CrewManagement({ onShowToast }) {
   const statusSeverity = (st) => {
     switch (st) {
       case 'Available': return 'success'
-      case 'Busy': return 'warning'
-      case 'On Leave': return 'danger'
+      case 'Busy':
+      case 'On Assignment': return 'danger'
       default: return 'secondary'
+    }
+  }
+
+  const getCrewStatusBadge = (st) => {
+    switch (st) {
+      case 'Available': return 'cal-status-badge--confirmed'
+      case 'Busy':
+      case 'On Assignment': return 'cal-status-badge--today'
+      default: return 'cal-status-badge--default'
     }
   }
 
@@ -158,7 +167,9 @@ export default function CrewManagement({ onShowToast }) {
 
                   <div className="flex justify-content-between align-items-center mb-2">
                     <span className="text-xs text-600 font-semibold">Status:</span>
-                    <Tag value={member.status} severity={statusSeverity(member.status)} />
+                    <span className={`cal-status-badge ${getCrewStatusBadge(member.status)}`}>
+                      {member.status}
+                    </span>
                   </div>
 
                   <div className="mb-3">
@@ -169,17 +180,17 @@ export default function CrewManagement({ onShowToast }) {
                     <ProgressBar value={member.workload} showValue={false} style={{ height: '6px' }} />
                   </div>
 
-                  <div className="bg-surface-ground p-2 border-round text-xs mb-3">
+                  <div className="crew-skills-box text-xs mb-3">
                     <div className="font-bold text-700 mb-1">Skills:</div>
                     <div className="text-600">{member.skills.join(', ')}</div>
                   </div>
 
-                  <Button
-                    label="View Assignments & Workload"
-                    icon="pi pi-eye"
-                    className="p-button-outlined p-button-sm w-full text-xs"
+                  <button
+                    className="cal-card-action-btn w-full justify-content-center"
                     onClick={() => setSelectedMember(member)}
-                  />
+                  >
+                    <i className="pi pi-eye" /> View Assignments & Workload
+                  </button>
                 </div>
               </div>
             ))}

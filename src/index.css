@@ -190,26 +190,125 @@ img {
   margin-right: 0.25rem !important;
 }
 
-.p-dialog .p-dialog-footer .p-button-text {
-  background: transparent !important;
+.p-dialog .p-dialog-footer .p-button-text,
+.p-dialog .p-dialog-footer .p-button-secondary {
+  background: #f0f4f9 !important;
   border: 1px solid transparent !important;
-  color: #475569 !important;
+  color: #334155 !important;
+  font-weight: 600 !important;
 }
 
-.p-dialog .p-dialog-footer .p-button-text:hover {
+.p-dialog .p-dialog-footer .p-button-text:hover,
+.p-dialog .p-dialog-footer .p-button-secondary:hover {
   background: #e2e8f0 !important;
   color: #0f172a !important;
 }
 
 .p-dialog .p-dialog-footer .p-button-primary {
-  background: #2563eb !important;
-  border: 1px solid #2563eb !important;
+  background: #090d16 !important;
+  border: 1px solid #090d16 !important;
   color: #ffffff !important;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 6px rgba(9, 13, 22, 0.25) !important;
 }
 
 .p-dialog .p-dialog-footer .p-button-primary:hover {
+  background: #1e293b !important;
+  border-color: #1e293b !important;
+  box-shadow: 0 4px 14px rgba(9, 13, 22, 0.4) !important;
+}
+
+/* ── Global Filter Reset Button & Toolbar Secondary Button Fix ── */
+.events-toolbar .p-button,
+.events-toolbar__left .p-button,
+.p-button.p-button-outlined.p-button-secondary,
+.p-button.p-button-outlined.p-button-secondary.p-button-sm {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  padding: 0.45rem 0.9rem !important;
+  height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+.events-toolbar .p-button .p-button-icon,
+.events-toolbar__left .p-button .p-button-icon,
+.p-button.p-button-outlined.p-button-secondary .p-button-icon,
+.p-button.p-button-outlined.p-button-secondary.p-button-sm .p-button-icon {
+  font-size: 0.85rem !important;
+  margin-right: 0.25rem !important;
+  color: #64748b !important;
+}
+
+.events-toolbar .p-button:hover,
+.events-toolbar__left .p-button:hover,
+.p-button.p-button-outlined.p-button-secondary:hover,
+.p-button.p-button-outlined.p-button-secondary.p-button-sm:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+}
+
+/* ── Global Action Buttons (p-button-success, p-button-primary) ── */
+.p-button.p-button-success {
+  background: #16a34a !important;
+  border: 1px solid #16a34a !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  padding: 0.55rem 1.25rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25) !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  outline: none !important;
+}
+
+.p-button.p-button-success:hover {
+  background: #15803d !important;
+  border-color: #15803d !important;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35) !important;
+}
+
+.p-button.p-button-primary {
+  background: #2563eb !important;
+  border: 1px solid #2563eb !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  padding: 0.55rem 1.25rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  outline: none !important;
+}
+
+.p-button.p-button-primary:hover {
   background: #1d4ed8 !important;
   border-color: #1d4ed8 !important;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+}
+
+.p-button .p-button-icon {
+  font-size: 0.9rem !important;
+  margin-right: 0.3rem !important;
 }

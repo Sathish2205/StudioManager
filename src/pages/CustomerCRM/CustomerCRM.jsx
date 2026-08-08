@@ -765,7 +765,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
             <InputText
               value={newCustName}
               onChange={(e) => setNewCustName(e.target.value)}
-              placeholder="e.g. Sathish & Priya Kumar"
+              placeholder="e.g. Arun & Priya"
               className="w-full p-inputtext"
             />
           </div>

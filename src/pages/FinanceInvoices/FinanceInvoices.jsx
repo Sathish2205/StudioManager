@@ -278,7 +278,7 @@ export default function FinanceInvoices({ onShowToast }) {
         <div className="flex flex-column gap-3 py-2 text-xs">
           <div>
             <label className="block font-bold mb-1">Client Name *</label>
-            <InputText value={payClient} onChange={(e) => setPayClient(e.target.value)} placeholder="e.g. Sathish & Priya" className="w-full" />
+            <InputText value={payClient} onChange={(e) => setPayClient(e.target.value)} placeholder="e.g. Arun & Priya" className="w-full" />
           </div>
           <div>
             <label className="block font-bold mb-1">Event *</label>

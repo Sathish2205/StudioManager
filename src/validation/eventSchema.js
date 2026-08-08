@@ -7,23 +7,23 @@ export const eventSchema = yup.object().shape({
   eventDate: yup.date().nullable().required('Event Date is required'),
   eventTime: yup.date().nullable(),
   venueName: yup.string().required('Venue Name is required'),
-  venueAddress: yup.string(),
-  city: yup.string(),
-  state: yup.string(),
-  pincode: yup.string(),
+  venueAddress: yup.string().nullable(),
+  city: yup.string().nullable(),
+  state: yup.string().nullable(),
+  pincode: yup.string().nullable(),
   
   // Photography Details
-  photographerId: yup.string(),
-  videographerId: yup.string(),
-  droneRequired: yup.boolean(),
-  liveStreaming: yup.boolean(),
-  albumRequired: yup.boolean(),
-  candidPhotography: yup.boolean(),
-  traditionalPhotography: yup.boolean(),
-  traditionalVideo: yup.boolean(),
+  photographerId: yup.string().nullable(),
+  videographerId: yup.string().nullable(),
+  droneRequired: yup.boolean().default(false),
+  liveStreaming: yup.boolean().default(false),
+  albumRequired: yup.boolean().default(false),
+  candidPhotography: yup.boolean().default(false),
+  traditionalPhotography: yup.boolean().default(false),
+  traditionalVideo: yup.boolean().default(false),
 
   // Package Details
-  packageId: yup.string().required('Package is required'),
+  packageId: yup.string().nullable(),
   packagePrice: yup
     .number()
     .typeError('Package Price must be a number')
@@ -46,5 +46,5 @@ export const eventSchema = yup.object().shape({
   eventStatus: yup.string().default('Booked'),
 
   // Notes
-  specialInstructions: yup.string()
+  specialInstructions: yup.string().nullable()
 })

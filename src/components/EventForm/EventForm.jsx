@@ -62,22 +62,28 @@ export default function EventForm({ onSuccess, onCancel }) {
     defaultValues: {
       clientName: '',
       clientId: null,
-      eventType: null,
       eventName: '',
+      eventType: null,
       eventDate: null,
-      startTime: null,
-      endTime: null,
-      venue: '',
-      guestCount: null,
+      eventTime: null,
+      venueName: '',
+      venueAddress: '',
+      city: '',
+      state: '',
+      pincode: '',
+      photographerId: null,
+      videographerId: null,
+      droneRequired: false,
+      liveStreaming: false,
+      albumRequired: false,
+      candidPhotography: false,
+      traditionalPhotography: false,
+      traditionalVideo: false,
       packageId: null,
-      packagePrice: null,
+      packagePrice: 0,
       advancePaid: 0,
-      assignedLeadPhotographer: null,
-      assignedAssistantPhotographer: null,
-      assignedLeadVideographer: null,
-      assignedDronePilot: null,
-      deliverables: [],
-      notes: ''
+      eventStatus: 'Booked',
+      specialInstructions: ''
     }
   })
 
@@ -161,9 +167,9 @@ export default function EventForm({ onSuccess, onCancel }) {
           const newClient = await createClient({
             firstName,
             lastName,
-            phone: data.clientMobile || '+91 98765 43210',
-            email: data.clientEmail || 'client@example.com',
-            city: data.venue || 'Bengaluru',
+            phone: '+91 98765 43210',
+            email: 'client@example.com',
+            city: data.city || 'Bengaluru',
             status: 'active'
           })
           if (newClient && (newClient._id || newClient.id)) {
@@ -172,19 +178,20 @@ export default function EventForm({ onSuccess, onCancel }) {
         }
       }
 
+      const selectedPkg = packages.find((p) => p.id === data.packageId)
       const backendPayload = {
         clientId: clientId || '6a773edbf7cc32adc5f12f7f',
         eventName: data.eventName || `${data.clientName || 'Special'} Event`,
         eventType: mapEventTypeForBackend(data.eventType),
         eventDate: data.eventDate ? new Date(data.eventDate).toISOString() : new Date().toISOString(),
-        startTime: data.startTime ? new Date(data.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '09:00 AM',
-        endTime: data.endTime ? new Date(data.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '10:00 PM',
-        venue: data.venue || 'Studio Ballroom',
-        package: data.packageName || 'Custom Package',
-        packageAmount: Number(data.packagePrice || data.totalAmount || 150000),
+        startTime: data.eventTime ? new Date(data.eventTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '09:00 AM',
+        endTime: '10:00 PM',
+        venue: data.venueName || 'Studio Ballroom',
+        package: selectedPkg ? selectedPkg.name : 'Custom Package',
+        packageAmount: Number(data.packagePrice || 150000),
         advanceAmount: Number(data.advancePaid || 0),
         status: 'Confirmed',
-        notes: data.notes || ''
+        notes: data.specialInstructions || ''
       }
 
       const res = await createEvent(backendPayload)

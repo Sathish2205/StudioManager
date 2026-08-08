@@ -1,6 +1,22 @@
-// GET /api/clients
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
+// GET /api/clients/dropdown (or /api/clients)
 export const getClients = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  try {
+    const token = localStorage.getItem('token')
+    const headers = token ? { Authorization: `Bearer ${token}` } : {}
+    const res = await fetch(`${API_BASE}/clients/dropdown`, { headers })
+    if (res.ok) {
+      const data = await res.json()
+      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+        return data.data
+      }
+    }
+  } catch (err) {
+    console.warn('Backend unavailable, using client fallback:', err.message)
+  }
+
+  // Fallback data
   return [
     { id: 'CLI-101', name: 'Sathish & Priya', mobile: '+91 98765 43210', label: 'Sathish & Priya (+91 98765 43210)' },
     { id: 'CLI-102', name: 'Sophia & James Sterling', mobile: '+1 (555) 234-5678', label: 'Sophia & James Sterling (+1 555-234-5678)' },

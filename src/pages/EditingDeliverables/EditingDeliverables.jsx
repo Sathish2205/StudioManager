@@ -157,21 +157,6 @@ export default function EditingDeliverables({ onShowToast }) {
         </div>
 
         <div className="editing-header__actions">
-          <div className="editing-tab-toggle">
-            <button
-              className={`editing-tab-btn ${activeTab === 'kanban' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('kanban')}
-            >
-              <i className="pi pi-th-large mr-1" /> Kanban Workflow
-            </button>
-            <button
-              className={`editing-tab-btn ${activeTab === 'deliverables' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('deliverables')}
-            >
-              <i className="pi pi-list mr-1" /> Deliverables Table
-            </button>
-          </div>
-
           <Button
             label="Create Editing Task"
             icon="pi pi-plus"
@@ -179,6 +164,22 @@ export default function EditingDeliverables({ onShowToast }) {
             onClick={handleOpenCreate}
           />
         </div>
+      </div>
+
+      {/* ── Dedicated Studio Tab Navigation Bar ── */}
+      <div className="studio-tab-bar">
+        <button
+          className={`studio-tab-btn ${activeTab === 'kanban' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('kanban')}
+        >
+          <i className="pi pi-th-large" /> Kanban Workflow
+        </button>
+        <button
+          className={`studio-tab-btn ${activeTab === 'deliverables' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('deliverables')}
+        >
+          <i className="pi pi-list" /> Deliverables Table <span className="studio-tab-badge">{tasks.length}</span>
+        </button>
       </div>
 
       {/* ── Toolbar Search & Filters ── */}
@@ -310,6 +311,11 @@ export default function EditingDeliverables({ onShowToast }) {
           <DataTable
             value={filteredTasks}
             paginator
+            paginatorLeft={
+              <span className="events-paginator__count">
+                Showing <strong>{filteredTasks.length}</strong> of {tasks.length} Deliverables
+              </span>
+            }
             rows={5}
             rowsPerPageOptions={[5, 10, 20]}
             responsiveLayout="scroll"

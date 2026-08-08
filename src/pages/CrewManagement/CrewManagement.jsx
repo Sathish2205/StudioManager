@@ -103,21 +103,6 @@ export default function CrewManagement({ onShowToast }) {
         </div>
 
         <div className="crew-header__actions">
-          <div className="editing-tab-toggle">
-            <button
-              className={`editing-tab-btn ${activeTab === 'members' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('members')}
-            >
-              Team Roster ({crewList.length})
-            </button>
-            <button
-              className={`editing-tab-btn ${activeTab === 'assignments' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('assignments')}
-            >
-              Crew Event Assignments
-            </button>
-          </div>
-
           <Button
             label="Assign Crew to Event"
             icon="pi pi-user-plus"
@@ -125,6 +110,22 @@ export default function CrewManagement({ onShowToast }) {
             onClick={() => setIsAssignOpen(true)}
           />
         </div>
+      </div>
+
+      {/* ── Dedicated Studio Tab Navigation Bar ── */}
+      <div className="studio-tab-bar">
+        <button
+          className={`studio-tab-btn ${activeTab === 'members' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('members')}
+        >
+          <i className="pi pi-users" /> Team Roster <span className="studio-tab-badge">{crewList.length}</span>
+        </button>
+        <button
+          className={`studio-tab-btn ${activeTab === 'assignments' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('assignments')}
+        >
+          <i className="pi pi-calendar" /> Crew Event Assignments
+        </button>
       </div>
 
       {/* ── TAB 1: TEAM ROSTER ── */}
@@ -201,7 +202,20 @@ export default function CrewManagement({ onShowToast }) {
       {/* ── TAB 2: ASSIGNMENTS TABLE ── */}
       {activeTab === 'assignments' && (
         <div className="events-table-card">
-          <DataTable value={crewList.flatMap((c) => c.assignments.map((a) => ({ ...a, crewName: c.name, role: c.role })))} responsiveLayout="scroll" stripedRows className="events-datatable">
+          <DataTable
+            value={crewList.flatMap((c) => c.assignments.map((a) => ({ ...a, crewName: c.name, role: c.role })))}
+            paginator
+            paginatorLeft={
+              <span className="events-paginator__count">
+                Showing <strong>{crewList.flatMap((c) => c.assignments).length}</strong> Event Assignments
+              </span>
+            }
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+          >
             <Column field="crewName" header="Crew Member" sortable style={{ minWidth: '180px' }} />
             <Column field="role" header="Role" style={{ minWidth: '130px' }} />
             <Column field="event" header="Assigned Event" sortable style={{ minWidth: '220px' }} />

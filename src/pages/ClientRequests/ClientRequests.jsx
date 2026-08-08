@@ -167,7 +167,20 @@ export default function ClientRequests({ onShowToast }) {
 
       {/* ── TABLE ── */}
       <div className="events-table-card">
-        <DataTable value={filteredRequests} paginator rows={5} responsiveLayout="scroll" stripedRows className="events-datatable">
+        <DataTable
+          value={filteredRequests}
+          paginator
+          paginatorLeft={
+            <span className="events-paginator__count">
+              Showing <strong>{filteredRequests.length}</strong> of {requests.length} Client Requests
+            </span>
+          }
+          rows={5}
+          rowsPerPageOptions={[5, 10, 20]}
+          responsiveLayout="scroll"
+          stripedRows
+          className="events-datatable"
+        >
           <Column field="id" header="Request ID" sortable style={{ minWidth: '110px' }} />
           <Column field="title" header="Request Summary" sortable style={{ minWidth: '240px' }} />
           <Column field="clientName" header="Client" sortable style={{ minWidth: '180px' }} />

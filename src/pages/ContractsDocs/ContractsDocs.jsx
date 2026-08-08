@@ -111,21 +111,6 @@ export default function ContractsDocs({ onShowToast }) {
         </div>
 
         <div className="contracts-header__actions">
-          <div className="editing-tab-toggle">
-            <button
-              className={`editing-tab-btn ${activeTab === 'contracts' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('contracts')}
-            >
-              Contracts & Agreements
-            </button>
-            <button
-              className={`editing-tab-btn ${activeTab === 'docs' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('docs')}
-            >
-              Document Vault ({documents.length})
-            </button>
-          </div>
-
           <Button
             label="New Contract"
             icon="pi pi-file-edit"
@@ -141,10 +126,39 @@ export default function ContractsDocs({ onShowToast }) {
         </div>
       </div>
 
+      {/* ── Dedicated Studio Tab Navigation Bar ── */}
+      <div className="studio-tab-bar">
+        <button
+          className={`studio-tab-btn ${activeTab === 'contracts' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('contracts')}
+        >
+          <i className="pi pi-file-edit" /> Contracts & Agreements <span className="studio-tab-badge">{contracts.length}</span>
+        </button>
+        <button
+          className={`studio-tab-btn ${activeTab === 'docs' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('docs')}
+        >
+          <i className="pi pi-folder" /> Document Vault <span className="studio-tab-badge">{documents.length}</span>
+        </button>
+      </div>
+
       {/* ── TAB 1: CONTRACTS ── */}
       {activeTab === 'contracts' && (
         <div className="events-table-card">
-          <DataTable value={contracts} paginator rows={5} responsiveLayout="scroll" stripedRows className="events-datatable">
+          <DataTable
+            value={contracts}
+            paginator
+            paginatorLeft={
+              <span className="events-paginator__count">
+                Showing <strong>{contracts.length}</strong> of {MOCK_CONTRACTS.length} Contracts
+              </span>
+            }
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+          >
             <Column field="contractNo" header="Contract #" sortable style={{ minWidth: '130px' }} />
             <Column field="clientName" header="Client" sortable style={{ minWidth: '180px' }} />
             <Column field="eventName" header="Event" style={{ minWidth: '200px' }} />
@@ -193,7 +207,20 @@ export default function ContractsDocs({ onShowToast }) {
           </div>
 
           <div className="events-table-card">
-            <DataTable value={filteredDocs} paginator rows={5} responsiveLayout="scroll" stripedRows className="events-datatable">
+            <DataTable
+              value={filteredDocs}
+              paginator
+              paginatorLeft={
+                <span className="events-paginator__count">
+                  Showing <strong>{filteredDocs.length}</strong> of {documents.length} Documents
+                </span>
+              }
+              rows={5}
+              rowsPerPageOptions={[5, 10, 20]}
+              responsiveLayout="scroll"
+              stripedRows
+              className="events-datatable"
+            >
               <Column field="name" header="Document Name" sortable style={{ minWidth: '250px' }} />
               <Column field="type" header="Type" body={(r) => <Tag value={r.type} severity="info" />} style={{ minWidth: '110px' }} />
               <Column field="clientName" header="Client" style={{ minWidth: '180px' }} />

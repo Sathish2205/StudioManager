@@ -132,27 +132,6 @@ export default function EquipmentTracker({ onShowToast }) {
         </div>
 
         <div className="equipment-header__actions">
-          <div className="editing-tab-toggle">
-            <button
-              className={`editing-tab-btn ${activeTab === 'inventory' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('inventory')}
-            >
-              Inventory ({equipmentList.length})
-            </button>
-            <button
-              className={`editing-tab-btn ${activeTab === 'assignments' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('assignments')}
-            >
-              Event Gear Assignments
-            </button>
-            <button
-              className={`editing-tab-btn ${activeTab === 'maintenance' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('maintenance')}
-            >
-              Maintenance Alerts
-            </button>
-          </div>
-
           <Button
             label="Assign Gear to Event"
             icon="pi pi-box"
@@ -166,6 +145,28 @@ export default function EquipmentTracker({ onShowToast }) {
             onClick={() => setIsAddOpen(true)}
           />
         </div>
+      </div>
+
+      {/* ── Dedicated Studio Tab Navigation Bar ── */}
+      <div className="studio-tab-bar">
+        <button
+          className={`studio-tab-btn ${activeTab === 'inventory' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('inventory')}
+        >
+          <i className="pi pi-desktop" /> Inventory <span className="studio-tab-badge">{equipmentList.length}</span>
+        </button>
+        <button
+          className={`studio-tab-btn ${activeTab === 'assignments' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('assignments')}
+        >
+          <i className="pi pi-calendar-plus" /> Event Gear Assignments
+        </button>
+        <button
+          className={`studio-tab-btn ${activeTab === 'maintenance' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('maintenance')}
+        >
+          <i className="pi pi-exclamation-triangle" /> Maintenance Alerts
+        </button>
       </div>
 
       {/* ── TAB 1: INVENTORY TABLE ── */}
@@ -209,7 +210,20 @@ export default function EquipmentTracker({ onShowToast }) {
           </div>
 
           <div className="events-table-card">
-            <DataTable value={filteredEquipment} paginator rows={5} responsiveLayout="scroll" stripedRows className="events-datatable">
+            <DataTable
+              value={filteredEquipment}
+              paginator
+              paginatorLeft={
+                <span className="events-paginator__count">
+                  Showing <strong>{filteredEquipment.length}</strong> of {equipmentList.length} Gear Items
+                </span>
+              }
+              rows={5}
+              rowsPerPageOptions={[5, 10, 20]}
+              responsiveLayout="scroll"
+              stripedRows
+              className="events-datatable"
+            >
               <Column field="id" header="Tag ID" sortable style={{ minWidth: '100px' }} />
               <Column field="name" header="Equipment Name & Model" sortable style={{ minWidth: '220px' }} />
               <Column field="category" header="Category" body={(r) => <Tag value={r.category} severity="info" />} style={{ minWidth: '120px' }} />
@@ -225,7 +239,20 @@ export default function EquipmentTracker({ onShowToast }) {
       {/* ── TAB 2: ASSIGNMENTS ── */}
       {activeTab === 'assignments' && (
         <div className="events-table-card">
-          <DataTable value={equipmentList.filter((e) => e.status === 'Assigned')} responsiveLayout="scroll" stripedRows className="events-datatable">
+          <DataTable
+            value={equipmentList.filter((e) => e.status === 'Assigned')}
+            paginator
+            paginatorLeft={
+              <span className="events-paginator__count">
+                Showing <strong>{equipmentList.filter((e) => e.status === 'Assigned').length}</strong> Assigned Items
+              </span>
+            }
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+          >
             <Column field="name" header="Equipment Item" style={{ minWidth: '220px' }} />
             <Column field="assignedToEvent" header="Assigned Event" style={{ minWidth: '220px' }} />
             <Column field="assignedDate" header="Shoot Date" style={{ minWidth: '120px' }} />
@@ -237,7 +264,20 @@ export default function EquipmentTracker({ onShowToast }) {
       {/* ── TAB 3: MAINTENANCE ALERTS ── */}
       {activeTab === 'maintenance' && (
         <div className="events-table-card">
-          <DataTable value={equipmentList} responsiveLayout="scroll" stripedRows className="events-datatable">
+          <DataTable
+            value={equipmentList}
+            paginator
+            paginatorLeft={
+              <span className="events-paginator__count">
+                Showing <strong>{equipmentList.length}</strong> Gear Items
+              </span>
+            }
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+          >
             <Column field="name" header="Equipment Item" style={{ minWidth: '220px' }} />
             <Column field="lastMaintenance" header="Last Service" style={{ minWidth: '130px' }} />
             <Column field="nextMaintenance" header="Next Service Due" body={(r) => <span className="font-bold text-amber-600">{r.nextMaintenance}</span>} style={{ minWidth: '140px' }} />

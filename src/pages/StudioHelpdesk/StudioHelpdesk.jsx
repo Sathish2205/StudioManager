@@ -219,7 +219,20 @@ export default function StudioHelpdesk({ onShowToast }) {
 
       {/* ── TICKETS TABLE ── */}
       <div className="events-table-card">
-        <DataTable value={filteredTickets} paginator rows={5} responsiveLayout="scroll" stripedRows className="events-datatable">
+        <DataTable
+          value={filteredTickets}
+          paginator
+          paginatorLeft={
+            <span className="events-paginator__count">
+              Showing <strong>{filteredTickets.length}</strong> of {tickets.length} Tickets
+            </span>
+          }
+          rows={5}
+          rowsPerPageOptions={[5, 10, 20]}
+          responsiveLayout="scroll"
+          stripedRows
+          className="events-datatable"
+        >
           <Column field="id" header="Ticket ID" sortable style={{ minWidth: '110px' }} />
           <Column field="title" header="Title & Subject" sortable style={{ minWidth: '240px' }} />
           <Column field="category" header="Category" body={(r) => <Tag value={r.category} severity="info" />} style={{ minWidth: '120px' }} />

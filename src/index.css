@@ -314,11 +314,12 @@ img {
 }
 
 /* ── PrimeReact Enterprise TabMenu & Global Tab Bar Styling ── */
-.p-tabmenu .p-tabmenu-nav,
-.editing-tab-toggle {
+.studio-tab-bar,
+.editing-tab-toggle,
+.p-tabmenu .p-tabmenu-nav {
   display: flex !important;
   align-items: center !important;
-  gap: 0.5rem !important;
+  gap: 0.25rem !important;
   border: none !important;
   border-bottom: 2px solid #e2e8f0 !important;
   background: transparent !important;
@@ -328,26 +329,29 @@ img {
   border-radius: 0 !important;
   list-style-type: none !important;
   width: 100% !important;
+  overflow-x: auto !important;
 }
 
+.studio-tab-bar .p-tabmenuitem,
 .p-tabmenu .p-tabmenu-nav .p-tabmenuitem {
   margin: 0 !important;
   padding: 0 !important;
 }
 
-.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link,
-.editing-tab-btn {
+.studio-tab-btn,
+.editing-tab-btn,
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
   background: transparent !important;
   border: none !important;
   border-bottom: 2px solid transparent !important;
   color: #64748b !important;
-  font-size: 0.85rem !important;
+  font-size: 0.88rem !important;
   font-weight: 600 !important;
   padding: 0.65rem 1.15rem !important;
   cursor: pointer !important;
   transition: all 0.15s ease !important;
   margin-bottom: -2px !important;
-  border-radius: 0 !important;
+  border-radius: 6px 6px 0 0 !important;
   outline: none !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -356,26 +360,48 @@ img {
   white-space: nowrap !important;
 }
 
-.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link:hover,
-.editing-tab-btn:hover {
+.studio-tab-btn:hover,
+.editing-tab-btn:hover,
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link:hover {
   color: #0f172a !important;
   border-bottom-color: #cbd5e1 !important;
-  background: transparent !important;
+  background: #f8fafc !important;
 }
 
-.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link,
-.editing-tab-btn.is-active {
+.studio-tab-btn.is-active,
+.editing-tab-btn.is-active,
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
   color: #2563eb !important;
   font-weight: 700 !important;
-  border-bottom: 2px solid #2563eb !important;
+  border-bottom: 2.5px solid #2563eb !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 
+.studio-tab-btn .p-menuitem-icon,
+.editing-tab-btn i,
+.studio-tab-btn i,
 .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-icon {
   font-size: 0.9rem !important;
-  margin-right: 0.35rem !important;
+  margin-right: 0.2rem !important;
   color: inherit !important;
+}
+
+.studio-tab-badge {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  transition: all 0.15s ease;
+  margin-left: 0.25rem;
+}
+
+.studio-tab-btn.is-active .studio-tab-badge,
+.editing-tab-btn.is-active .studio-tab-badge {
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 /* ── GLOBAL EXACT EVENTS PAGE PAGINATOR (Fixed Bottom Bar) ── */

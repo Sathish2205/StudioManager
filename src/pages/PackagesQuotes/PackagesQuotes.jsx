@@ -83,27 +83,6 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
         </div>
 
         <div className="packages-header__actions">
-          <div className="editing-tab-toggle">
-            <button
-              className={`editing-tab-btn ${activeTab === 'packages' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('packages')}
-            >
-              Studio Packages
-            </button>
-            <button
-              className={`editing-tab-btn ${activeTab === 'addons' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('addons')}
-            >
-              Service Add-ons
-            </button>
-            <button
-              className={`editing-tab-btn ${activeTab === 'quotes' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('quotes')}
-            >
-              Client Quotes ({quotes.length})
-            </button>
-          </div>
-
           <Button
             label="Create Quotation"
             icon="pi pi-file-edit"
@@ -111,6 +90,28 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
             onClick={() => setIsQuoteOpen(true)}
           />
         </div>
+      </div>
+
+      {/* ── Dedicated Studio Tab Navigation Bar ── */}
+      <div className="studio-tab-bar">
+        <button
+          className={`studio-tab-btn ${activeTab === 'packages' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('packages')}
+        >
+          <i className="pi pi-box" /> Studio Packages
+        </button>
+        <button
+          className={`studio-tab-btn ${activeTab === 'addons' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('addons')}
+        >
+          <i className="pi pi-tags" /> Service Add-ons
+        </button>
+        <button
+          className={`studio-tab-btn ${activeTab === 'quotes' ? 'is-active' : ''}`}
+          onClick={() => setActiveTab('quotes')}
+        >
+          <i className="pi pi-file-edit" /> Client Quotes <span className="studio-tab-badge">{quotes.length}</span>
+        </button>
       </div>
 
       {/* ── TAB 1: PACKAGES GRID ── */}
@@ -165,7 +166,20 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
       {/* ── TAB 2: ADD-ONS TABLE ── */}
       {activeTab === 'addons' && (
         <div className="events-table-card">
-          <DataTable value={addons} responsiveLayout="scroll" stripedRows className="events-datatable">
+          <DataTable
+            value={addons}
+            paginator
+            paginatorLeft={
+              <span className="events-paginator__count">
+                Showing <strong>{addons.length}</strong> of {MOCK_ADDONS.length} Add-ons
+              </span>
+            }
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+          >
             <Column field="id" header="Add-on ID" style={{ minWidth: '100px' }} />
             <Column field="name" header="Add-on Service Name" sortable style={{ minWidth: '220px' }} />
             <Column field="description" header="Description" style={{ minWidth: '250px' }} />
@@ -178,7 +192,20 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
       {/* ── TAB 3: QUOTATIONS TABLE ── */}
       {activeTab === 'quotes' && (
         <div className="events-table-card">
-          <DataTable value={quotes} paginator rows={5} responsiveLayout="scroll" stripedRows className="events-datatable">
+          <DataTable
+            value={quotes}
+            paginator
+            paginatorLeft={
+              <span className="events-paginator__count">
+                Showing <strong>{quotes.length}</strong> of {MOCK_QUOTES.length} Client Quotes
+              </span>
+            }
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+          >
             <Column field="quoteNo" header="Quote #" sortable style={{ minWidth: '130px' }} />
             <Column field="clientName" header="Client" sortable style={{ minWidth: '180px' }} />
             <Column field="eventName" header="Event" style={{ minWidth: '220px' }} />

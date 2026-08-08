@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -12,6 +12,7 @@ import EventDetailDrawer from '../../components/EventDetailDrawer'
 import './Events.css'
 
 import { SHARED_EVENTS } from '../../services/sharedEventsData'
+import { getEvents } from '../../services/eventService'
 
 export default function Events({ activeTab = 'events', setActiveTab, onNavigateInvoice }) {
   const [globalFilter, setGlobalFilter] = useState('')
@@ -20,8 +21,53 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
   const [selectedDetailEvent, setSelectedDetailEvent] = useState(null)
   const [drawerVisible, setDrawerVisible] = useState(false)
 
-  // Comprehensive PhotoStudio Shoots & Events Dataset
-  const initialEvents = SHARED_EVENTS
+  // PhotoStudio Shoots & Events Dataset
+  const [initialEvents, setInitialEvents] = useState(SHARED_EVENTS)
+
+  useEffect(() => {
+    async function loadEvents() {
+      const data = await getEvents()
+      if (data && data.length > 0) {
+        const mapped = data.map((evt) => {
+          const clientName = evt.clientId
+            ? `${evt.clientId.firstName || ''} ${evt.clientId.lastName || ''}`.trim()
+            : evt.eventName || 'Client'
+
+          const photographers = (evt.assignedPhotographers || []).map((p) => p.name || 'Photographer')
+          const editors = (evt.assignedEditors || []).map((e) => e.name || 'Editor')
+          const crew = [...photographers, ...editors]
+
+          const total = evt.packageAmount || 0
+          const paid = evt.totalPaid || 0
+          const balance = evt.remainingAmount || Math.max(0, total - paid)
+          const paymentProgress = total > 0 ? Math.round((paid / total) * 100) : 0
+
+          let paymentStatus = 'Pending Deposit'
+          if (balance === 0 && total > 0) paymentStatus = 'Paid in Full'
+          else if (paid > 0) paymentStatus = 'Advance Paid'
+
+          return {
+            id: evt._id ? `EVT-${evt._id.slice(-4).toUpperCase()}` : `EVT-${Date.now()}`,
+            couple: clientName || evt.eventName || 'Special Event',
+            eventType: evt.eventType || 'Wedding Shoot',
+            date: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '2026-10-15',
+            time: `${evt.startTime || '09:00 AM'} - ${evt.endTime || '10:00 PM'}`,
+            venue: evt.venue || 'Luxury Studio Venue',
+            package: evt.package || 'Custom Package',
+            totalAmount: `₹${total.toLocaleString()}`,
+            paidAmount: `₹${paid.toLocaleString()}`,
+            balanceAmount: `₹${balance.toLocaleString()}`,
+            paymentProgress,
+            paymentStatus,
+            crew: crew.length > 0 ? crew : ['Lead Photographer'],
+            status: evt.status || 'Confirmed'
+          }
+        })
+        setInitialEvents(mapped)
+      }
+    }
+    loadEvents()
+  }, [])
 
   // Status Filter Options
   const statusOptions = [

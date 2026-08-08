@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -9,11 +9,35 @@ import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 
 import { MOCK_EQUIPMENT_LIST } from './mockEquipmentData'
+import { getEquipment } from '../../services/equipmentService'
 import './EquipmentTracker.css'
 
 export default function EquipmentTracker({ onShowToast }) {
   const [activeTab, setActiveTab] = useState('inventory') // 'inventory', 'assignments', 'maintenance'
   const [equipmentList, setEquipmentList] = useState(MOCK_EQUIPMENT_LIST)
+
+  useEffect(() => {
+    async function fetchBackendEquipment() {
+      const data = await getEquipment()
+      if (data && data.length > 0) {
+        const mapped = data.map((eq) => ({
+          id: eq._id ? `EQ-${eq._id.slice(-4).toUpperCase()}` : `EQ-${Date.now()}`,
+          name: eq.name || 'Equipment Item',
+          category: eq.category || 'Camera',
+          brand: eq.brand || 'Sony',
+          model: eq.model || 'Standard',
+          serialNumber: eq.serialNumber || 'SN-100234',
+          status: eq.availability || 'Available',
+          condition: eq.condition || 'Good',
+          assignedTo: eq.assignedTo ? eq.assignedTo.name : 'Unassigned',
+          value: eq.purchasePrice || 150000,
+          lastMaintenance: eq.lastMaintenanceDate ? new Date(eq.lastMaintenanceDate).toISOString().split('T')[0] : '2026-06-15'
+        }))
+        setEquipmentList(mapped)
+      }
+    }
+    fetchBackendEquipment()
+  }, [])
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('')

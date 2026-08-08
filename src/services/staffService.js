@@ -1,31 +1,19 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+import { apiGet } from './apiClient'
+
+// GET /api/employees
+export const getStaff = async () => {
+  const result = await apiGet('/employees?limit=50')
+  if (result && result.success && Array.isArray(result.data)) {
+    return result.data
+  }
+  return null
+}
 
 // GET /api/employees/dropdown
-export const getStaff = async () => {
-  try {
-    const token = localStorage.getItem('token')
-    const headers = token ? { Authorization: `Bearer ${token}` } : {}
-    const res = await fetch(`${API_BASE}/employees/dropdown`, { headers })
-    if (res.ok) {
-      const data = await res.json()
-      if (data.success && data.data && data.data.photographers) {
-        return data.data
-      }
-    }
-  } catch (err) {
-    console.warn('Backend staff unavailable, using fallback:', err.message)
+export const getStaffDropdown = async () => {
+  const result = await apiGet('/employees/dropdown')
+  if (result && result.success && result.data) {
+    return result.data
   }
-
-  return {
-    photographers: [
-      { id: 'STF-01', name: 'Alex Vance (Lead Photographer)' },
-      { id: 'STF-02', name: 'Elena Rostova (Senior Photographer)' },
-      { id: 'STF-03', name: 'Maya S. (Traditional Photographer)' }
-    ],
-    videographers: [
-      { id: 'STF-04', name: 'David P. (Cinematic Videographer)' },
-      { id: 'STF-05', name: 'Marco K. (Drone & Video Specialist)' },
-      { id: 'STF-06', name: 'Sarah L. (Traditional Videographer)' }
-    ]
-  }
+  return null
 }

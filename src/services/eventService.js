@@ -1,32 +1,34 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+import { apiGet, apiPost, apiPut } from './apiClient'
+
+// GET /api/events
+export const getEvents = async () => {
+  const result = await apiGet('/events?limit=50')
+  if (result && result.success && Array.isArray(result.data)) {
+    return result.data
+  }
+  return null
+}
 
 // POST /api/events
 export const createEvent = async (eventData) => {
-  try {
-    const token = localStorage.getItem('token')
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    }
-
-    const res = await fetch(`${API_BASE}/events`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(eventData)
-    })
-
-    if (res.ok) {
-      const result = await res.json()
-      return result
-    }
-  } catch (err) {
-    console.warn('Backend event creation unavailable, falling back:', err.message)
+  const result = await apiPost('/events', eventData)
+  if (result && result.success) {
+    return result
   }
-
-  // Fallback response
+  
+  // Fallback if backend unavailable
   return {
     success: true,
     id: `EVT-${Date.now()}`,
     data: eventData
   }
+}
+
+// PUT /api/events/:id
+export const updateEvent = async (id, eventData) => {
+  const result = await apiPut(`/events/${id}`, eventData)
+  if (result && result.success) {
+    return result.data
+  }
+  return null
 }

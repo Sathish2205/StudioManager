@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -15,12 +15,40 @@ import {
   MOCK_NOTIFICATIONS,
   MOCK_ANALYTICS_DATA
 } from './mockCRMData'
+import { getClients } from '../../services/clientService'
 
 import './CustomerCRM.css'
 
 export default function CustomerCRM({ onNavigateAddEvent }) {
   // Master Customers State
   const [customers, setCustomers] = useState(MOCK_CUSTOMERS)
+
+  useEffect(() => {
+    async function fetchBackendClients() {
+      const data = await getClients()
+      if (data && data.length > 0) {
+        const mapped = data.map((c) => {
+          const name = `${c.firstName || ''} ${c.lastName || ''}`.trim() || 'Client'
+          return {
+            id: c._id ? `CLI-${c._id.slice(-4).toUpperCase()}` : `CLI-${Date.now()}`,
+            name,
+            avatar: null,
+            mobile: c.phone || '+91 98765 43210',
+            email: c.email || 'client@example.com',
+            city: c.city || 'Bengaluru',
+            eventsCount: 1,
+            totalSpent: 450000,
+            lastEventDate: c.createdAt ? new Date(c.createdAt).toISOString().split('T')[0] : '2026-08-01',
+            loyaltyTier: c.status === 'active' ? 'Platinum' : 'Gold',
+            status: c.status === 'lead' ? 'Lead' : 'Active',
+            notes: c.notes || 'Client booked via backend API.'
+          }
+        })
+        setCustomers(mapped)
+      }
+    }
+    fetchBackendClients()
+  }, [])
 
   // Filters State
   const [searchQuery, setSearchQuery] = useState('')

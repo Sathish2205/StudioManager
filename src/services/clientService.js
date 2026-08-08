@@ -1,27 +1,28 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+import { apiGet, apiPost } from './apiClient'
 
-// GET /api/clients/dropdown (or /api/clients)
+// GET /api/clients
 export const getClients = async () => {
-  try {
-    const token = localStorage.getItem('token')
-    const headers = token ? { Authorization: `Bearer ${token}` } : {}
-    const res = await fetch(`${API_BASE}/clients/dropdown`, { headers })
-    if (res.ok) {
-      const data = await res.json()
-      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-        return data.data
-      }
-    }
-  } catch (err) {
-    console.warn('Backend unavailable, using client fallback:', err.message)
+  const result = await apiGet('/clients?limit=50')
+  if (result && result.success && Array.isArray(result.data)) {
+    return result.data
   }
+  return null
+}
 
-  // Fallback data
-  return [
-    { id: 'CLI-101', name: 'Sathish & Priya', mobile: '+91 98765 43210', label: 'Sathish & Priya (+91 98765 43210)' },
-    { id: 'CLI-102', name: 'Sophia & James Sterling', mobile: '+1 (555) 234-5678', label: 'Sophia & James Sterling (+1 555-234-5678)' },
-    { id: 'CLI-103', name: 'Priya & Rohan Sharma', mobile: '+91 99887 76655', label: 'Priya & Rohan Sharma (+91 99887 76655)' },
-    { id: 'CLI-104', name: 'Aarav & Ananya Mehta', mobile: '+91 91234 56789', label: 'Aarav & Ananya Mehta (+91 91234 56789)' },
-    { id: 'CLI-105', name: 'Chloe & Nathaniel Dupont', mobile: '+33 6 12 34 56 78', label: 'Chloe & Nathaniel Dupont (+33 6 12 34 56 78)' }
-  ]
+// GET /api/clients/dropdown
+export const getClientsDropdown = async () => {
+  const result = await apiGet('/clients/dropdown')
+  if (result && result.success && Array.isArray(result.data) && result.data.length > 0) {
+    return result.data
+  }
+  return null
+}
+
+// POST /api/clients
+export const createClient = async (clientData) => {
+  const result = await apiPost('/clients', clientData)
+  if (result && result.success) {
+    return result.data
+  }
+  return null
 }

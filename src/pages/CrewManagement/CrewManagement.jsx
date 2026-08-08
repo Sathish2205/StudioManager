@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -10,12 +10,34 @@ import { Dialog } from 'primereact/dialog'
 import { ProgressBar } from 'primereact/progressbar'
 
 import { MOCK_CREW_MEMBERS } from './mockCrewData'
+import { getStaff } from '../../services/staffService'
 import './CrewManagement.css'
 
 export default function CrewManagement({ onShowToast }) {
   const [activeTab, setActiveTab] = useState('members') // 'members', 'assignments'
   const [crewList, setCrewList] = useState(MOCK_CREW_MEMBERS)
   const [selectedMember, setSelectedMember] = useState(null)
+
+  useEffect(() => {
+    async function fetchBackendStaff() {
+      const data = await getStaff()
+      if (data && data.length > 0) {
+        const mapped = data.map((st) => ({
+          id: st._id ? `CREW-${st._id.slice(-4).toUpperCase()}` : `CREW-${Date.now()}`,
+          name: st.name || 'Staff Member',
+          role: st.role || 'Photographer',
+          phone: st.phone || '+91 98765 43210',
+          email: st.email || 'staff@example.com',
+          status: st.status === 'Active' ? 'Available' : st.status || 'Available',
+          eventsCompleted: Math.floor(Math.random() * 20) + 5,
+          rating: 4.9,
+          specialization: st.specialization || 'Wedding Photography'
+        }))
+        setCrewList(mapped)
+      }
+    }
+    fetchBackendStaff()
+  }, [])
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('')

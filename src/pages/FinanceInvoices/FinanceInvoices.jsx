@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -14,12 +14,52 @@ import {
   MOCK_PAYMENTS,
   MOCK_INVOICES_LIST
 } from './mockFinanceData'
+import { getPayments, getFinanceOverview } from '../../services/financeService'
 import './FinanceInvoices.css'
 
 export default function FinanceInvoices({ onShowToast }) {
   const [activeTab, setActiveTab] = useState('payments') // 'payments', 'invoices', 'outstanding'
   const [payments, setPayments] = useState(MOCK_PAYMENTS)
   const [invoices, setInvoices] = useState(MOCK_INVOICES_LIST)
+  const [finMetrics, setFinMetrics] = useState(MOCK_FINANCE_METRICS)
+
+  useEffect(() => {
+    async function fetchFinanceBackendData() {
+      const pData = await getPayments()
+      if (pData && pData.length > 0) {
+        const mappedPayments = pData.map((p) => {
+          const clientName = p.clientId
+            ? `${p.clientId.firstName || ''} ${p.clientId.lastName || ''}`.trim()
+            : 'Client'
+          const eventName = p.eventId ? p.eventId.eventName || 'Wedding Shoot' : 'Special Shoot'
+          return {
+            id: p._id ? `PAY-${p._id.slice(-4).toUpperCase()}` : `PAY-${Date.now()}`,
+            clientName,
+            eventName,
+            amount: p.amount || 50000,
+            paymentDate: p.paymentDate ? new Date(p.paymentDate).toISOString().split('T')[0] : '2026-08-01',
+            paymentType: p.paymentType || 'Advance',
+            paymentMethod: p.paymentMethod || 'UPI',
+            transactionRef: p.transactionId || `TXN-${Date.now()}`
+          }
+        })
+        setPayments(mappedPayments)
+      }
+
+      const fOverview = await getFinanceOverview()
+      if (fOverview && fOverview.overview) {
+        setFinMetrics({
+          totalRevenue: fOverview.overview.totalRevenue || 3850000,
+          receivedAmount: fOverview.overview.totalCollected || 2420000,
+          pendingAmount: fOverview.overview.pendingBalance || 1430000,
+          overdueAmount: fOverview.overview.overdueAmount || 250000,
+          thisMonthRevenue: fOverview.overview.thisMonthRevenue || 680000,
+          upcomingPayments: fOverview.overview.upcomingPayments || 420000
+        })
+      }
+    }
+    fetchFinanceBackendData()
+  }, [])
 
   // Dialog State
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
@@ -163,7 +203,7 @@ export default function FinanceInvoices({ onShowToast }) {
         <div className="fin-metric-card">
           <div>
             <div className="fin-metric__label">Total Revenue</div>
-            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.totalRevenue / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__val">₹{(finMetrics.totalRevenue / 100000).toFixed(1)}L</div>
             <div className="fin-metric__sub">
               <span className="home-metric-tag home-metric-tag--green">
                 <i className="pi pi-arrow-up-right" /> +15.4% YoY
@@ -176,7 +216,7 @@ export default function FinanceInvoices({ onShowToast }) {
         <div className="fin-metric-card">
           <div>
             <div className="fin-metric__label">Amount Received</div>
-            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.receivedAmount / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__val">₹{(finMetrics.receivedAmount / 100000).toFixed(1)}L</div>
             <div className="fin-metric__sub">
               <span className="home-metric-tag home-metric-tag--green">
                 <i className="pi pi-check-circle" /> 62.8% Collected
@@ -189,7 +229,7 @@ export default function FinanceInvoices({ onShowToast }) {
         <div className="fin-metric-card">
           <div>
             <div className="fin-metric__label">Pending Amount</div>
-            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.pendingAmount / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__val">₹{(finMetrics.pendingAmount / 100000).toFixed(1)}L</div>
             <div className="fin-metric__sub">
               <span className="home-metric-tag home-metric-tag--amber">
                 <i className="pi pi-clock" /> 37.2% Uncollected
@@ -202,7 +242,7 @@ export default function FinanceInvoices({ onShowToast }) {
         <div className="fin-metric-card">
           <div>
             <div className="fin-metric__label">Overdue Amount</div>
-            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.overdueAmount / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__val">₹{(finMetrics.overdueAmount / 100000).toFixed(1)}L</div>
             <div className="fin-metric__sub">
               <span className="home-metric-tag home-metric-tag--pink">
                 <i className="pi pi-exclamation-circle" /> 3 Overdue
@@ -215,7 +255,7 @@ export default function FinanceInvoices({ onShowToast }) {
         <div className="fin-metric-card">
           <div>
             <div className="fin-metric__label">This Month Revenue</div>
-            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.thisMonthRevenue / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__val">₹{(finMetrics.thisMonthRevenue / 100000).toFixed(1)}L</div>
             <div className="fin-metric__sub">
               <span className="home-metric-tag home-metric-tag--purple">
                 <i className="pi pi-chart-line" /> Target Achieved
@@ -228,7 +268,7 @@ export default function FinanceInvoices({ onShowToast }) {
         <div className="fin-metric-card">
           <div>
             <div className="fin-metric__label">Upcoming Payments</div>
-            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.upcomingPayments / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__val">₹{(finMetrics.upcomingPayments / 100000).toFixed(1)}L</div>
             <div className="fin-metric__sub">
               <span className="home-metric-tag home-metric-tag--blue">
                 <i className="pi pi-calendar" /> Due Next 7 Days

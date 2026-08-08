@@ -1,12 +1,34 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Sidebar from '../../components/Sidebar'
 import DashboardHeader from '../../components/DashboardHeader'
 import SmartReminders from '../../components/SmartReminders/SmartReminders'
+import { getDashboardData } from '../../services/dashboardService'
 import './Dashboard.css'
 
 export default function Dashboard({ activeTab = 'home', setActiveTab }) {
   const [showFinancials, setShowFinancials] = useState(false)
   const [toastMsg, setToastMsg] = useState(null)
+  const [dashKpis, setDashKpis] = useState({
+    activeShootsCount: 14,
+    revenueCollected: 1420000,
+    editingPendingCount: 4,
+    deliverablesReadyCount: 6
+  })
+
+  useEffect(() => {
+    async function fetchBackendDashboard() {
+      const data = await getDashboardData()
+      if (data && data.kpis) {
+        setDashKpis({
+          activeShootsCount: data.kpis.activeShootsCount || 14,
+          revenueCollected: data.kpis.revenueCollected || 1420000,
+          editingPendingCount: data.kpis.editingPendingCount || 4,
+          deliverablesReadyCount: data.kpis.deliverablesReadyCount || 6
+        })
+      }
+    }
+    fetchBackendDashboard()
+  }, [])
 
   const showToast = (msg) => {
     setToastMsg(msg)

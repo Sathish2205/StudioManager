@@ -253,19 +253,19 @@ export default function SmartReminders({ onShowToast }) {
 
         <div className="sr-header-actions">
           {unreadCount > 0 && (
-            <Button
-              label="Mark Read"
-              icon="pi pi-check"
-              className="p-button-text p-button-sm text-xs font-semibold"
+            <button
+              className="cal-card-action-btn"
               onClick={handleMarkAllRead}
-            />
+            >
+              <i className="pi pi-check" /> Mark Read
+            </button>
           )}
-          <Button
-            label="Create Reminder"
-            icon="pi pi-plus"
-            className="sr-btn-add"
+          <button
+            className="p-button p-button-primary text-xs"
             onClick={() => setIsAddOpen(true)}
-          />
+          >
+            <i className="pi pi-plus" /> Create Reminder
+          </button>
         </div>
       </div>
 

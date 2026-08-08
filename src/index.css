@@ -312,3 +312,150 @@ img {
   font-size: 0.9rem !important;
   margin-right: 0.3rem !important;
 }
+
+/* ── PrimeReact Enterprise TabMenu & Global Tab Bar Styling ── */
+.p-tabmenu .p-tabmenu-nav,
+.editing-tab-toggle {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  border: none !important;
+  border-bottom: 2px solid #e2e8f0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 0 1.25rem 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  list-style-type: none !important;
+  width: 100% !important;
+}
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link,
+.editing-tab-btn {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  color: #64748b !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  padding: 0.65rem 1.15rem !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  margin-bottom: -2px !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link:hover,
+.editing-tab-btn:hover {
+  color: #0f172a !important;
+  border-bottom-color: #cbd5e1 !important;
+  background: transparent !important;
+}
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link,
+.editing-tab-btn.is-active {
+  color: #2563eb !important;
+  font-weight: 700 !important;
+  border-bottom: 2px solid #2563eb !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-icon {
+  font-size: 0.9rem !important;
+  margin-right: 0.35rem !important;
+  color: inherit !important;
+}
+
+/* ── GLOBAL EXACT EVENTS PAGE PAGINATOR (Fixed Bottom Bar) ── */
+.events-datatable .p-paginator {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 250px !important;
+  right: 0 !important;
+  z-index: 100 !important;
+  background: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  border-radius: 0 !important;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.04) !important;
+  padding: 0.4rem 1.25rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.events-datatable .p-paginator .p-paginator-left-content {
+  margin-right: auto !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.events-paginator__count {
+  font-size: 0.78rem !important;
+  color: #64748b !important;
+}
+
+.events-paginator__count strong {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+.events-datatable .p-paginator .p-paginator-first,
+.events-datatable .p-paginator .p-paginator-prev,
+.events-datatable .p-paginator .p-paginator-next,
+.events-datatable .p-paginator .p-paginator-last,
+.events-datatable .p-paginator .p-paginator-page {
+  min-width: 28px !important;
+  height: 28px !important;
+  border-radius: 5px !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #475569 !important;
+  font-size: 0.78rem !important;
+  margin: 0 0.12rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.15s ease !important;
+}
+
+.events-datatable .p-paginator .p-paginator-page.p-highlight {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  border-color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+
+.events-datatable .p-paginator .p-paginator-page:not(.p-highlight):hover,
+.events-datatable .p-paginator .p-paginator-first:hover,
+.events-datatable .p-paginator .p-paginator-prev:hover,
+.events-datatable .p-paginator .p-paginator-next:hover,
+.events-datatable .p-paginator .p-paginator-last:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.events-datatable .p-paginator .p-dropdown {
+  height: 28px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 5px !important;
+  margin-left: 0.5rem !important;
+}
+
+.events-datatable .p-paginator .p-dropdown .p-dropdown-label {
+  line-height: 26px !important;
+  font-size: 0.78rem !important;
+}

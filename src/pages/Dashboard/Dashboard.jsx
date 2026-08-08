@@ -126,7 +126,9 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
                 <div className="home-metric__title">Total Shoots Booked</div>
                 <div className="home-metric__val">38</div>
                 <div className="home-metric__sub">
-                  <i className="pi pi-arrow-up-right mr-1" /> +12% this month
+                  <span className="home-metric-tag home-metric-tag--green">
+                    <i className="pi pi-arrow-up-right" /> +12% this month
+                  </span>
                 </div>
               </div>
               <div className="home-metric__icon-wrap home-metric__icon-wrap--blue">
@@ -139,7 +141,9 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
                 <div className="home-metric__title">Gross Revenue</div>
                 <div className="home-metric__val">₹24.5L</div>
                 <div className="home-metric__sub">
-                  <i className="pi pi-check-circle mr-1" /> ₹14.2L Collected
+                  <span className="home-metric-tag home-metric-tag--green">
+                    <i className="pi pi-check-circle" /> ₹14.2L Collected
+                  </span>
                 </div>
               </div>
               <div className="home-metric__icon-wrap home-metric__icon-wrap--green">
@@ -151,8 +155,10 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
               <div>
                 <div className="home-metric__title">Edits In Progress</div>
                 <div className="home-metric__val">14</div>
-                <div className="home-metric__sub text-amber-600">
-                  <i className="pi pi-spin pi-spinner mr-1" /> 4 Pending Review
+                <div className="home-metric__sub">
+                  <span className="home-metric-tag home-metric-tag--amber">
+                    <i className="pi pi-spinner" /> 4 Pending Review
+                  </span>
                 </div>
               </div>
               <div className="home-metric__icon-wrap home-metric__icon-wrap--amber">
@@ -165,7 +171,9 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
                 <div className="home-metric__title">Albums Delivered</div>
                 <div className="home-metric__val">22</div>
                 <div className="home-metric__sub">
-                  <i className="pi pi-box mr-1" /> 6 Ready Today
+                  <span className="home-metric-tag home-metric-tag--purple">
+                    <i className="pi pi-box" /> 6 Ready Today
+                  </span>
                 </div>
               </div>
               <div className="home-metric__icon-wrap home-metric__icon-wrap--purple">

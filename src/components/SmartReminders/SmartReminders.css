@@ -4,10 +4,10 @@
 
 .smart-reminders-card {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   border-radius: 14px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -57,9 +57,12 @@
   font-weight: 800;
   background: #ef4444;
   color: #ffffff;
-  padding: 0.15rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 50px;
   letter-spacing: 0.03em;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
 }
 
 .sr-card-sub {

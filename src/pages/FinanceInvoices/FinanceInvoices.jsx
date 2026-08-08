@@ -7,6 +7,7 @@ import { Tag } from 'primereact/tag'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
+import { TabMenu } from 'primereact/tabmenu'
 
 import {
   MOCK_FINANCE_METRICS,
@@ -23,6 +24,32 @@ export default function FinanceInvoices({ onShowToast }) {
   // Dialog State
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false)
+
+  // PrimeReact TabMenu Items
+  const financeTabItems = [
+    { label: 'Payment History', icon: 'pi pi-credit-card', key: 'payments' },
+    { label: 'Invoices', icon: 'pi pi-file-pdf', key: 'invoices' },
+    { label: 'Outstanding Balance', icon: 'pi pi-clock', key: 'outstanding' }
+  ]
+
+  // Paginator Left Templates (Matching Events Page)
+  const paymentsPaginatorLeft = (
+    <div className="events-paginator__count">
+      Showing <strong>{payments.length}</strong> of <strong>{MOCK_PAYMENTS.length}</strong> Payments
+    </div>
+  )
+
+  const invoicesPaginatorLeft = (
+    <div className="events-paginator__count">
+      Showing <strong>{invoices.length}</strong> of <strong>{MOCK_INVOICES_LIST.length}</strong> Invoices
+    </div>
+  )
+
+  const outstandingPaginatorLeft = (
+    <div className="events-paginator__count">
+      Showing <strong>{invoices.filter((i) => i.balance > 0).length}</strong> of <strong>{invoices.filter((i) => i.balance > 0).length}</strong> Outstanding Balances
+    </div>
+  )
 
   // Form Record Payment
   const [payClient, setPayClient] = useState('')
@@ -116,27 +143,6 @@ export default function FinanceInvoices({ onShowToast }) {
         </div>
 
         <div className="finance-header__actions">
-          <div className="editing-tab-toggle">
-            <button
-              className={`editing-tab-btn ${activeTab === 'payments' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('payments')}
-            >
-              Payment History
-            </button>
-            <button
-              className={`editing-tab-btn ${activeTab === 'invoices' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('invoices')}
-            >
-              Invoices
-            </button>
-            <button
-              className={`editing-tab-btn ${activeTab === 'outstanding' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('outstanding')}
-            >
-              Outstanding Balance
-            </button>
-          </div>
-
           <Button
             label="Record Payment"
             icon="pi pi-plus"
@@ -152,61 +158,107 @@ export default function FinanceInvoices({ onShowToast }) {
         </div>
       </div>
 
-      {/* ── 6 EXECUTIVE FINANCE DASHBOARD CARDS ── */}
-      <div className="crm-metrics-grid">
-        <div className="crm-metric-card">
+      {/* ── 6 EXECUTIVE FINANCE DASHBOARD CARDS (3x2 ENTERPRISE GRID) ── */}
+      <div className="fin-metrics-grid">
+        <div className="fin-metric-card">
           <div>
-            <div className="crm-metric__label">Total Revenue</div>
-            <div className="crm-metric__val">₹{(MOCK_FINANCE_METRICS.totalRevenue / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__label">Total Revenue</div>
+            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.totalRevenue / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__sub">
+              <span className="home-metric-tag home-metric-tag--green">
+                <i className="pi pi-arrow-up-right" /> +15.4% YoY
+              </span>
+            </div>
           </div>
-          <div className="crm-metric__icon crm-metric__icon--blue"><i className="pi pi-wallet" /></div>
+          <div className="fin-metric__icon fin-metric__icon--blue"><i className="pi pi-wallet" /></div>
         </div>
 
-        <div className="crm-metric-card">
+        <div className="fin-metric-card">
           <div>
-            <div className="crm-metric__label">Amount Received</div>
-            <div className="crm-metric__val text-green-600">₹{(MOCK_FINANCE_METRICS.receivedAmount / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__label">Amount Received</div>
+            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.receivedAmount / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__sub">
+              <span className="home-metric-tag home-metric-tag--green">
+                <i className="pi pi-check-circle" /> 62.8% Collected
+              </span>
+            </div>
           </div>
-          <div className="crm-metric__icon crm-metric__icon--green"><i className="pi pi-check-circle" /></div>
+          <div className="fin-metric__icon fin-metric__icon--green"><i className="pi pi-check-circle" /></div>
         </div>
 
-        <div className="crm-metric-card">
+        <div className="fin-metric-card">
           <div>
-            <div className="crm-metric__label">Pending Amount</div>
-            <div className="crm-metric__val text-amber-600">₹{(MOCK_FINANCE_METRICS.pendingAmount / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__label">Pending Amount</div>
+            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.pendingAmount / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__sub">
+              <span className="home-metric-tag home-metric-tag--amber">
+                <i className="pi pi-clock" /> 37.2% Uncollected
+              </span>
+            </div>
           </div>
-          <div className="crm-metric__icon crm-metric__icon--amber"><i className="pi pi-clock" /></div>
+          <div className="fin-metric__icon fin-metric__icon--amber"><i className="pi pi-clock" /></div>
         </div>
 
-        <div className="crm-metric-card">
+        <div className="fin-metric-card">
           <div>
-            <div className="crm-metric__label">Overdue Amount</div>
-            <div className="crm-metric__val text-red-600">₹{(MOCK_FINANCE_METRICS.overdueAmount / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__label">Overdue Amount</div>
+            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.overdueAmount / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__sub">
+              <span className="home-metric-tag home-metric-tag--pink">
+                <i className="pi pi-exclamation-circle" /> 3 Overdue
+              </span>
+            </div>
           </div>
-          <div className="crm-metric__icon crm-metric__icon--pink"><i className="pi pi-exclamation-circle" /></div>
+          <div className="fin-metric__icon fin-metric__icon--pink"><i className="pi pi-exclamation-circle" /></div>
         </div>
 
-        <div className="crm-metric-card">
+        <div className="fin-metric-card">
           <div>
-            <div className="crm-metric__label">This Month Revenue</div>
-            <div className="crm-metric__val">₹{(MOCK_FINANCE_METRICS.thisMonthRevenue / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__label">This Month Revenue</div>
+            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.thisMonthRevenue / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__sub">
+              <span className="home-metric-tag home-metric-tag--purple">
+                <i className="pi pi-chart-line" /> Target Achieved
+              </span>
+            </div>
           </div>
-          <div className="crm-metric__icon crm-metric__icon--purple"><i className="pi pi-chart-line" /></div>
+          <div className="fin-metric__icon fin-metric__icon--purple"><i className="pi pi-chart-line" /></div>
         </div>
 
-        <div className="crm-metric-card">
+        <div className="fin-metric-card">
           <div>
-            <div className="crm-metric__label">Upcoming Payments</div>
-            <div className="crm-metric__val">₹{(MOCK_FINANCE_METRICS.upcomingPayments / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__label">Upcoming Payments</div>
+            <div className="fin-metric__val">₹{(MOCK_FINANCE_METRICS.upcomingPayments / 100000).toFixed(1)}L</div>
+            <div className="fin-metric__sub">
+              <span className="home-metric-tag home-metric-tag--blue">
+                <i className="pi pi-calendar" /> Due Next 7 Days
+              </span>
+            </div>
           </div>
-          <div className="crm-metric__icon crm-metric__icon--blue"><i className="pi pi-calendar" /></div>
+          <div className="fin-metric__icon fin-metric__icon--blue"><i className="pi pi-calendar" /></div>
         </div>
       </div>
+
+      {/* ── PRIMEREACT TABMENU ENTERPRISE TABS ── */}
+      <TabMenu
+        model={financeTabItems}
+        activeIndex={financeTabItems.findIndex((t) => t.key === activeTab)}
+        onTabChange={(e) => setActiveTab(financeTabItems[e.index].key)}
+      />
 
       {/* ── TAB 1: PAYMENTS ── */}
       {activeTab === 'payments' && (
         <div className="events-table-card">
-          <DataTable value={payments} paginator rows={5} responsiveLayout="scroll" stripedRows className="events-datatable">
+          <DataTable
+            value={payments}
+            paginator
+            paginatorLeft={paymentsPaginatorLeft}
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+          >
             <Column field="id" header="Payment Ref" sortable style={{ minWidth: '120px' }} />
             <Column field="clientName" header="Client Name" sortable style={{ minWidth: '180px' }} />
             <Column field="eventName" header="Event" sortable style={{ minWidth: '200px' }} />
@@ -222,7 +274,16 @@ export default function FinanceInvoices({ onShowToast }) {
       {/* ── TAB 2: INVOICES ── */}
       {activeTab === 'invoices' && (
         <div className="events-table-card">
-          <DataTable value={invoices} paginator rows={5} responsiveLayout="scroll" stripedRows className="events-datatable">
+          <DataTable
+            value={invoices}
+            paginator
+            paginatorLeft={invoicesPaginatorLeft}
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+          >
             <Column field="invoiceNo" header="Invoice #" sortable style={{ minWidth: '130px' }} />
             <Column field="clientName" header="Client" sortable style={{ minWidth: '180px' }} />
             <Column field="eventName" header="Event" style={{ minWidth: '190px' }} />
@@ -238,7 +299,16 @@ export default function FinanceInvoices({ onShowToast }) {
       {/* ── TAB 3: OUTSTANDING BALANCES ── */}
       {activeTab === 'outstanding' && (
         <div className="events-table-card">
-          <DataTable value={invoices.filter((i) => i.balance > 0)} paginator rows={5} responsiveLayout="scroll" className="events-datatable">
+          <DataTable
+            value={invoices.filter((i) => i.balance > 0)}
+            paginator
+            paginatorLeft={outstandingPaginatorLeft}
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+          >
             <Column field="clientName" header="Client" style={{ minWidth: '180px' }} />
             <Column field="eventName" header="Event" style={{ minWidth: '200px' }} />
             <Column field="total" header="Total (₹)" body={(r) => `₹${r.total.toLocaleString()}`} style={{ minWidth: '130px' }} />

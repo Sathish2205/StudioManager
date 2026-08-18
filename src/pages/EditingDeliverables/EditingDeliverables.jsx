@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -9,12 +9,41 @@ import { ProgressBar } from 'primereact/progressbar'
 import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 
-import { MOCK_KANBAN_TASKS, KANBAN_STAGES } from './mockEditingData'
+import { getTasks, createTask, updateTask, deleteTask } from '../../services/taskService'
 import './EditingDeliverables.css'
 
+const KANBAN_STAGES = ['New', 'In Progress', 'Review', 'Approved', 'Delivered']
+
 export default function EditingDeliverables({ onShowToast }) {
-  const [tasks, setTasks] = useState(MOCK_KANBAN_TASKS)
+  const [tasks, setTasks] = useState([])
   const [activeTab, setActiveTab] = useState('kanban') // 'kanban' or 'deliverables'
+  const [loading, setLoading] = useState(true)
+
+  const loadTasks = async () => {
+    setLoading(true)
+    const data = await getTasks()
+    if (data && data.length > 0) {
+      const mapped = data.map(t => ({
+        _id: t._id,
+        id: t._id ? `TASK-${t._id.slice(-4).toUpperCase()}` : `TASK-${Date.now()}`,
+        eventName: t.eventId ? t.eventId.eventName : 'Studio Task',
+        clientName: t.title || 'Client',
+        type: t.description || 'Edited Photos',
+        editor: t.assignedTo ? t.assignedTo.name : 'Unassigned',
+        progress: t.status === 'Completed' ? 100 : t.status === 'In Progress' ? 50 : 0,
+        stage: t.status === 'Completed' ? 'Delivered' : t.status === 'In Progress' ? 'In Progress' : 'New',
+        deadline: t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '',
+        priority: t.priority || 'Medium',
+        notes: t.description || ''
+      }))
+      setTasks(mapped)
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    loadTasks()
+  }, [])
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('')

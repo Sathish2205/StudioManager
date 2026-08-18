@@ -7,13 +7,16 @@ import { Tag } from 'primereact/tag'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 
-import { MOCK_CONTRACTS, MOCK_DOCUMENTS } from './mockContractsData'
 import './ContractsDocs.css'
 
 export default function ContractsDocs({ onShowToast }) {
   const [activeTab, setActiveTab] = useState('contracts') // 'contracts', 'docs'
-  const [contracts, setContracts] = useState(MOCK_CONTRACTS)
-  const [documents, setDocuments] = useState(MOCK_DOCUMENTS)
+  const [contracts, setContracts] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('studio_contracts') || '[]') } catch { return [] }
+  })
+  const [documents, setDocuments] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('studio_documents') || '[]') } catch { return [] }
+  })
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('')
@@ -150,7 +153,7 @@ export default function ContractsDocs({ onShowToast }) {
             paginator
             paginatorLeft={
               <span className="events-paginator__count">
-                Showing <strong>{contracts.length}</strong> of {MOCK_CONTRACTS.length} Contracts
+                Showing <strong>{contracts.length}</strong> Contracts
               </span>
             }
             rows={5}

@@ -9,11 +9,12 @@ import { Dialog } from 'primereact/dialog'
 import { InputTextarea } from 'primereact/inputtextarea'
 import { ProgressBar } from 'primereact/progressbar'
 
-import { MOCK_CLIENT_REQUESTS } from './mockRequestsData'
 import './ClientRequests.css'
 
 export default function ClientRequests({ onShowToast }) {
-  const [requests, setRequests] = useState(MOCK_CLIENT_REQUESTS)
+  const [requests, setRequests] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('studio_client_requests') || '[]') } catch { return [] }
+  })
   const [selectedReq, setSelectedReq] = useState(null)
 
   // Filters

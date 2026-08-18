@@ -8,35 +8,42 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 
-import { MOCK_EQUIPMENT_LIST } from './mockEquipmentData'
-import { getEquipment } from '../../services/equipmentService'
+import { getEquipment, createEquipment, updateEquipment, deleteEquipment } from '../../services/equipmentService'
 import './EquipmentTracker.css'
 
 export default function EquipmentTracker({ onShowToast }) {
   const [activeTab, setActiveTab] = useState('inventory') // 'inventory', 'assignments', 'maintenance'
-  const [equipmentList, setEquipmentList] = useState(MOCK_EQUIPMENT_LIST)
+  const [equipmentList, setEquipmentList] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const loadEquipment = async () => {
+    setLoading(true)
+    const data = await getEquipment()
+    if (data && data.length > 0) {
+      const mapped = data.map((eq) => ({
+        _id: eq._id,
+        id: eq._id ? `EQ-${eq._id.slice(-4).toUpperCase()}` : `EQ-${Date.now()}`,
+        name: eq.name || 'Equipment Item',
+        category: eq.category || 'Camera',
+        brand: eq.brand || 'Sony',
+        model: eq.model || 'Standard',
+        serialNo: eq.serialNumber || '',
+        status: eq.availability || 'Available',
+        condition: eq.condition || 'Good',
+        assignedTo: eq.assignedTo ? eq.assignedTo.name : 'Unassigned',
+        purchasePrice: eq.purchasePrice || 0,
+        currentValue: eq.purchasePrice || 0,
+        lastMaintenance: eq.lastMaintenanceDate ? new Date(eq.lastMaintenanceDate).toISOString().split('T')[0] : '',
+        assignedToEvent: 'None',
+        assignedDate: 'N/A'
+      }))
+      setEquipmentList(mapped)
+    }
+    setLoading(false)
+  }
 
   useEffect(() => {
-    async function fetchBackendEquipment() {
-      const data = await getEquipment()
-      if (data && data.length > 0) {
-        const mapped = data.map((eq) => ({
-          id: eq._id ? `EQ-${eq._id.slice(-4).toUpperCase()}` : `EQ-${Date.now()}`,
-          name: eq.name || 'Equipment Item',
-          category: eq.category || 'Camera',
-          brand: eq.brand || 'Sony',
-          model: eq.model || 'Standard',
-          serialNumber: eq.serialNumber || 'SN-100234',
-          status: eq.availability || 'Available',
-          condition: eq.condition || 'Good',
-          assignedTo: eq.assignedTo ? eq.assignedTo.name : 'Unassigned',
-          value: eq.purchasePrice || 150000,
-          lastMaintenance: eq.lastMaintenanceDate ? new Date(eq.lastMaintenanceDate).toISOString().split('T')[0] : '2026-06-15'
-        }))
-        setEquipmentList(mapped)
-      }
-    }
-    fetchBackendEquipment()
+    loadEquipment()
   }, [])
 
   // Filters
@@ -65,33 +72,30 @@ export default function EquipmentTracker({ onShowToast }) {
     if (onShowToast) onShowToast(msg, sev)
   }
 
-  const handleAddEquipment = () => {
+  const handleAddEquipment = async () => {
     if (!eqName || !eqSerial) {
       triggerToast('Equipment Name and Serial Number are required', 'error')
       return
     }
 
-    const newEq = {
-      id: `EQ-${100 + equipmentList.length + 1}`,
+    const result = await createEquipment({
       name: eqName,
       category: eqCategory,
       brand: eqBrand,
       model: 'Pro Model',
-      serialNo: eqSerial,
-      purchaseDate: new Date().toISOString().split('T')[0],
+      serialNumber: eqSerial,
       purchasePrice: eqPrice,
-      currentValue: eqPrice,
-      location: 'Studio Main Locker',
-      status: 'Available',
-      assignedToEvent: 'None',
-      assignedDate: 'N/A',
-      lastMaintenance: new Date().toISOString().split('T')[0],
-      nextMaintenance: '2026-12-31'
-    }
+      condition: 'Good',
+      availability: 'Available'
+    })
 
-    setEquipmentList([newEq, ...equipmentList])
-    setIsAddOpen(false)
-    triggerToast(`Equipment "${newEq.name}" added to inventory!`, 'success')
+    if (result) {
+      await loadEquipment()
+      setIsAddOpen(false)
+      triggerToast(`Equipment "${eqName}" added to inventory & saved!`, 'success')
+    } else {
+      triggerToast('Failed to save equipment. Please try again.', 'error')
+    }
   }
 
   const handleAssignEquipment = () => {

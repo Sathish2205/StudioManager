@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect, useCallback } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Tag } from 'primereact/tag'
@@ -8,12 +8,14 @@ import { Dialog } from 'primereact/dialog'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 
-import { ALL_STAGES, MOCK_SUMMARY_METRICS, MOCK_WORKFLOWS } from './mockWorkflowData'
+import { ALL_STAGES } from './mockWorkflowData'
+import { fetchWorkflowSummaries, updateWorkflowByEvent } from '../../services/workflowService'
 import './WorkflowManagement.css'
 
 export default function WorkflowManagement() {
   // Master Workflows State
-  const [workflows, setWorkflows] = useState(MOCK_WORKFLOWS)
+  const [workflows, setWorkflows] = useState([])
+  const [loading, setLoading] = useState(true)
 
   // Filters State
   const [searchQuery, setSearchQuery] = useState('')
@@ -23,6 +25,7 @@ export default function WorkflowManagement() {
   // Selected Workflow for Status Modal
   const [selectedWorkflow, setSelectedWorkflow] = useState(null)
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   // Modal Editing Form State
   const [editingStageIndex, setEditingStageIndex] = useState(0)
@@ -30,6 +33,47 @@ export default function WorkflowManagement() {
   const [editingEditor, setEditingEditor] = useState('')
   const [paymentInput, setPaymentInput] = useState('')
   const [toastMsg, setToastMsg] = useState(null)
+
+  // Load workflows from API on mount
+  const loadWorkflows = useCallback(async () => {
+    setLoading(true)
+    try {
+      const data = await fetchWorkflowSummaries()
+      if (data && data.length > 0) {
+        // Map API data to match component's expected shape
+        const mapped = data.map((wf) => ({
+          ...wf,
+          id: wf._id || wf.workflowId || wf.id,
+          currentStageIndex: wf.currentStageIndex || 0,
+          overallStatus: wf.overallStatus || 'Booking',
+          assignedEditor: wf.assignedEditor || 'Unassigned',
+          paymentSummary: wf.paymentSummary || {
+            totalAmount: 0,
+            advancePaid: 0,
+            balanceDue: 0,
+            paymentStatus: 'Pending',
+          },
+          // Keep empty arrays for fields the API doesn't return
+          activityLog: wf.activityLog || [],
+          tasks: wf.tasks || [],
+          deliverables: wf.deliverables || [],
+          estimatedDeliveryDate: wf.estimatedDeliveryDate || 'TBD',
+        }))
+        setWorkflows(mapped)
+      } else {
+        setWorkflows([])
+      }
+    } catch (err) {
+      console.warn('Failed to load workflows from API:', err)
+      setWorkflows([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadWorkflows()
+  }, [loadWorkflows])
 
   // Filter Options
   const statusOptions = [
@@ -61,11 +105,11 @@ export default function WorkflowManagement() {
     return workflows.filter((w) => {
       const matchesSearch =
         !searchQuery ||
-        w.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        w.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        w.eventName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        w.clientPhone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        w.photographer.toLowerCase().includes(searchQuery.toLowerCase())
+        (w.id && w.id.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (w.clientName && w.clientName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (w.eventName && w.eventName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (w.clientPhone && w.clientPhone.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (w.photographer && w.photographer.toLowerCase().includes(searchQuery.toLowerCase()))
 
       const matchesStatus = !statusFilter || w.overallStatus === statusFilter
       const matchesType = !eventTypeFilter || w.eventType === eventTypeFilter
@@ -88,35 +132,59 @@ export default function WorkflowManagement() {
     setIsStatusDialogOpen(true)
   }
 
-  // Save Status & Stage Changes
-  const handleSaveWorkflowChanges = () => {
+  // Save Status & Stage Changes — NOW PERSISTS TO DATABASE
+  const handleSaveWorkflowChanges = async () => {
     if (!selectedWorkflow) return
 
-    setWorkflows((prev) =>
-      prev.map((w) => {
-        if (w.id !== selectedWorkflow.id) return w
-        const newLog = [
-          {
-            id: `ACT-${Date.now()}`,
-            title: `Workflow Stage Updated`,
-            timestamp: new Date().toLocaleString(),
-            actor: 'Studio Manager',
-            details: `Stage updated to Stage ${editingStageIndex + 1}: ${ALL_STAGES[editingStageIndex]}. Overall Status set to ${editingStatus}.`
-          },
-          ...w.activityLog
-        ]
-        return {
-          ...w,
-          currentStageIndex: editingStageIndex,
-          overallStatus: editingStatus,
-          assignedEditor: editingEditor || w.assignedEditor,
-          activityLog: newLog
-        }
-      })
-    )
+    setSaving(true)
+    try {
+      // Determine the eventId for the API call
+      const eventId = selectedWorkflow.eventId || selectedWorkflow.id
 
-    setIsStatusDialogOpen(false)
-    showToast(`Workflow ${selectedWorkflow.id} updated successfully!`)
+      // Call the backend API to persist the changes
+      const result = await updateWorkflowByEvent(eventId, {
+        overallStatus: editingStatus,
+        currentStageIndex: editingStageIndex,
+        assignedEditor: editingEditor || selectedWorkflow.assignedEditor,
+      })
+
+      if (result) {
+        // API call succeeded — update local state to reflect changes
+        setWorkflows((prev) =>
+          prev.map((w) => {
+            if ((w.eventId || w.id) !== eventId) return w
+            return {
+              ...w,
+              currentStageIndex: editingStageIndex,
+              overallStatus: editingStatus,
+              assignedEditor: editingEditor || w.assignedEditor,
+            }
+          })
+        )
+        setIsStatusDialogOpen(false)
+        showToast(`Workflow updated & saved to database successfully!`)
+      } else {
+        // API call failed — still update local state but warn user
+        setWorkflows((prev) =>
+          prev.map((w) => {
+            if ((w.eventId || w.id) !== eventId) return w
+            return {
+              ...w,
+              currentStageIndex: editingStageIndex,
+              overallStatus: editingStatus,
+              assignedEditor: editingEditor || w.assignedEditor,
+            }
+          })
+        )
+        setIsStatusDialogOpen(false)
+        showToast(`⚠️ Changes saved locally but may not have persisted to database.`)
+      }
+    } catch (err) {
+      console.error('Failed to save workflow changes:', err)
+      showToast(`❌ Error saving workflow changes. Please try again.`)
+    } finally {
+      setSaving(false)
+    }
   }
 
   // Quick Payment submit inside modal
@@ -171,7 +239,7 @@ export default function WorkflowManagement() {
       <span className="wf-table__event-title">{rowData.eventName}</span>
       <div className="wf-table__event-meta">
         <Tag value={rowData.eventType} severity="info" rounded style={{ fontSize: '0.7rem' }} />
-        <span>{rowData.eventDate}</span>
+        <span>{rowData.eventDate ? new Date(rowData.eventDate).toLocaleDateString() : ''}</span>
       </div>
     </div>
   )
@@ -307,7 +375,7 @@ export default function WorkflowManagement() {
         <div className="wf-metric-box">
           <div>
             <div className="wf-metric-label">Total Workflows</div>
-            <div className="wf-metric-num">{MOCK_SUMMARY_METRICS.totalWorkflows}</div>
+            <div className="wf-metric-num">{workflows.length}</div>
           </div>
           <div className="wf-metric-icon">
             <i className="pi pi-sitemap" />
@@ -317,7 +385,7 @@ export default function WorkflowManagement() {
         <div className="wf-metric-box">
           <div>
             <div className="wf-metric-label">In Editing</div>
-            <div className="wf-metric-num">{MOCK_SUMMARY_METRICS.inEditing}</div>
+            <div className="wf-metric-num">{workflows.filter(w => w.overallStatus === 'Editing').length}</div>
           </div>
           <div className="wf-metric-icon">
             <i className="pi pi-sliders-h" />
@@ -326,8 +394,8 @@ export default function WorkflowManagement() {
 
         <div className="wf-metric-box">
           <div>
-            <div className="wf-metric-label">Pending Approval</div>
-            <div className="wf-metric-num">{MOCK_SUMMARY_METRICS.pendingApproval}</div>
+            <div className="wf-metric-label">Booking</div>
+            <div className="wf-metric-num">{workflows.filter(w => w.overallStatus === 'Booking').length}</div>
           </div>
           <div className="wf-metric-icon">
             <i className="pi pi-clock" />
@@ -336,18 +404,8 @@ export default function WorkflowManagement() {
 
         <div className="wf-metric-box">
           <div>
-            <div className="wf-metric-label">Printing</div>
-            <div className="wf-metric-num">{MOCK_SUMMARY_METRICS.printing}</div>
-          </div>
-          <div className="wf-metric-icon">
-            <i className="pi pi-print" />
-          </div>
-        </div>
-
-        <div className="wf-metric-box">
-          <div>
-            <div className="wf-metric-label">Ready for Delivery</div>
-            <div className="wf-metric-num">{MOCK_SUMMARY_METRICS.readyForDelivery}</div>
+            <div className="wf-metric-label">Delivered</div>
+            <div className="wf-metric-num">{workflows.filter(w => w.overallStatus === 'Delivered').length}</div>
           </div>
           <div className="wf-metric-icon">
             <i className="pi pi-box" />
@@ -356,8 +414,8 @@ export default function WorkflowManagement() {
 
         <div className="wf-metric-box">
           <div>
-            <div className="wf-metric-label">Delivered Today</div>
-            <div className="wf-metric-num">{MOCK_SUMMARY_METRICS.deliveredToday}</div>
+            <div className="wf-metric-label">Completed</div>
+            <div className="wf-metric-num">{workflows.filter(w => w.overallStatus === 'Completed').length}</div>
           </div>
           <div className="wf-metric-icon">
             <i className="pi pi-check-circle" />
@@ -429,7 +487,8 @@ export default function WorkflowManagement() {
           responsiveLayout="scroll"
           stripedRows
           className="events-datatable"
-          emptyMessage="No matching client workflows found."
+          emptyMessage={loading ? 'Loading workflows...' : 'No matching client workflows found.'}
+          loading={loading}
           onRowClick={(e) => handleOpenStatusModal(e.data)}
           selectionMode="single"
         >
@@ -457,12 +516,14 @@ export default function WorkflowManagement() {
                 icon="pi pi-times"
                 className="wf-dialog-btn-cancel"
                 onClick={() => setIsStatusDialogOpen(false)}
+                disabled={saving}
               />
               <Button
-                label="Save & Apply Changes"
-                icon="pi pi-check"
+                label={saving ? 'Saving...' : 'Save & Apply Changes'}
+                icon={saving ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
                 className="wf-dialog-btn-save"
                 onClick={handleSaveWorkflowChanges}
+                disabled={saving}
               />
             </div>
           }

@@ -9,19 +9,17 @@ import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 import { TabMenu } from 'primereact/tabmenu'
 
-import {
-  MOCK_FINANCE_METRICS,
-  MOCK_PAYMENTS,
-  MOCK_INVOICES_LIST
-} from './mockFinanceData'
-import { getPayments, getFinanceOverview } from '../../services/financeService'
+import { getPayments, getFinanceOverview, getExpenses } from '../../services/financeService'
 import './FinanceInvoices.css'
 
 export default function FinanceInvoices({ onShowToast }) {
   const [activeTab, setActiveTab] = useState('payments') // 'payments', 'invoices', 'outstanding'
-  const [payments, setPayments] = useState(MOCK_PAYMENTS)
-  const [invoices, setInvoices] = useState(MOCK_INVOICES_LIST)
-  const [finMetrics, setFinMetrics] = useState(MOCK_FINANCE_METRICS)
+  const [payments, setPayments] = useState([])
+  const [invoices, setInvoices] = useState([])
+  const [finMetrics, setFinMetrics] = useState({
+    totalRevenue: 0, receivedAmount: 0, pendingAmount: 0,
+    overdueAmount: 0, thisMonthRevenue: 0, upcomingPayments: 0
+  })
 
   useEffect(() => {
     async function fetchFinanceBackendData() {
@@ -75,13 +73,13 @@ export default function FinanceInvoices({ onShowToast }) {
   // Paginator Left Templates (Matching Events Page)
   const paymentsPaginatorLeft = (
     <div className="events-paginator__count">
-      Showing <strong>{payments.length}</strong> of <strong>{MOCK_PAYMENTS.length}</strong> Payments
+      Showing <strong>{payments.length}</strong> Payments
     </div>
   )
 
   const invoicesPaginatorLeft = (
     <div className="events-paginator__count">
-      Showing <strong>{invoices.length}</strong> of <strong>{MOCK_INVOICES_LIST.length}</strong> Invoices
+      Showing <strong>{invoices.length}</strong> Invoices
     </div>
   )
 

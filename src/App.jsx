@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Dashboard from './pages/Dashboard'
 import Events from './pages/Events'
 import AddEventPage from './pages/AddEventPage'
@@ -21,10 +21,79 @@ import Sidebar from './components/Sidebar'
 import DashboardHeader from './components/DashboardHeader'
 import './App.css'
 
+const ROUTE_MAP = {
+  '/': 'home',
+  '/home': 'home',
+  '/overview': 'home',
+  '/events': 'events',
+  '/workflow': 'workflow',
+  '/crm': 'crm',
+  '/add-event': 'add-event',
+  '/invoice': 'invoice',
+  '/calendar': 'calendar',
+  '/tasks': 'tasks',
+  '/editing': 'tasks',
+  '/finance': 'finance',
+  '/packages': 'packages',
+  '/contracts': 'contracts',
+  '/crew': 'crew',
+  '/equipment': 'equipment',
+  '/helpdesk': 'helpdesk',
+  '/requests': 'requests'
+}
+
+const TAB_TO_PATH = {
+  'home': '/',
+  'events': '/events',
+  'workflow': '/workflow',
+  'crm': '/crm',
+  'add-event': '/add-event',
+  'invoice': '/invoice',
+  'calendar': '/calendar',
+  'tasks': '/editing',
+  'finance': '/finance',
+  'packages': '/packages',
+  'contracts': '/contracts',
+  'crew': '/crew',
+  'equipment': '/equipment',
+  'helpdesk': '/helpdesk',
+  'requests': '/requests'
+}
+
+function getTabFromUrl() {
+  const path = window.location.pathname.toLowerCase()
+  const cleanPath = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path
+  return ROUTE_MAP[cleanPath] || 'home'
+}
+
 function App() {
-  const [activeTab, setActiveTab] = useState('home')
+  const [activeTab, setActiveTabState] = useState(() => getTabFromUrl())
   const [selectedInvoiceEvent, setSelectedInvoiceEvent] = useState(null)
   const [globalToastMsg, setGlobalToastMsg] = useState(null)
+
+  const setActiveTab = (tabKey) => {
+    setActiveTabState(tabKey)
+    const targetPath = TAB_TO_PATH[tabKey] || '/'
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState({}, '', targetPath)
+    }
+  }
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const tabFromUrl = getTabFromUrl()
+      setActiveTabState(tabFromUrl)
+    }
+
+    const currentTab = getTabFromUrl()
+    const targetPath = TAB_TO_PATH[currentTab] || '/'
+    if (window.location.pathname !== targetPath) {
+      window.history.replaceState({}, '', targetPath)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
 
   const showGlobalToast = (msg) => {
     setGlobalToastMsg(msg)

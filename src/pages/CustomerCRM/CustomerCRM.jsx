@@ -9,45 +9,44 @@ import { Avatar } from 'primereact/avatar'
 import { Dialog } from 'primereact/dialog'
 import { ProgressBar } from 'primereact/progressbar'
 
-import {
-  MOCK_CRM_SUMMARY,
-  MOCK_CUSTOMERS,
-  MOCK_NOTIFICATIONS,
-  MOCK_ANALYTICS_DATA
-} from './mockCRMData'
-import { getClients } from '../../services/clientService'
+import { getClients, createClient, deleteClient } from '../../services/clientService'
 
 import './CustomerCRM.css'
 
 export default function CustomerCRM({ onNavigateAddEvent }) {
   // Master Customers State
-  const [customers, setCustomers] = useState(MOCK_CUSTOMERS)
+  const [customers, setCustomers] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const loadClients = async () => {
+    setLoading(true)
+    const data = await getClients()
+    if (data && data.length > 0) {
+      const mapped = data.map((c) => {
+        const name = `${c.firstName || ''} ${c.lastName || ''}`.trim() || 'Client'
+        return {
+          _id: c._id,
+          id: c._id ? `CLI-${c._id.slice(-4).toUpperCase()}` : `CLI-${Date.now()}`,
+          name,
+          avatar: null,
+          mobile: c.phone || '',
+          email: c.email || '',
+          city: c.city || 'Bengaluru',
+          eventsCount: 1,
+          totalSpent: 0,
+          lastEventDate: c.createdAt ? new Date(c.createdAt).toISOString().split('T')[0] : '',
+          loyaltyTier: c.status === 'active' ? 'Platinum' : 'Gold',
+          status: c.status === 'lead' ? 'Lead' : 'Active',
+          notes: c.notes || ''
+        }
+      })
+      setCustomers(mapped)
+    }
+    setLoading(false)
+  }
 
   useEffect(() => {
-    async function fetchBackendClients() {
-      const data = await getClients()
-      if (data && data.length > 0) {
-        const mapped = data.map((c) => {
-          const name = `${c.firstName || ''} ${c.lastName || ''}`.trim() || 'Client'
-          return {
-            id: c._id ? `CLI-${c._id.slice(-4).toUpperCase()}` : `CLI-${Date.now()}`,
-            name,
-            avatar: null,
-            mobile: c.phone || '+91 98765 43210',
-            email: c.email || 'client@example.com',
-            city: c.city || 'Bengaluru',
-            eventsCount: 1,
-            totalSpent: 450000,
-            lastEventDate: c.createdAt ? new Date(c.createdAt).toISOString().split('T')[0] : '2026-08-01',
-            loyaltyTier: c.status === 'active' ? 'Platinum' : 'Gold',
-            status: c.status === 'lead' ? 'Lead' : 'Active',
-            notes: c.notes || 'Client booked via backend API.'
-          }
-        })
-        setCustomers(mapped)
-      }
-    }
-    fetchBackendClients()
+    loadClients()
   }, [])
 
   // Filters State
@@ -128,63 +127,32 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
   }
 
   // Save New Customer Form
-  const handleCreateCustomer = () => {
+  const handleCreateCustomer = async () => {
     if (!newCustName.trim() || !newCustMobile.trim()) {
       showToast('Please enter customer name and mobile number')
       return
     }
 
-    const newRecord = {
-      id: `CRM-${1000 + customers.length + 1}`,
-      name: newCustName,
-      gender: 'Individual',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-      mobile: newCustMobile,
-      whatsapp: newCustMobile,
-      email: newCustEmail || 'client@example.com',
-      dob: '1995-01-01',
-      anniversaryDate: '',
-      address: 'Bengaluru Studio District',
+    const nameParts = newCustName.trim().split(' ')
+    const result = await createClient({
+      firstName: nameParts[0] || newCustName,
+      lastName: nameParts.slice(1).join(' ') || '',
+      phone: newCustMobile,
+      email: newCustEmail || undefined,
       city: newCustCity,
-      state: 'Karnataka',
-      country: 'India',
-      customerSince: new Date().toISOString().split('T')[0],
-      customerType: 'New',
-      loyaltyLevel: 'Bronze',
-      rewardPoints: 100,
-      status: 'Active',
-      totalBookings: 0,
-      lifetimeSpend: 0,
-      lastEvent: 'None',
-      upcomingEvent: 'None',
-      familyInfo: { spouse: '', children: [], importantDates: [] },
-      preferences: {
-        traditionalPhotography: true,
-        candidPhotography: true,
-        cinematicVideo: true,
-        droneCoverage: false,
-        outdoorShoot: true,
-        indoorShoot: false,
-        bwEditing: false,
-        brightStyle: true,
-        warmTone: true,
-        matteStyle: false,
-        notes: 'Newly created customer account.'
-      },
-      eventsHistory: [],
-      reminders: [],
-      referrals: [],
-      staffNotes: [],
-      communications: [],
-      documents: []
-    }
+      status: 'active'
+    })
 
-    setCustomers([newRecord, ...customers])
-    setIsAddCustomerOpen(false)
-    setNewCustName('')
-    setNewCustMobile('')
-    setNewCustEmail('')
-    showToast(`Customer ${newRecord.name} added successfully!`)
+    if (result) {
+      await loadClients()
+      setIsAddCustomerOpen(false)
+      setNewCustName('')
+      setNewCustMobile('')
+      setNewCustEmail('')
+      showToast(`Customer ${newCustName} added & saved to database!`)
+    } else {
+      showToast('Failed to save customer. Please try again.')
+    }
   }
 
   // Column Render Templates
@@ -322,7 +290,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
       {/* ── Notifications & Birthday Alert Bar ── */}
       <div className="crm-alerts-bar">
         <span className="text-xs font-bold uppercase text-blue-900">CRM Alerts:</span>
-        {MOCK_NOTIFICATIONS.map((n) => (
+        {[].map((n) => (
           <div key={n.id} className="crm-alert-item">
             <i className={n.icon} style={{ color: n.color }} />
             <span>{n.text}</span>
@@ -335,7 +303,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Total Customers</div>
-            <div className="crm-metric__val">{MOCK_CRM_SUMMARY.totalCustomers}</div>
+            <div className="crm-metric__val">{customers.length}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--blue">
             <i className="pi pi-users" />
@@ -345,7 +313,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Active Customers</div>
-            <div className="crm-metric__val">{MOCK_CRM_SUMMARY.activeCustomers}</div>
+            <div className="crm-metric__val">{customers.filter(c => c.status === 'Active').length}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--green">
             <i className="pi pi-check-circle" />
@@ -355,7 +323,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Repeat Clients</div>
-            <div className="crm-metric__val">{MOCK_CRM_SUMMARY.repeatCustomers}</div>
+            <div className="crm-metric__val">{0}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--amber">
             <i className="pi pi-refresh" />
@@ -365,7 +333,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Upcoming Birthdays</div>
-            <div className="crm-metric__val">{MOCK_CRM_SUMMARY.upcomingBirthdays}</div>
+            <div className="crm-metric__val">{0}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--pink">
             <i className="pi pi-gift" />
@@ -375,7 +343,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Anniversaries</div>
-            <div className="crm-metric__val">{MOCK_CRM_SUMMARY.upcomingAnniversaries}</div>
+            <div className="crm-metric__val">{0}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--purple">
             <i className="pi pi-heart-fill" />
@@ -385,7 +353,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Pending Follow-ups</div>
-            <div className="crm-metric__val">{MOCK_CRM_SUMMARY.upcomingFollowups}</div>
+            <div className="crm-metric__val">{0}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--blue">
             <i className="pi pi-phone" />
@@ -395,7 +363,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Total Referrals</div>
-            <div className="crm-metric__val">{MOCK_CRM_SUMMARY.totalReferrals}</div>
+            <div className="crm-metric__val">{0}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--green">
             <i className="pi pi-share-alt" />
@@ -405,7 +373,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Lifetime Revenue</div>
-            <div className="crm-metric__val">₹{(MOCK_CRM_SUMMARY.lifetimeRevenue / 100000).toFixed(1)}L</div>
+            <div className="crm-metric__val">₹{(customers.reduce((s, c) => s + (c.totalSpent || 0), 0) / 100000).toFixed(1)}L</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--amber">
             <i className="pi pi-wallet" />
@@ -513,7 +481,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
                 <i className="pi pi-chart-line text-blue-600 mr-2" /> New Customers Per Month (2026)
               </h3>
               <div className="flex flex-column gap-2">
-                {MOCK_ANALYTICS_DATA.monthlyAcquisition.map((m) => (
+                {[].map((m) => (
                   <div key={m.month} className="flex align-items-center gap-3 text-xs">
                     <span className="w-2rem font-semibold text-700">{m.month}</span>
                     <ProgressBar value={(m.count / 30) * 100} showValue={false} style={{ height: '8px' }} className="flex-1" />
@@ -531,7 +499,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
                 <i className="pi pi-compass text-green-600 mr-2" /> Acquisition Sources
               </h3>
               <div className="flex flex-column gap-3">
-                {MOCK_ANALYTICS_DATA.sources.map((s) => (
+                {[].map((s) => (
                   <div key={s.label} className="bg-surface-ground p-3 border-round-lg">
                     <div className="flex justify-content-between text-xs font-bold mb-1">
                       <span>{s.label}</span>

@@ -105,3 +105,24 @@ export const apiPut = async (endpoint, body) => {
 
   return null
 }
+
+export const apiDelete = async (endpoint) => {
+  try {
+    const token = await getOrFetchToken()
+    const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      method: 'DELETE',
+      headers
+    })
+
+    if (res.ok) {
+      return await res.json()
+    }
+  } catch (err) {
+    console.warn(`API DELETE ${endpoint} error:`, err.message)
+  }
+
+  return null
+}
+

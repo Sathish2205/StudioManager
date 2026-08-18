@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
@@ -6,7 +6,7 @@ import { Dialog } from 'primereact/dialog'
 import { Tooltip } from 'primereact/tooltip'
 import { Tag } from 'primereact/tag'
 import EventDetailDrawer from '../../components/EventDetailDrawer/EventDetailDrawer'
-import { SHARED_EVENTS } from '../../services/sharedEventsData'
+import { getEvents } from '../../services/eventService'
 import './ShootCalendar.css'
 
 export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
@@ -15,7 +15,52 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
   const [calendarView, setCalendarView] = useState('month') // 'month', 'week', 'day'
 
   // Events Dataset
-  const [eventsList, setEventsList] = useState(SHARED_EVENTS)
+  const [eventsList, setEventsList] = useState([])
+
+  useEffect(() => {
+    async function loadCalendarEvents() {
+      const data = await getEvents()
+      if (data && data.length > 0) {
+        const mapped = data.map((evt) => {
+          const clientName = evt.clientId
+            ? `${evt.clientId.firstName || ''} ${evt.clientId.lastName || ''}`.trim()
+            : evt.eventName || 'Client'
+          const photographers = (evt.assignedPhotographers || []).map(p => p.name)
+          const editors = (evt.assignedEditors || []).map(e => e.name)
+          const crew = [...photographers, ...editors]
+          const total = evt.packageAmount || 0
+          const paid = evt.totalPaid || 0
+
+          return {
+            _id: evt._id,
+            id: evt._id ? `EVT-${evt._id.slice(-4).toUpperCase()}` : `EVT-${Date.now()}`,
+            eventName: evt.eventName || 'Event',
+            clientName,
+            couple: clientName,
+            eventType: evt.eventType || 'Wedding',
+            date: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '',
+            startDate: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '',
+            endDate: evt.endDate ? new Date(evt.endDate).toISOString().split('T')[0] : (evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : ''),
+            time: `${evt.startTime || '09:00 AM'} - ${evt.endTime || '10:00 PM'}`,
+            startTime: evt.startTime || '09:00 AM',
+            endTime: evt.endTime || '10:00 PM',
+            venue: evt.venue || '',
+            package: evt.package || 'Custom Package',
+            amount: `₹${total.toLocaleString()}`,
+            crew: crew.length > 0 ? crew : ['Photographer'],
+            payment: paid >= total && total > 0 ? 'Paid in Full' : paid > 0 ? 'Advance Paid' : 'Pending',
+            paymentSeverity: paid >= total && total > 0 ? 'success' : paid > 0 ? 'warning' : 'danger',
+            status: evt.status || 'Confirmed',
+            statusSeverity: evt.status === 'In Progress' ? 'danger' : evt.status === 'Confirmed' ? 'info' : 'success',
+            progress: 0,
+            notes: evt.notes || ''
+          }
+        })
+        setEventsList(mapped)
+      }
+    }
+    loadCalendarEvents()
+  }, [])
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('')

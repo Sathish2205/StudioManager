@@ -8,11 +8,12 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputTextarea } from 'primereact/inputtextarea'
 
-import { MOCK_HELPDESK_METRICS, MOCK_TICKETS } from './mockHelpdeskData'
 import './StudioHelpdesk.css'
 
 export default function StudioHelpdesk({ onShowToast }) {
-  const [tickets, setTickets] = useState(MOCK_TICKETS)
+  const [tickets, setTickets] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('studio_helpdesk_tickets') || '[]') } catch { return [] }
+  })
   const [selectedTicket, setSelectedTicket] = useState(null)
 
   // Filters
@@ -142,7 +143,7 @@ export default function StudioHelpdesk({ onShowToast }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Open Tickets</div>
-            <div className="crm-metric__val text-red-600">{MOCK_HELPDESK_METRICS.openTickets}</div>
+            <div className="crm-metric__val text-red-600">{tickets.filter(t => t.status === 'Open').length}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--pink"><i className="pi pi-inbox" /></div>
         </div>
@@ -150,7 +151,7 @@ export default function StudioHelpdesk({ onShowToast }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">High Priority</div>
-            <div className="crm-metric__val text-amber-600">{MOCK_HELPDESK_METRICS.highPriority}</div>
+            <div className="crm-metric__val text-amber-600">{tickets.filter(t => t.priority === 'Critical' || t.priority === 'High').length}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--amber"><i className="pi pi-exclamation-triangle" /></div>
         </div>
@@ -158,7 +159,7 @@ export default function StudioHelpdesk({ onShowToast }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">In Progress</div>
-            <div className="crm-metric__val text-blue-600">{MOCK_HELPDESK_METRICS.inProgress}</div>
+            <div className="crm-metric__val text-blue-600">{tickets.filter(t => t.status === 'In Progress').length}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--blue"><i className="pi pi-sync" /></div>
         </div>
@@ -166,7 +167,7 @@ export default function StudioHelpdesk({ onShowToast }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Waiting Feedback</div>
-            <div className="crm-metric__val">{MOCK_HELPDESK_METRICS.waiting}</div>
+            <div className="crm-metric__val">{tickets.filter(t => t.status === 'Waiting').length}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--purple"><i className="pi pi-clock" /></div>
         </div>
@@ -174,7 +175,7 @@ export default function StudioHelpdesk({ onShowToast }) {
         <div className="crm-metric-card">
           <div>
             <div className="crm-metric__label">Resolved Tickets</div>
-            <div className="crm-metric__val text-green-600">{MOCK_HELPDESK_METRICS.resolved}</div>
+            <div className="crm-metric__val text-green-600">{tickets.filter(t => t.status === 'Resolved').length}</div>
           </div>
           <div className="crm-metric__icon crm-metric__icon--green"><i className="pi pi-check-circle" /></div>
         </div>

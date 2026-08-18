@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -7,18 +7,37 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 
-import {
-  MOCK_PACKAGES,
-  MOCK_ADDONS,
-  MOCK_QUOTES
-} from './mockPackagesData'
+import { getPackages } from '../../services/packageService'
 import './PackagesQuotes.css'
 
 export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
   const [activeTab, setActiveTab] = useState('packages') // 'packages', 'addons', 'quotes'
-  const [packages, setPackages] = useState(MOCK_PACKAGES)
-  const [addons, setAddons] = useState(MOCK_ADDONS)
-  const [quotes, setQuotes] = useState(MOCK_QUOTES)
+  const [packages, setPackages] = useState([])
+  const [addons, setAddons] = useState([])
+  const [quotes, setQuotes] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('studio_quotes') || '[]') } catch { return [] }
+  })
+
+  useEffect(() => {
+    async function loadPackages() {
+      const data = await getPackages()
+      if (data && data.length > 0) {
+        const mapped = data.map(p => ({
+          id: p._id || p.id,
+          name: p.name || p.packageName || 'Package',
+          type: p.type || 'Wedding',
+          coverage: p.coverage || 'Full Day',
+          photographers: p.photographers || 2,
+          videographers: p.videographers || 1,
+          deliverables: p.deliverables || ['Edited Photos', 'Album'],
+          price: p.price || p.amount || 0,
+          status: 'Active'
+        }))
+        setPackages(mapped)
+      }
+    }
+    loadPackages()
+  }, [])
 
   // Dialog State
   const [isQuoteOpen, setIsQuoteOpen] = useState(false)
@@ -171,7 +190,7 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
             paginator
             paginatorLeft={
               <span className="events-paginator__count">
-                Showing <strong>{addons.length}</strong> of {MOCK_ADDONS.length} Add-ons
+                Showing <strong>{addons.length}</strong> Add-ons
               </span>
             }
             rows={5}
@@ -197,7 +216,7 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
             paginator
             paginatorLeft={
               <span className="events-paginator__count">
-                Showing <strong>{quotes.length}</strong> of {MOCK_QUOTES.length} Client Quotes
+                Showing <strong>{quotes.length}</strong> Client Quotes
               </span>
             }
             rows={5}

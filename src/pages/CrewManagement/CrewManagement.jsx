@@ -9,34 +9,40 @@ import { Avatar } from 'primereact/avatar'
 import { Dialog } from 'primereact/dialog'
 import { ProgressBar } from 'primereact/progressbar'
 
-import { MOCK_CREW_MEMBERS } from './mockCrewData'
-import { getStaff } from '../../services/staffService'
+import { getStaff, createStaff, deleteStaff } from '../../services/staffService'
 import './CrewManagement.css'
 
 export default function CrewManagement({ onShowToast }) {
   const [activeTab, setActiveTab] = useState('members') // 'members', 'assignments'
-  const [crewList, setCrewList] = useState(MOCK_CREW_MEMBERS)
+  const [crewList, setCrewList] = useState([])
   const [selectedMember, setSelectedMember] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  const loadCrew = async () => {
+    setLoading(true)
+    const data = await getStaff()
+    if (data && data.length > 0) {
+      const mapped = data.map((st) => ({
+        _id: st._id,
+        id: st._id ? `CREW-${st._id.slice(-4).toUpperCase()}` : `CREW-${Date.now()}`,
+        name: st.name || 'Staff Member',
+        role: st.role || 'Photographer',
+        phone: st.phone || '',
+        email: st.email || '',
+        status: st.status === 'Active' ? 'Available' : st.status || 'Available',
+        eventsCompleted: Math.floor(Math.random() * 20) + 5,
+        rating: 4.9,
+        specialization: st.specialization || 'Wedding Photography',
+        upcomingEventsCount: 0,
+        assignments: []
+      }))
+      setCrewList(mapped)
+    }
+    setLoading(false)
+  }
 
   useEffect(() => {
-    async function fetchBackendStaff() {
-      const data = await getStaff()
-      if (data && data.length > 0) {
-        const mapped = data.map((st) => ({
-          id: st._id ? `CREW-${st._id.slice(-4).toUpperCase()}` : `CREW-${Date.now()}`,
-          name: st.name || 'Staff Member',
-          role: st.role || 'Photographer',
-          phone: st.phone || '+91 98765 43210',
-          email: st.email || 'staff@example.com',
-          status: st.status === 'Active' ? 'Available' : st.status || 'Available',
-          eventsCompleted: Math.floor(Math.random() * 20) + 5,
-          rating: 4.9,
-          specialization: st.specialization || 'Wedding Photography'
-        }))
-        setCrewList(mapped)
-      }
-    }
-    fetchBackendStaff()
+    loadCrew()
   }, [])
 
   // Filters

@@ -16,10 +16,11 @@ import { eventSchema } from '../../validation/eventSchema'
 import { getClients } from '../../services/clientService'
 import { getPackages } from '../../services/packageService'
 import { getStaff } from '../../services/staffService'
-import { createEvent } from '../../services/eventService'
+import { createEvent, updateEvent } from '../../services/eventService'
+import { createClient } from '../../services/clientService'
 import './EventForm.css'
 
-export default function EventForm({ onSuccess, onCancel }) {
+export default function EventForm({ eventToEdit, onSuccess, onCancel }) {
   const toastRef = useRef(null)
 
   // API Data States
@@ -56,9 +57,10 @@ export default function EventForm({ onSuccess, onCancel }) {
     setValue,
     watch,
     reset,
-    formState: { errors, isDirty }
+    formState: { errors, isDirty, isValid }
   } = useForm({
     resolver: yupResolver(eventSchema),
+    mode: 'onChange',
     defaultValues: {
       clientName: '',
       clientId: null,
@@ -86,6 +88,55 @@ export default function EventForm({ onSuccess, onCancel }) {
       specialInstructions: ''
     }
   })
+
+  // Pre-fill form when eventToEdit is passed
+  useEffect(() => {
+    if (eventToEdit) {
+      const raw = eventToEdit.rawEvent || eventToEdit
+      const dateVal = raw.eventDate || eventToEdit.date
+      let parsedDate = null
+      if (dateVal) {
+        parsedDate = new Date(dateVal)
+        if (isNaN(parsedDate.getTime())) parsedDate = null
+      }
+
+      const parsePrice = (val) => {
+        if (typeof val === 'number') return val
+        if (!val) return 0
+        return parseFloat(val.toString().replace(/[^0-9.]/g, '')) || 0
+      }
+
+      const pkgPrice = raw.packageAmount || parsePrice(eventToEdit.totalAmount) || 150000
+      const advPaid = raw.totalPaid || raw.advanceAmount || parsePrice(eventToEdit.paidAmount) || 0
+
+      reset({
+        clientName: eventToEdit.couple || raw.eventName || (raw.clientId ? `${raw.clientId.firstName || ''} ${raw.clientId.lastName || ''}`.trim() : ''),
+        clientId: raw.clientId?._id || raw.clientId || null,
+        eventName: raw.eventName || eventToEdit.couple || '',
+        eventType: raw.eventType || eventToEdit.eventType || 'Wedding',
+        eventDate: parsedDate,
+        eventTime: null,
+        venueName: raw.venue || eventToEdit.venue || '',
+        venueAddress: raw.venueAddress || '',
+        city: raw.city || '',
+        state: raw.state || '',
+        pincode: raw.pincode || '',
+        photographerId: raw.assignedPhotographers?.[0]?._id || raw.photographerId || null,
+        videographerId: raw.assignedVideographers?.[0]?._id || raw.videographerId || null,
+        droneRequired: !!raw.droneRequired,
+        liveStreaming: !!raw.liveStreaming,
+        albumRequired: !!raw.albumRequired,
+        candidPhotography: !!raw.candidPhotography,
+        traditionalPhotography: !!raw.traditionalPhotography,
+        traditionalVideo: !!raw.traditionalVideo,
+        packageId: raw.packageId || null,
+        packagePrice: pkgPrice,
+        advancePaid: advPaid,
+        eventStatus: raw.status || eventToEdit.status || 'Confirmed',
+        specialInstructions: raw.notes || ''
+      })
+    }
+  }, [eventToEdit, reset])
 
   // Watch Package Price and Advance Paid for Balance Amount calculation
   const watchPackagePrice = watch('packagePrice') || 0
@@ -194,19 +245,28 @@ export default function EventForm({ onSuccess, onCancel }) {
         notes: data.specialInstructions || ''
       }
 
-      const res = await createEvent(backendPayload)
-      const eventId = res?.data?._id || res?.id || `EVT-${Date.now()}`
+      const isEditing = !!(eventToEdit && (eventToEdit._id || eventToEdit.id || eventToEdit.rawEvent?._id))
+      const targetId = eventToEdit?.rawEvent?._id || eventToEdit?._id || eventToEdit?.id
+
+      let res
+      if (isEditing && targetId && !String(targetId).startsWith('EVT-')) {
+        res = await updateEvent(targetId, backendPayload)
+      } else {
+        res = await createEvent(backendPayload)
+      }
+
+      const eventId = res?.data?._id || res?._id || res?.id || targetId || `EVT-${Date.now()}`
 
       toastRef.current?.show({
         severity: 'success',
-        summary: 'Event Saved to Backend',
-        detail: `Event #${eventId} successfully posted to database!`,
+        summary: isEditing ? 'Event Updated' : 'Event Saved to Backend',
+        detail: isEditing ? `Event #${eventId} details updated successfully!` : `Event #${eventId} successfully posted to database!`,
         life: 3000
       })
 
       reset()
       if (onSuccess) {
-        setTimeout(() => onSuccess(res), 1000)
+        setTimeout(() => onSuccess(res || backendPayload), 1000)
       }
     } catch (error) {
       console.error('Error submitting event to backend:', error)
@@ -763,7 +823,7 @@ export default function EventForm({ onSuccess, onCancel }) {
 
           <Button
             type="submit"
-            label="Save Event"
+            label={eventToEdit ? 'Update Event' : 'Save Event'}
             icon="pi pi-check"
             className="p-button-primary"
             loading={isSubmitting}

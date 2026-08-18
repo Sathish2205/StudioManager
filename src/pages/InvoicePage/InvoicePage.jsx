@@ -22,16 +22,19 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
     photographer: 'Sathish Kumar & Lead Team'
   }
 
+  const rawId = String(invoiceData.id || invoiceData._id || 'EVT-2026-0891')
+  const invoiceNumStr = rawId.includes('EVT') ? rawId.replace('EVT', 'INV') : `INV-${rawId.replace(/[^a-zA-Z0-9]/g, '').slice(-8).toUpperCase()}`
+
   // Calculate Numerical Totals
   const parseAmt = (val) => {
-    if (!val) return 0
+    if (!val && val !== 0) return 0
     if (typeof val === 'number') return val
     return parseFloat(val.toString().replace(/[^0-9.]/g, '')) || 0
   }
 
-  const totalCost = parseAmt(invoiceData.amount || '185000')
+  const totalCost = parseAmt(invoiceData.amount || invoiceData.packageAmount || '185000')
   const advancePaid = parseAmt(invoiceData.advancePaid || invoiceData.advanceAmount || '75000')
-  const balanceDue = parseAmt(invoiceData.balanceAmount || totalCost - advancePaid)
+  const balanceDue = Math.max(0, parseAmt(invoiceData.balanceAmount) || (totalCost - advancePaid))
   const gstTax = Math.round(totalCost * 0.18)
   const grandTotal = totalCost + gstTax
 
@@ -49,7 +52,7 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
             Event Created & Invoice Generated
           </h2>
           <p className="invoice-actions-bar__subtitle">
-            Invoice #{invoiceData.id.replace('EVT', 'INV')} ready for client delivery and printing
+            Invoice #{invoiceNumStr} ready for client delivery and printing
           </p>
         </div>
 
@@ -92,7 +95,7 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
           <div className="invoice-meta-box">
             <div className="invoice-title">TAX INVOICE</div>
             <div className="invoice-meta-row">
-              Invoice No: <strong>INV-{invoiceData.id.replace(/[^0-9]/g, '') || '2026-0891'}</strong>
+              Invoice No: <strong>{invoiceNumStr}</strong>
             </div>
             <div className="invoice-meta-row">
               Date: <strong>{new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</strong>

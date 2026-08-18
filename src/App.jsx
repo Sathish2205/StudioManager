@@ -69,6 +69,7 @@ function getTabFromUrl() {
 function App() {
   const [activeTab, setActiveTabState] = useState(() => getTabFromUrl())
   const [selectedInvoiceEvent, setSelectedInvoiceEvent] = useState(null)
+  const [selectedEditEvent, setSelectedEditEvent] = useState(null)
   const [globalToastMsg, setGlobalToastMsg] = useState(null)
 
   const setActiveTab = (tabKey) => {
@@ -103,6 +104,11 @@ function App() {
   const handleNavigateInvoice = (eventData) => {
     setSelectedInvoiceEvent(eventData)
     setActiveTab('invoice')
+  }
+
+  const handleNavigateEditEvent = (eventData) => {
+    setSelectedEditEvent(eventData)
+    setActiveTab('add-event')
   }
 
   return (
@@ -143,6 +149,7 @@ function App() {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           onNavigateInvoice={handleNavigateInvoice}
+          onNavigateEditEvent={handleNavigateEditEvent}
         />
       )}
 
@@ -166,13 +173,13 @@ function App() {
           <div className="portal-main">
             <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
             <div className="portal-body">
-              <CustomerCRM onNavigateAddEvent={() => setActiveTab('add-event')} />
+              <CustomerCRM onNavigateAddEvent={() => handleNavigateEditEvent(null)} />
             </div>
           </div>
         </div>
       )}
 
-      {/* ── ADD EVENT PAGE ── */}
+      {/* ── ADD / EDIT EVENT PAGE ── */}
       {activeTab === 'add-event' && (
         <div className="portal-layout">
           <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -180,9 +187,19 @@ function App() {
             <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
             <div className="portal-body">
               <AddEventPage
-                onNavigateEvents={() => setActiveTab('events')}
-                onNavigateDashboard={() => setActiveTab('home')}
-                onNavigateInvoice={handleNavigateInvoice}
+                eventToEdit={selectedEditEvent}
+                onNavigateEvents={() => {
+                  setSelectedEditEvent(null)
+                  setActiveTab('events')
+                }}
+                onNavigateDashboard={() => {
+                  setSelectedEditEvent(null)
+                  setActiveTab('home')
+                }}
+                onNavigateInvoice={(createdEvent) => {
+                  setSelectedEditEvent(null)
+                  handleNavigateInvoice(createdEvent)
+                }}
               />
             </div>
           </div>

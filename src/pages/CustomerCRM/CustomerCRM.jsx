@@ -9,7 +9,7 @@ import { Avatar } from 'primereact/avatar'
 import { Dialog } from 'primereact/dialog'
 import { ProgressBar } from 'primereact/progressbar'
 
-import { getClients, createClient, deleteClient } from '../../services/clientService'
+import { getClients, createClient, updateClient, deleteClient } from '../../services/clientService'
 
 import './CustomerCRM.css'
 
@@ -30,13 +30,23 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
           name,
           avatar: null,
           mobile: c.phone || '',
+          whatsapp: c.whatsapp || c.phone || '',
           email: c.email || '',
           city: c.city || 'Bengaluru',
-          eventsCount: 1,
-          totalSpent: 0,
-          lastEventDate: c.createdAt ? new Date(c.createdAt).toISOString().split('T')[0] : '',
-          loyaltyTier: c.status === 'active' ? 'Platinum' : 'Gold',
+          state: c.state || 'Karnataka',
+          address: c.address || `${c.city || 'Bengaluru'}, Karnataka`,
+          dob: c.dob || 'N/A',
+          anniversaryDate: c.anniversaryDate || 'N/A',
+          totalBookings: c.totalBookings || 1,
+          lifetimeSpend: c.totalSpent || c.lifetimeSpend || 0,
+          lastEvent: c.lastEvent || (c.createdAt ? new Date(c.createdAt).toISOString().split('T')[0] : '2026-08-10'),
+          customerSince: c.customerSince || (c.createdAt ? new Date(c.createdAt).getFullYear() : '2026'),
+          loyaltyLevel: c.loyaltyLevel || (c.status === 'active' ? 'Platinum' : 'Gold'),
+          rewardPoints: c.rewardPoints || 1200,
           status: c.status === 'lead' ? 'Lead' : 'Active',
+          eventsHistory: Array.isArray(c.eventsHistory) ? c.eventsHistory : [],
+          familyInfo: c.familyInfo || { spouse: 'N/A', children: [], importantDates: [] },
+          preferences: c.preferences || { traditionalPhotography: true, candidPhotography: true, droneCoverage: false, cinematicVideo: true },
           notes: c.notes || ''
         }
       })
@@ -63,8 +73,9 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [activeProfileTab, setActiveProfileTab] = useState('overview')
 
-  // Add Customer Modal State
+  // Add/Edit Customer Modal State
   const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false)
+  const [editingCustomer, setEditingCustomer] = useState(null)
   const [newCustName, setNewCustName] = useState('')
   const [newCustMobile, setNewCustMobile] = useState('')
   const [newCustEmail, setNewCustEmail] = useState('')
@@ -126,7 +137,27 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
     setIsProfileOpen(true)
   }
 
-  // Save New Customer Form
+  // Open Edit Customer Dialog (populate fields with existing data)
+  const handleEditCustomer = (customer) => {
+    setEditingCustomer(customer)
+    setNewCustName(customer.name || '')
+    setNewCustMobile(customer.mobile || '')
+    setNewCustEmail(customer.email || '')
+    setNewCustCity(customer.city || 'Bengaluru')
+    setIsAddCustomerOpen(true)
+  }
+
+  // Close and reset dialog
+  const handleCloseCustomerDialog = () => {
+    setIsAddCustomerOpen(false)
+    setEditingCustomer(null)
+    setNewCustName('')
+    setNewCustMobile('')
+    setNewCustEmail('')
+    setNewCustCity('Bengaluru')
+  }
+
+  // Save Customer Form (Create or Update)
   const handleCreateCustomer = async () => {
     if (!newCustName.trim() || !newCustMobile.trim()) {
       showToast('Please enter customer name and mobile number')
@@ -134,22 +165,32 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
     }
 
     const nameParts = newCustName.trim().split(' ')
-    const result = await createClient({
+    const payload = {
       firstName: nameParts[0] || newCustName,
       lastName: nameParts.slice(1).join(' ') || '',
       phone: newCustMobile,
       email: newCustEmail || undefined,
       city: newCustCity,
       status: 'active'
-    })
+    }
+
+    let result
+    if (editingCustomer && editingCustomer._id) {
+      // Update existing customer
+      result = await updateClient(editingCustomer._id, payload)
+    } else {
+      // Create new customer
+      result = await createClient(payload)
+    }
 
     if (result) {
       await loadClients()
-      setIsAddCustomerOpen(false)
-      setNewCustName('')
-      setNewCustMobile('')
-      setNewCustEmail('')
-      showToast(`Customer ${newCustName} added & saved to database!`)
+      handleCloseCustomerDialog()
+      showToast(
+        editingCustomer
+          ? `Customer ${newCustName} updated successfully!`
+          : `Customer ${newCustName} added & saved to database!`
+      )
     } else {
       showToast('Failed to save customer. Please try again.')
     }
@@ -179,23 +220,23 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
 
   const cityBodyTemplate = (rowData) => (
     <div className="flex flex-column text-xs">
-      <span className="font-semibold text-800">{rowData.city}</span>
-      <span className="text-500">Since {rowData.customerSince}</span>
+      <span className="font-semibold text-800">{rowData.city || 'Bengaluru'}</span>
+      <span className="text-500">Since {rowData.customerSince || '2026'}</span>
     </div>
   )
 
   const spendBodyTemplate = (rowData) => (
     <div className="flex flex-column text-xs">
-      <span className="font-bold text-900">₹{rowData.lifetimeSpend.toLocaleString()}</span>
-      <span className="text-primary font-semibold">{rowData.totalBookings} Bookings</span>
+      <span className="font-bold text-900">₹{(rowData.lifetimeSpend || 0).toLocaleString()}</span>
+      <span className="text-primary font-semibold">{rowData.totalBookings || 0} Bookings</span>
     </div>
   )
 
   const loyaltyBodyTemplate = (rowData) => {
-    const lvl = rowData.loyaltyLevel.toLowerCase()
+    const lvl = (rowData.loyaltyLevel || 'Gold').toLowerCase()
     return (
       <span className={`loyalty-badge loyalty-badge--${lvl}`}>
-        <i className="pi pi-star-fill" /> {rowData.loyaltyLevel}
+        <i className="pi pi-star-fill" /> {rowData.loyaltyLevel || 'Gold'}
       </span>
     )
   }
@@ -217,6 +258,14 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         severity="info"
         tooltip="View Full CRM Profile"
         onClick={() => handleOpenProfile(rowData)}
+      />
+      <Button
+        icon="pi pi-pencil"
+        rounded
+        text
+        severity="warning"
+        tooltip="Edit Client"
+        onClick={() => handleEditCustomer(rowData)}
       />
       <Button
         icon="pi pi-calendar-plus"
@@ -547,14 +596,14 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
                   Client Since {selectedCustomer.customerSince}
                 </p>
                 <div className="crm-profile-badges">
-                  <span className={`loyalty-badge loyalty-badge--${selectedCustomer.loyaltyLevel.toLowerCase()}`}>
-                    <i className="pi pi-star-fill" /> {selectedCustomer.loyaltyLevel}
+                  <span className={`loyalty-badge loyalty-badge--${(selectedCustomer.loyaltyLevel || 'Gold').toLowerCase()}`}>
+                    <i className="pi pi-star-fill" /> {selectedCustomer.loyaltyLevel || 'Gold'}
                   </span>
                   <span className="crm-badge crm-badge--points">
-                    <i className="pi pi-bolt" /> {selectedCustomer.rewardPoints} Points
+                    <i className="pi pi-bolt" /> {selectedCustomer.rewardPoints || 0} Points
                   </span>
                   <span className="crm-badge crm-badge--active">
-                    <i className="pi pi-circle-fill" style={{ fontSize: '0.5rem' }} /> {selectedCustomer.status}
+                    <i className="pi pi-circle-fill" style={{ fontSize: '0.5rem' }} /> {selectedCustomer.status || 'Active'}
                   </span>
                 </div>
               </div>
@@ -592,7 +641,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
           <div className="crm-profile-tabs">
             {[
               { id: 'overview', label: 'Overview & Family', icon: 'pi pi-user' },
-              { id: 'events', label: `Event History (${selectedCustomer.eventsHistory.length})`, icon: 'pi pi-calendar' },
+              { id: 'events', label: `Event History (${(selectedCustomer.eventsHistory || []).length})`, icon: 'pi pi-calendar' },
               { id: 'preferences', label: 'Photography Style', icon: 'pi pi-camera' },
               { id: 'reminders', label: 'Reminders & Referrals', icon: 'pi pi-bell' },
               { id: 'timeline', label: 'Notes & Timeline', icon: 'pi pi-clock' }
@@ -636,10 +685,10 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
                       Family Information & Dates
                     </h3>
                     <div className="flex flex-column gap-2 text-xs text-800">
-                      <div><strong>Spouse Name:</strong> {selectedCustomer.familyInfo.spouse || 'N/A'}</div>
-                      <div><strong>Children:</strong> {selectedCustomer.familyInfo.children.join(', ') || 'None'}</div>
+                      <div><strong>Spouse Name:</strong> {selectedCustomer?.familyInfo?.spouse || 'N/A'}</div>
+                      <div><strong>Children:</strong> {(selectedCustomer?.familyInfo?.children || []).join(', ') || 'None'}</div>
                       <div className="mt-2 font-bold text-700">Important Family Dates:</div>
-                      {selectedCustomer.familyInfo.importantDates.map((d, i) => (
+                      {(selectedCustomer?.familyInfo?.importantDates || []).map((d, i) => (
                         <div key={i} className="bg-surface-ground p-2 border-round flex justify-content-between">
                           <span>{d.label}</span>
                           <span className="font-bold text-primary">{d.date}</span>
@@ -655,15 +704,15 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
           {/* Tab 2: Event History */}
           {activeProfileTab === 'events' && (
             <div className="crm-tab-panel">
-              <DataTable value={selectedCustomer.eventsHistory} responsiveLayout="scroll" className="p-datatable-sm">
+              <DataTable value={selectedCustomer?.eventsHistory || []} responsiveLayout="scroll" className="p-datatable-sm">
                 <Column field="id" header="Event ID" />
                 <Column field="type" header="Event Type" />
                 <Column field="date" header="Date" />
                 <Column field="package" header="Package" />
                 <Column field="photographer" header="Photographer" />
-                <Column field="amount" header="Amount (₹)" body={(r) => `₹${r.amount.toLocaleString()}`} />
-                <Column field="paymentStatus" header="Payment" body={(r) => <Tag value={r.paymentStatus} severity="success" />} />
-                <Column field="rating" header="Rating" body={(r) => '⭐'.repeat(r.rating)} />
+                <Column field="amount" header="Amount (₹)" body={(r) => `₹${(r.amount || 0).toLocaleString()}`} />
+                <Column field="paymentStatus" header="Payment" body={(r) => <Tag value={r.paymentStatus || 'Completed'} severity="success" />} />
+                <Column field="rating" header="Rating" body={(r) => '⭐'.repeat(r.rating || 5)} />
               </DataTable>
             </div>
           )}
@@ -673,16 +722,16 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
             <div className="crm-tab-panel">
               <h3 className="text-xs font-bold text-700 uppercase mb-3">Customer Editing & Shooting Preferences</h3>
               <div className="flex flex-wrap gap-2 mb-4">
-                <span className={`pref-chip ${selectedCustomer.preferences.traditionalPhotography ? '' : 'pref-chip--inactive'}`}>Traditional Photography</span>
-                <span className={`pref-chip ${selectedCustomer.preferences.candidPhotography ? '' : 'pref-chip--inactive'}`}>Candid Photography</span>
-                <span className={`pref-chip ${selectedCustomer.preferences.cinematicVideo ? '' : 'pref-chip--inactive'}`}>Cinematic 4K Video</span>
-                <span className={`pref-chip ${selectedCustomer.preferences.droneCoverage ? '' : 'pref-chip--inactive'}`}>Drone Aerial Coverage</span>
-                <span className={`pref-chip ${selectedCustomer.preferences.outdoorShoot ? '' : 'pref-chip--inactive'}`}>Outdoor Sunset Shoot</span>
-                <span className={`pref-chip ${selectedCustomer.preferences.warmTone ? '' : 'pref-chip--inactive'}`}>Warm Tone Color Grading</span>
-                <span className={`pref-chip ${selectedCustomer.preferences.brightStyle ? '' : 'pref-chip--inactive'}`}>Bright Natural Style</span>
+                <span className={`pref-chip ${selectedCustomer?.preferences?.traditionalPhotography ? '' : 'pref-chip--inactive'}`}>Traditional Photography</span>
+                <span className={`pref-chip ${selectedCustomer?.preferences?.candidPhotography ? '' : 'pref-chip--inactive'}`}>Candid Photography</span>
+                <span className={`pref-chip ${selectedCustomer?.preferences?.cinematicVideo ? '' : 'pref-chip--inactive'}`}>Cinematic 4K Video</span>
+                <span className={`pref-chip ${selectedCustomer?.preferences?.droneCoverage ? '' : 'pref-chip--inactive'}`}>Drone Aerial Coverage</span>
+                <span className={`pref-chip ${selectedCustomer?.preferences?.outdoorShoot ? '' : 'pref-chip--inactive'}`}>Outdoor Sunset Shoot</span>
+                <span className={`pref-chip ${selectedCustomer?.preferences?.warmTone ? '' : 'pref-chip--inactive'}`}>Warm Tone Color Grading</span>
+                <span className={`pref-chip ${selectedCustomer?.preferences?.brightStyle ? '' : 'pref-chip--inactive'}`}>Bright Natural Style</span>
               </div>
               <div className="bg-amber-50 p-3 border-round border-1 border-amber-200 text-xs text-amber-900">
-                <strong>Studio Manager Note:</strong> "{selectedCustomer.preferences.notes}"
+                <strong>Studio Manager Note:</strong> "{selectedCustomer?.preferences?.notes || 'Standard Client Preferences'}"
               </div>
             </div>
           )}
@@ -744,14 +793,14 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
 
       {/* ── ADD NEW CUSTOMER DIALOG ── */}
       <Dialog
-        header="Add New CRM Customer Record"
+        header={editingCustomer ? 'Edit Customer Details' : 'Add New CRM Customer Record'}
         visible={isAddCustomerOpen}
         style={{ width: '500px' }}
-        onHide={() => setIsAddCustomerOpen(false)}
+        onHide={handleCloseCustomerDialog}
         footer={
           <div className="flex justify-content-end gap-2">
-            <Button label="Cancel" className="p-button-text" onClick={() => setIsAddCustomerOpen(false)} />
-            <Button label="Save Customer" icon="pi pi-check" className="p-button-primary" onClick={handleCreateCustomer} />
+            <Button label="Cancel" className="p-button-text" onClick={handleCloseCustomerDialog} />
+            <Button label={editingCustomer ? 'Update Customer' : 'Save Customer'} icon="pi pi-check" className="p-button-primary" onClick={handleCreateCustomer} />
           </div>
         }
       >

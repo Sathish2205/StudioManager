@@ -13,7 +13,7 @@ import './Events.css'
 
 import { getEvents, deleteEvent } from '../../services/eventService'
 
-export default function Events({ activeTab = 'events', setActiveTab, onNavigateInvoice }) {
+export default function Events({ activeTab = 'events', setActiveTab, onNavigateInvoice, onNavigateEditEvent }) {
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [selectedType, setSelectedType] = useState(null)
@@ -61,7 +61,8 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
           paymentProgress,
           paymentStatus,
           crew: crew.length > 0 ? crew : ['Lead Photographer'],
-          status: evt.status || 'Confirmed'
+          status: evt.status || 'Confirmed',
+          rawEvent: evt
         }
       })
       setInitialEvents(mapped)
@@ -175,8 +176,19 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
 
   const actionBodyTemplate = (rowData) => (
     <div className="events-table__actions" onClick={(e) => e.stopPropagation()}>
-      <Button icon="pi pi-eye" rounded text severity="secondary" aria-label="View" onClick={() => handleRowSelect(rowData)} />
-      <Button icon="pi pi-pencil" rounded text severity="info" aria-label="Edit" />
+      <Button icon="pi pi-eye" rounded text severity="secondary" aria-label="View" tooltip="View Details" onClick={() => handleRowSelect(rowData)} />
+      <Button
+        icon="pi pi-pencil"
+        rounded
+        text
+        severity="info"
+        aria-label="Edit"
+        tooltip="Edit Event"
+        onClick={(e) => {
+          e.stopPropagation()
+          if (onNavigateEditEvent) onNavigateEditEvent(rowData)
+        }}
+      />
       <Button
         icon="pi pi-download"
         rounded
@@ -217,7 +229,10 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
               icon="pi pi-plus"
               className="events-header__btn-add"
               rounded
-              onClick={() => setActiveTab('add-event')}
+              onClick={() => {
+                if (onNavigateEditEvent) onNavigateEditEvent(null)
+                setActiveTab('add-event')
+              }}
             />
           </div>
 
@@ -294,7 +309,10 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
         event={selectedDetailEvent}
         visible={drawerVisible}
         onHide={() => setDrawerVisible(false)}
-        onEdit={() => setActiveTab('add-event')}
+        onEdit={(evt) => {
+          setDrawerVisible(false)
+          if (onNavigateEditEvent) onNavigateEditEvent(evt || selectedDetailEvent)
+        }}
       />
     </div>
   )

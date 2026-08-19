@@ -12,7 +12,16 @@ import { InputNumber } from 'primereact/inputnumber'
 import { getTasks, createTask, updateTask, deleteTask } from '../../services/taskService'
 import './EditingDeliverables.css'
 
-const KANBAN_STAGES = ['New', 'Shoot Completed', 'Editing Completed', 'Review', 'On Hold', 'Delivered']
+const KANBAN_STAGES = [
+  'To Do',
+  'Culling',
+  'Editing & Album Design',
+  'Quality Check',
+  'Final Approval',
+  'Production',
+  'Ready for Delivery',
+  'Delivered'
+]
 
 export default function EditingDeliverables({ onShowToast }) {
   const [tasks, setTasks] = useState([])
@@ -29,12 +38,16 @@ export default function EditingDeliverables({ onShowToast }) {
         const deliverableType = t.deliverableType || t.description || 'Edited Photos'
         const assignedEditor = t.assignedEditor || t.assignedTo?.name || 'Deepa (Lead Editor)'
         
-        let status = t.status || 'New'
-        if (status === 'In Progress') status = 'Editing Completed'
+        let status = t.status || 'To Do'
+        if (status === 'New') status = 'To Do'
+        if (status === 'Shoot Completed') status = 'Culling'
+        if (status === 'In Progress' || status === 'Editing Completed') status = 'Editing & Album Design'
+        if (status === 'On Hold') status = 'Quality Check'
+        if (status === 'Review') status = 'Final Approval'
         if (status === 'Approved' || status === 'Completed') status = 'Delivered'
-        if (!KANBAN_STAGES.includes(status)) status = 'New'
+        if (!KANBAN_STAGES.includes(status)) status = 'To Do'
 
-        const progress = typeof t.progress === 'number' ? t.progress : (status === 'Delivered' ? 100 : status === 'Editing Completed' ? 75 : status === 'Shoot Completed' ? 25 : 0)
+        const progress = typeof t.progress === 'number' ? t.progress : (status === 'Delivered' ? 100 : status === 'Ready for Delivery' ? 90 : status === 'Production' ? 80 : status === 'Final Approval' ? 70 : status === 'Quality Check' ? 60 : status === 'Editing & Album Design' ? 45 : status === 'Culling' ? 20 : 0)
 
         return {
           _id: t._id,
@@ -63,7 +76,7 @@ export default function EditingDeliverables({ onShowToast }) {
           progress: 85,
           deadline: '2026-08-22',
           priority: 'High',
-          status: 'Editing Completed',
+          status: 'Editing & Album Design',
           notes: 'Color grading requested for sunset couple portraits.'
         },
         {
@@ -87,7 +100,7 @@ export default function EditingDeliverables({ onShowToast }) {
           progress: 30,
           deadline: '2026-08-28',
           priority: 'Medium',
-          status: 'Shoot Completed',
+          status: 'Culling',
           notes: 'Album culling in progress.'
         },
         {
@@ -96,10 +109,10 @@ export default function EditingDeliverables({ onShowToast }) {
           clientName: 'Pooja Hegde',
           assignedEditor: 'Deepa (Lead Editor)',
           deliverableType: 'Highlight Video',
-          progress: 50,
+          progress: 70,
           deadline: '2026-08-25',
           priority: 'Medium',
-          status: 'Review',
+          status: 'Final Approval',
           notes: 'Awaiting client approval on draft video edit.'
         }
       ]
@@ -128,7 +141,7 @@ export default function EditingDeliverables({ onShowToast }) {
   const [formType, setFormType] = useState('Edited Photos')
   const [formEditor, setFormEditor] = useState('Deepa (Lead Editor)')
   const [formProgress, setFormProgress] = useState(0)
-  const [formStage, setFormStage] = useState('New')
+  const [formStage, setFormStage] = useState('To Do')
   const [formDeadline, setFormDeadline] = useState('2026-08-20')
   const [formPriority, setFormPriority] = useState('Medium')
   const [formNotes, setFormNotes] = useState('')
@@ -144,7 +157,7 @@ export default function EditingDeliverables({ onShowToast }) {
     setFormType('Edited Photos')
     setFormEditor('Deepa (Lead Editor)')
     setFormProgress(0)
-    setFormStage('New')
+    setFormStage('To Do')
     setFormDeadline('2026-08-20')
     setFormPriority('Medium')
     setFormNotes('')

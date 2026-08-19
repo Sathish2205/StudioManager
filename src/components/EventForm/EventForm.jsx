@@ -262,7 +262,7 @@ export default function EventForm({ eventToEdit, onSuccess, onCancel }) {
             description: `${data.eventType || 'Wedding'} Shoot Deliverable`,
             deliverableType: 'Edited Photos',
             assignedEditor: 'Deepa (Lead Editor)',
-            status: 'New',
+            status: 'To Do',
             priority: 'Medium',
             dueDate: data.eventDate ? new Date(data.eventDate).toISOString().split('T')[0] : '2026-08-20',
             progress: 0

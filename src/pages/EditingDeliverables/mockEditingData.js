@@ -1,2 +1,11 @@
 export const MOCK_KANBAN_TASKS = []
-export const KANBAN_STAGES = ['New', 'Shoot Completed', 'Editing Completed', 'Review', 'On Hold', 'Delivered']
+export const KANBAN_STAGES = [
+  'To Do',
+  'Culling',
+  'Editing & Album Design',
+  'Quality Check',
+  'Final Approval',
+  'Production',
+  'Ready for Delivery',
+  'Delivered'
+]

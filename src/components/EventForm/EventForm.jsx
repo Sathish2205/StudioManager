@@ -18,6 +18,7 @@ import { getPackages } from '../../services/packageService'
 import { getStaff } from '../../services/staffService'
 import { createEvent, updateEvent } from '../../services/eventService'
 import { createClient } from '../../services/clientService'
+import { createTask } from '../../services/taskService'
 import './EventForm.css'
 
 export default function EventForm({ eventToEdit, onSuccess, onCancel }) {
@@ -253,6 +254,22 @@ export default function EventForm({ eventToEdit, onSuccess, onCancel }) {
         res = await updateEvent(targetId, backendPayload)
       } else {
         res = await createEvent(backendPayload)
+        // Automatically create a new Kanban editing task in stage "New"
+        try {
+          await createTask({
+            title: data.clientName || 'Client',
+            eventName: data.eventName || `${data.clientName || 'Special'} Event`,
+            description: `${data.eventType || 'Wedding'} Shoot Deliverable`,
+            deliverableType: 'Edited Photos',
+            assignedEditor: 'Deepa (Lead Editor)',
+            status: 'New',
+            priority: 'Medium',
+            dueDate: data.eventDate ? new Date(data.eventDate).toISOString().split('T')[0] : '2026-08-20',
+            progress: 0
+          })
+        } catch (err) {
+          console.error('Failed to auto-create Kanban editing task:', err)
+        }
       }
 
       const eventId = res?.data?._id || res?._id || res?.id || targetId || `EVT-${Date.now()}`

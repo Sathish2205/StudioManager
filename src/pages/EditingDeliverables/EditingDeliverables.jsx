@@ -12,7 +12,7 @@ import { InputNumber } from 'primereact/inputnumber'
 import { getTasks, createTask, updateTask, deleteTask } from '../../services/taskService'
 import './EditingDeliverables.css'
 
-const KANBAN_STAGES = ['New', 'In Progress', 'Review', 'Approved', 'Delivered']
+const KANBAN_STAGES = ['New', 'Shoot Completed', 'Editing Completed', 'Review', 'On Hold', 'Delivered']
 
 export default function EditingDeliverables({ onShowToast }) {
   const [tasks, setTasks] = useState([])
@@ -23,20 +23,87 @@ export default function EditingDeliverables({ onShowToast }) {
     setLoading(true)
     const data = await getTasks()
     if (data && data.length > 0) {
-      const mapped = data.map(t => ({
-        _id: t._id,
-        id: t._id ? `TASK-${t._id.slice(-4).toUpperCase()}` : `TASK-${Date.now()}`,
-        eventName: t.eventId ? t.eventId.eventName : 'Studio Task',
-        clientName: t.title || 'Client',
-        type: t.description || 'Edited Photos',
-        editor: t.assignedTo ? t.assignedTo.name : 'Unassigned',
-        progress: t.status === 'Completed' ? 100 : t.status === 'In Progress' ? 50 : 0,
-        stage: t.status === 'Completed' ? 'Delivered' : t.status === 'In Progress' ? 'In Progress' : 'New',
-        deadline: t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : '',
-        priority: t.priority || 'Medium',
-        notes: t.description || ''
-      }))
+      const mapped = data.map((t) => {
+        const eventName = t.eventName || t.eventId?.eventName || t.eventId?.couple || t.title || 'Studio Deliverable'
+        const clientName = t.clientName || t.title || 'Client'
+        const deliverableType = t.deliverableType || t.description || 'Edited Photos'
+        const assignedEditor = t.assignedEditor || t.assignedTo?.name || 'Deepa (Lead Editor)'
+        
+        let status = t.status || 'New'
+        if (status === 'In Progress') status = 'Editing Completed'
+        if (status === 'Approved' || status === 'Completed') status = 'Delivered'
+        if (!KANBAN_STAGES.includes(status)) status = 'New'
+
+        const progress = typeof t.progress === 'number' ? t.progress : (status === 'Delivered' ? 100 : status === 'Editing Completed' ? 75 : status === 'Shoot Completed' ? 25 : 0)
+
+        return {
+          _id: t._id,
+          id: t._id ? `TASK-${t._id.slice(-4).toUpperCase()}` : `TASK-${Date.now()}`,
+          eventName,
+          clientName,
+          deliverableType,
+          assignedEditor,
+          progress,
+          status,
+          deadline: t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : (t.deadline || '2026-08-20'),
+          priority: t.priority || 'Medium',
+          notes: t.notes || t.description || ''
+        }
+      })
       setTasks(mapped)
+    } else {
+      // Default initial tasks if database is empty
+      const initialDefaultTasks = [
+        {
+          id: 'TSK-101',
+          eventName: 'Ananya & Vikram Wedding',
+          clientName: 'Ananya Sharma',
+          assignedEditor: 'Deepa (Lead Editor)',
+          deliverableType: 'Edited Photos',
+          progress: 85,
+          deadline: '2026-08-22',
+          priority: 'High',
+          status: 'Editing Completed',
+          notes: 'Color grading requested for sunset couple portraits.'
+        },
+        {
+          id: 'TSK-102',
+          eventName: 'Harish Engagement Shoot',
+          clientName: 'Harish',
+          assignedEditor: 'Rahul Video Editor',
+          deliverableType: 'Teaser',
+          progress: 100,
+          deadline: '2026-08-20',
+          priority: 'Urgent',
+          status: 'Delivered',
+          notes: 'Teaser video delivered to client on WhatsApp.'
+        },
+        {
+          id: 'TSK-103',
+          eventName: 'Gokulnath Royal Wedding',
+          clientName: 'Gokulnath',
+          assignedEditor: 'Arun Retoucher',
+          deliverableType: 'Album',
+          progress: 30,
+          deadline: '2026-08-28',
+          priority: 'Medium',
+          status: 'Shoot Completed',
+          notes: 'Album culling in progress.'
+        },
+        {
+          id: 'TSK-104',
+          eventName: 'Pooja Hegde Portrait Shoot',
+          clientName: 'Pooja Hegde',
+          assignedEditor: 'Deepa (Lead Editor)',
+          deliverableType: 'Highlight Video',
+          progress: 50,
+          deadline: '2026-08-25',
+          priority: 'Medium',
+          status: 'Review',
+          notes: 'Awaiting client approval on draft video edit.'
+        }
+      ]
+      setTasks(initialDefaultTasks)
     }
     setLoading(false)
   }
@@ -86,28 +153,44 @@ export default function EditingDeliverables({ onShowToast }) {
 
   const handleOpenEdit = (task) => {
     setEditingTask(task)
-    setFormEventName(task.eventName)
-    setFormClientName(task.clientName)
-    setFormType(task.deliverableType)
-    setFormEditor(task.assignedEditor)
-    setFormProgress(task.progress)
-    setFormStage(task.status)
-    setFormDeadline(task.deadline)
-    setFormPriority(task.priority)
-    setFormNotes(task.notes)
+    setFormEventName(task.eventName || '')
+    setFormClientName(task.clientName || '')
+    setFormType(task.deliverableType || 'Edited Photos')
+    setFormEditor(task.assignedEditor || 'Deepa (Lead Editor)')
+    setFormProgress(task.progress || 0)
+    setFormStage(task.status || 'New')
+    setFormDeadline(task.deadline || '2026-08-20')
+    setFormPriority(task.priority || 'Medium')
+    setFormNotes(task.notes || '')
     setIsDialogOpen(true)
   }
 
-  const handleSaveTask = () => {
+  const handleSaveTask = async () => {
     if (!formEventName || !formClientName) {
       triggerToast('Event name and client name are required', 'error')
       return
     }
 
+    const payload = {
+      title: formClientName,
+      eventName: formEventName,
+      description: formNotes ? `${formType} - ${formNotes}` : formType,
+      deliverableType: formType,
+      assignedEditor: formEditor,
+      status: formStage,
+      priority: formPriority,
+      dueDate: formDeadline,
+      progress: formProgress
+    }
+
     if (editingTask) {
+      const targetId = editingTask._id || editingTask.id
+      if (editingTask._id) {
+        await updateTask(editingTask._id, payload)
+      }
       setTasks((prev) =>
         prev.map((t) =>
-          t.id === editingTask.id
+          (t.id === targetId || t._id === targetId)
             ? {
                 ...t,
                 eventName: formEventName,
@@ -123,17 +206,16 @@ export default function EditingDeliverables({ onShowToast }) {
             : t
         )
       )
-      triggerToast(`Editing task ${editingTask.id} updated!`, 'success')
+      triggerToast(`Editing task ${targetId} updated successfully!`, 'success')
     } else {
+      const res = await createTask(payload)
       const newT = {
-        id: `TSK-${200 + tasks.length + 1}`,
-        eventId: `EVT-2026-${200 + tasks.length + 1}`,
+        _id: res?._id,
+        id: res?._id ? `TASK-${res._id.slice(-4).toUpperCase()}` : `TSK-${Date.now()}`,
         eventName: formEventName,
         clientName: formClientName,
         assignedEditor: formEditor,
         deliverableType: formType,
-        photosTotal: 500,
-        photosCompleted: Math.round(500 * (formProgress / 100)),
         progress: formProgress,
         deadline: formDeadline,
         priority: formPriority,
@@ -141,16 +223,25 @@ export default function EditingDeliverables({ onShowToast }) {
         notes: formNotes || 'New task created.'
       }
       setTasks([newT, ...tasks])
-      triggerToast(`New editing task ${newT.id} created!`, 'success')
+      triggerToast(`New editing task ${newT.id} created & saved!`, 'success')
     }
     setIsDialogOpen(false)
   }
 
-  const handleMoveStage = (taskId, nextStage) => {
+  const handleMoveStage = async (taskId, nextStage) => {
+    const taskObj = tasks.find((t) => t.id === taskId || t._id === taskId)
+
+    // Update state locally for responsive UI
     setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status: nextStage } : t))
+      prev.map((t) => (t.id === taskId || t._id === taskId ? { ...t, status: nextStage } : t))
     )
-    triggerToast(`Task ${taskId} moved to ${nextStage}!`)
+
+    // Persist status change to API
+    if (taskObj && taskObj._id) {
+      await updateTask(taskObj._id, { status: nextStage })
+    }
+
+    triggerToast(`Task ${taskId} moved to ${nextStage}!`, 'success')
   }
 
   const filteredTasks = tasks.filter((t) => {

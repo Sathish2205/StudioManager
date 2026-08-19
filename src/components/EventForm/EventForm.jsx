@@ -214,7 +214,7 @@ export default function EventForm({ eventToEdit, onSuccess, onCancel }) {
         } else {
           const nameParts = clientName.trim().split(' ')
           const firstName = nameParts[0] || 'Client'
-          const lastName = nameParts.slice(1).join(' ') || 'User'
+          const lastName = nameParts.slice(1).join(' ') || ''
           const newClient = await createClient({
             firstName,
             lastName,

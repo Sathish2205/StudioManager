@@ -3,7 +3,7 @@ import { Dialog } from 'primereact/dialog'
 import SmartReminders from '../SmartReminders/SmartReminders'
 import './DashboardHeader.css'
 
-export default function DashboardHeader({ activeTab = 'home', setActiveTab }) {
+export default function DashboardHeader({ activeTab = 'home', setActiveTab, onToggleSidebar }) {
   const [isRemindersOpen, setIsRemindersOpen] = useState(false)
   const [toastMsg, setToastMsg] = useState(null)
 
@@ -83,6 +83,15 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab }) {
       )}
 
       <header className="portal-header">
+        {/* Mobile Hamburger Toggle */}
+        <button
+          className="portal-header__hamburger"
+          onClick={onToggleSidebar}
+          aria-label="Toggle sidebar menu"
+        >
+          <i className="pi pi-bars" />
+        </button>
+
         {/* Left Title / Interactive Breadcrumb with Home Icon Only */}
         <div className="portal-header__left">
           <div className="portal-header__breadcrumb">

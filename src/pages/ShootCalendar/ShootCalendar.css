@@ -360,3 +360,86 @@
 .cal-overflow-chip:hover {
   background: #e2e8f0;
 }
+
+/* ── Responsive: Shoot Calendar ── */
+@media (max-width: 768px) {
+  .calendar-top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .calendar-nav-bar {
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0.65rem 0.85rem;
+    align-items: flex-start;
+  }
+
+  .calendar-nav-controls {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .calendar-grid-cells {
+    grid-auto-rows: minmax(80px, auto);
+  }
+
+  .calendar-date-cell {
+    min-height: 80px;
+    padding: 0.35rem;
+  }
+
+  .calendar-week-day {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.68rem;
+  }
+
+  .cal-event-chip {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.3rem;
+  }
+
+  .cal-event-chip__title {
+    font-size: 0.65rem;
+  }
+
+  .cal-event-chip__time {
+    display: none;
+  }
+
+  .calendar-view-btn {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-portal-title {
+    font-size: 1.25rem;
+  }
+
+  .calendar-grid-cells {
+    grid-auto-rows: minmax(60px, auto);
+  }
+
+  .calendar-date-cell {
+    min-height: 60px;
+    padding: 0.25rem;
+    gap: 0.2rem;
+  }
+
+  .date-number {
+    font-size: 0.72rem;
+    width: 20px;
+    height: 20px;
+  }
+
+  .day-count-indicator {
+    font-size: 0.6rem;
+  }
+
+  .cal-event-chip__title {
+    font-size: 0.6rem;
+  }
+}

@@ -71,9 +71,11 @@ function App() {
   const [selectedInvoiceEvent, setSelectedInvoiceEvent] = useState(null)
   const [selectedEditEvent, setSelectedEditEvent] = useState(null)
   const [globalToastMsg, setGlobalToastMsg] = useState(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const setActiveTab = (tabKey) => {
     setActiveTabState(tabKey)
+    setSidebarOpen(false) // auto-close sidebar on mobile
     const targetPath = TAB_TO_PATH[tabKey] || '/'
     if (window.location.pathname !== targetPath) {
       window.history.pushState({}, '', targetPath)
@@ -156,9 +158,9 @@ function App() {
       {/* ── WORKFLOW MANAGEMENT ── */}
       {activeTab === 'workflow' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <WorkflowManagement />
             </div>
@@ -169,9 +171,9 @@ function App() {
       {/* ── CUSTOMER CRM ── */}
       {activeTab === 'crm' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <CustomerCRM onNavigateAddEvent={() => handleNavigateEditEvent(null)} />
             </div>
@@ -182,9 +184,9 @@ function App() {
       {/* ── ADD / EDIT EVENT PAGE ── */}
       {activeTab === 'add-event' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <AddEventPage
                 eventToEdit={selectedEditEvent}
@@ -209,9 +211,9 @@ function App() {
       {/* ── INVOICE PAGE ── */}
       {activeTab === 'invoice' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <InvoicePage
                 event={selectedInvoiceEvent}
@@ -226,9 +228,9 @@ function App() {
       {/* ── MODULE 1: SHOOT CALENDAR ── */}
       {activeTab === 'calendar' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <ShootCalendar
                 onShowToast={showGlobalToast}
@@ -242,9 +244,9 @@ function App() {
       {/* ── MODULE 2: EDITING & DELIVERABLES ── */}
       {activeTab === 'tasks' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <EditingDeliverables onShowToast={showGlobalToast} />
             </div>
@@ -255,9 +257,9 @@ function App() {
       {/* ── MODULE 3: FINANCE & INVOICES ── */}
       {activeTab === 'finance' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <FinanceInvoices onShowToast={showGlobalToast} />
             </div>
@@ -268,9 +270,9 @@ function App() {
       {/* ── MODULE 4: PACKAGES & QUOTES ── */}
       {activeTab === 'packages' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <PackagesQuotes
                 onShowToast={showGlobalToast}
@@ -284,9 +286,9 @@ function App() {
       {/* ── MODULE 5: CONTRACTS & DOCS ── */}
       {activeTab === 'contracts' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <ContractsDocs onShowToast={showGlobalToast} />
             </div>
@@ -297,9 +299,9 @@ function App() {
       {/* ── MODULE 6: CREW & PHOTOGRAPHERS ── */}
       {activeTab === 'crew' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <CrewManagement onShowToast={showGlobalToast} />
             </div>
@@ -310,9 +312,9 @@ function App() {
       {/* ── MODULE 7: EQUIPMENT TRACKER ── */}
       {activeTab === 'equipment' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <EquipmentTracker onShowToast={showGlobalToast} />
             </div>
@@ -323,9 +325,9 @@ function App() {
       {/* ── MODULE 8: STUDIO HELPDESK ── */}
       {activeTab === 'helpdesk' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <StudioHelpdesk onShowToast={showGlobalToast} />
             </div>
@@ -336,9 +338,9 @@ function App() {
       {/* ── MODULE 9: CLIENT REQUESTS ── */}
       {activeTab === 'requests' && (
         <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
           <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <ClientRequests onShowToast={showGlobalToast} />
             </div>

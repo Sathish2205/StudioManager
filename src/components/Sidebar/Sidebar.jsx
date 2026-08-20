@@ -1,7 +1,7 @@
 import React from 'react'
 import './Sidebar.css'
 
-export default function Sidebar({ activeTab, setActiveTab }) {
+export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onCloseMobile }) {
   const menuItems = [
     { id: 'home', label: 'Studio Overview', icon: 'pi pi-home' },
     { id: 'events', label: 'Events & Shoots', icon: 'pi pi-calendar' },
@@ -18,47 +18,65 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     { id: 'requests', label: 'Client Requests', icon: 'pi pi-layers' }
   ]
 
+  const handleNavClick = (tabId) => {
+    setActiveTab(tabId)
+    // Auto-close sidebar on mobile after navigation
+    if (onCloseMobile) onCloseMobile()
+  }
+
   return (
-    <aside className="portal-sidebar">
-      {/* Brand Logo Header */}
-      <div className="portal-sidebar__brand">
-        <div className="portal-sidebar__logo-wrap">
-          <span className="portal-sidebar__brand-name">
-            PhotoStudio<span className="portal-sidebar__brand-dot">⊙</span>PRO<sup>®</sup>
-          </span>
-          <span className="portal-sidebar__brand-sub">EVENT & FINANCE MANAGEMENT</span>
-        </div>
-      </div>
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isMobileOpen && (
+        <div className="portal-sidebar-backdrop" onClick={onCloseMobile} />
+      )}
 
-      {/* Profile Snippet Box */}
-      <div className="portal-sidebar__profile">
-        <div className="portal-sidebar__avatar-wrap">
-          <i className="pi pi-camera portal-sidebar__avatar-icon" />
-        </div>
-        <div className="portal-sidebar__user-details">
-          <span className="portal-sidebar__greeting">Hi SATHISH</span>
-          <a href="#info" className="portal-sidebar__view-link">Lead Studio Manager</a>
-        </div>
-        <button className="portal-sidebar__settings-btn" aria-label="Settings">
-          <i className="pi pi-cog" />
+      <aside className={`portal-sidebar ${isMobileOpen ? 'portal-sidebar--mobile-open' : ''}`}>
+        {/* Mobile Close Button */}
+        <button className="portal-sidebar__close-btn" onClick={onCloseMobile} aria-label="Close menu">
+          <i className="pi pi-times" />
         </button>
-      </div>
 
-      {/* Vertical Navigation Links */}
-      <nav className="portal-sidebar__nav">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            className={`portal-sidebar__item ${activeTab === item.id ? 'portal-sidebar__item--active' : ''}`}
-            onClick={() => setActiveTab(item.id)}
-          >
-            <div className="portal-sidebar__item-left">
-              <i className={`${item.icon} portal-sidebar__icon`} />
-              <span>{item.label}</span>
-            </div>
+        {/* Brand Logo Header */}
+        <div className="portal-sidebar__brand">
+          <div className="portal-sidebar__logo-wrap">
+            <span className="portal-sidebar__brand-name">
+              PhotoStudio<span className="portal-sidebar__brand-dot">⊙</span>PRO<sup>®</sup>
+            </span>
+            <span className="portal-sidebar__brand-sub">EVENT & FINANCE MANAGEMENT</span>
+          </div>
+        </div>
+
+        {/* Profile Snippet Box */}
+        <div className="portal-sidebar__profile">
+          <div className="portal-sidebar__avatar-wrap">
+            <i className="pi pi-camera portal-sidebar__avatar-icon" />
+          </div>
+          <div className="portal-sidebar__user-details">
+            <span className="portal-sidebar__greeting">Hi SATHISH</span>
+            <a href="#info" className="portal-sidebar__view-link">Lead Studio Manager</a>
+          </div>
+          <button className="portal-sidebar__settings-btn" aria-label="Settings">
+            <i className="pi pi-cog" />
           </button>
-        ))}
-      </nav>
-    </aside>
+        </div>
+
+        {/* Vertical Navigation Links */}
+        <nav className="portal-sidebar__nav">
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              className={`portal-sidebar__item ${activeTab === item.id ? 'portal-sidebar__item--active' : ''}`}
+              onClick={() => handleNavClick(item.id)}
+            >
+              <div className="portal-sidebar__item-left">
+                <i className={`${item.icon} portal-sidebar__icon`} />
+                <span>{item.label}</span>
+              </div>
+            </button>
+          ))}
+        </nav>
+      </aside>
+    </>
   )
 }

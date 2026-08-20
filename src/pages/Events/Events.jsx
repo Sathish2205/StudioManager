@@ -6,6 +6,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { Tag } from 'primereact/tag'
 import { Button } from 'primereact/button'
 import { ProgressBar } from 'primereact/progressbar'
+import { Dialog } from 'primereact/dialog'
 import Sidebar from '../../components/Sidebar'
 import DashboardHeader from '../../components/DashboardHeader'
 import EventDetailDrawer from '../../components/EventDetailDrawer'
@@ -19,6 +20,13 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
   const [selectedType, setSelectedType] = useState(null)
   const [selectedDetailEvent, setSelectedDetailEvent] = useState(null)
   const [drawerVisible, setDrawerVisible] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // Mobile Filter Dialog State
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [draftSearch, setDraftSearch] = useState('')
+  const [draftStatus, setDraftStatus] = useState(null)
+  const [draftType, setDraftType] = useState(null)
 
   // PhotoStudio Shoots & Events Dataset
   const [initialEvents, setInitialEvents] = useState([])
@@ -110,6 +118,33 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
 
     return matchesGlobal && matchesStatus && matchesType
   })
+
+  // Mobile Filter Dialog Handlers
+  const handleOpenMobileFilter = () => {
+    setDraftSearch(globalFilter)
+    setDraftStatus(selectedStatus)
+    setDraftType(selectedType)
+    setIsMobileFilterOpen(true)
+  }
+
+  const handleApplyMobileFilter = () => {
+    setGlobalFilter(draftSearch)
+    setSelectedStatus(draftStatus)
+    setSelectedType(draftType)
+    setIsMobileFilterOpen(false)
+  }
+
+  const handleResetMobileFilter = () => {
+    setDraftSearch('')
+    setDraftStatus(null)
+    setDraftType(null)
+    setGlobalFilter('')
+    setSelectedStatus(null)
+    setSelectedType(null)
+    setIsMobileFilterOpen(false)
+  }
+
+  const activeFilterCount = (globalFilter ? 1 : 0) + (selectedStatus ? 1 : 0) + (selectedType ? 1 : 0)
 
   const handleRowSelect = (rowData) => {
     setSelectedDetailEvent(rowData)
@@ -209,10 +244,10 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
 
   return (
     <div className="portal-layout">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
 
       <div className="portal-main">
-        <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+        <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         <div className="portal-body">
           {/* Header Banner */}
@@ -236,8 +271,8 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
             />
           </div>
 
-          {/* ─── Search & Filter Toolbar ─── */}
-          <div className="events-toolbar">
+          {/* ─── Desktop Search & Filter Toolbar ─── */}
+          <div className="events-toolbar events-toolbar--desktop">
             <div className="events-toolbar__left">
               {/* Global Search */}
               <div className="events-search">
@@ -277,6 +312,88 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
               />
             </div>
           </div>
+
+          {/* ─── Mobile Search & Filter Toolbar ─── */}
+          <div className="events-toolbar events-toolbar--mobile">
+            <div className="events-search">
+              <i className="pi pi-search events-search__icon" />
+              <InputText
+                value={globalFilter}
+                onChange={(e) => setGlobalFilter(e.target.value)}
+                placeholder="Search events..."
+                className="events-search__input"
+              />
+              {globalFilter && (
+                <i
+                  className="pi pi-times events-search__clear"
+                  onClick={() => setGlobalFilter('')}
+                />
+              )}
+            </div>
+            <Button
+              icon="pi pi-filter"
+              label={activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+              className="mobile-filter-btn p-button-primary"
+              onClick={handleOpenMobileFilter}
+            />
+          </div>
+
+          {/* ─── Mobile Filter Dialog Modal ─── */}
+          <Dialog
+            header="🔍 Filter Events & Shoots"
+            visible={isMobileFilterOpen}
+            style={{ width: '92vw', maxWidth: '440px' }}
+            onHide={() => setIsMobileFilterOpen(false)}
+            dismissableMask
+          >
+            <div className="mobile-filter-form">
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">Search Keyword</label>
+                <InputText
+                  value={draftSearch}
+                  onChange={(e) => setDraftSearch(e.target.value)}
+                  placeholder="Search couple, venue, crew..."
+                />
+              </div>
+
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">Status</label>
+                <Dropdown
+                  value={draftStatus}
+                  options={statusOptions}
+                  onChange={(e) => setDraftStatus(e.value)}
+                  placeholder="Filter by Status"
+                  showClear
+                />
+              </div>
+
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">Event Type</label>
+                <Dropdown
+                  value={draftType}
+                  options={typeOptions}
+                  onChange={(e) => setDraftType(e.value)}
+                  placeholder="Filter by Event Type"
+                  showClear
+                />
+              </div>
+            </div>
+
+            <div className="mobile-filter-dialog-footer pt-3">
+              <Button
+                label="Reset"
+                icon="pi pi-refresh"
+                className="p-button-outlined p-button-secondary"
+                onClick={handleResetMobileFilter}
+              />
+              <Button
+                label="Apply Filters"
+                icon="pi pi-check"
+                className="p-button-primary"
+                onClick={handleApplyMobileFilter}
+              />
+            </div>
+          </Dialog>
 
           {/* ─── PrimeReact DataTable with Sticky Bottom Paginator ─── */}
           <div className="events-table-card">

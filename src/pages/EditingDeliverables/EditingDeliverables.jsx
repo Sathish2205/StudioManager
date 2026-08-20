@@ -131,6 +131,39 @@ export default function EditingDeliverables({ onShowToast }) {
   const [filterType, setFilterType] = useState(null)
   const [filterEditor, setFilterEditor] = useState(null)
 
+  // Mobile Filter Dialog State
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [draftSearch, setDraftSearch] = useState('')
+  const [draftType, setDraftType] = useState(null)
+  const [draftEditor, setDraftEditor] = useState(null)
+
+  const handleOpenMobileFilter = () => {
+    setDraftSearch(searchQuery)
+    setDraftType(filterType)
+    setDraftEditor(filterEditor)
+    setIsMobileFilterOpen(true)
+  }
+
+  const handleApplyMobileFilter = () => {
+    setSearchQuery(draftSearch)
+    setFilterType(draftType)
+    setFilterEditor(draftEditor)
+    setIsMobileFilterOpen(false)
+  }
+
+  const handleResetMobileFilter = () => {
+    setDraftSearch('')
+    setDraftType(null)
+    setDraftEditor(null)
+    setSearchQuery('')
+    setFilterType(null)
+    setFilterEditor(null)
+    setIsMobileFilterOpen(false)
+  }
+
+  const activeFilterCount = (searchQuery ? 1 : 0) + (filterType ? 1 : 0) + (filterEditor ? 1 : 0)
+
+
   // Dialog State
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
@@ -315,8 +348,8 @@ export default function EditingDeliverables({ onShowToast }) {
         </button>
       </div>
 
-      {/* ── Toolbar Search & Filters ── */}
-      <div className="events-toolbar">
+      {/* ─── Desktop Search & Filter Toolbar ─── */}
+      <div className="events-toolbar events-toolbar--desktop">
         <div className="events-toolbar__left">
           <div className="events-search">
             <i className="pi pi-search events-search__icon" />
@@ -375,6 +408,103 @@ export default function EditingDeliverables({ onShowToast }) {
           )}
         </div>
       </div>
+
+      {/* ─── Mobile Search & Filter Toolbar ─── */}
+      <div className="events-toolbar events-toolbar--mobile">
+        <div className="events-search">
+          <i className="pi pi-search events-search__icon" />
+          <InputText
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search deliverables..."
+            className="events-search__input"
+          />
+          {searchQuery && (
+            <i
+              className="pi pi-times events-search__clear"
+              onClick={() => setSearchQuery('')}
+            />
+          )}
+        </div>
+        <Button
+          icon="pi pi-filter"
+          label={activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+          className="mobile-filter-btn p-button-primary"
+          onClick={handleOpenMobileFilter}
+        />
+      </div>
+
+      {/* ─── Mobile Filter Dialog Modal ─── */}
+      <Dialog
+        header="🔍 Filter Deliverables"
+        visible={isMobileFilterOpen}
+        style={{ width: '92vw', maxWidth: '440px' }}
+        onHide={() => setIsMobileFilterOpen(false)}
+        dismissableMask
+      >
+        <div className="mobile-filter-form">
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Search Keyword</label>
+            <InputText
+              value={draftSearch}
+              onChange={(e) => setDraftSearch(e.target.value)}
+              placeholder="Search event, client, editor..."
+            />
+          </div>
+
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Deliverable Type</label>
+            <Dropdown
+              value={draftType}
+              options={[
+                { label: 'All Deliverables', value: 'All Deliverables' },
+                { label: 'Edited Photos', value: 'Edited Photos' },
+                { label: 'Wedding Video', value: 'Wedding Video' },
+                { label: 'Highlight Video', value: 'Highlight Video' },
+                { label: 'Teaser', value: 'Teaser' },
+                { label: 'Album', value: 'Album' },
+                { label: 'Reel', value: 'Reel' },
+                { label: 'Raw Files', value: 'Raw Files' }
+              ]}
+              onChange={(e) => setDraftType(e.value)}
+              placeholder="Deliverable Type"
+              showClear
+            />
+          </div>
+
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Assigned Editor</label>
+            <Dropdown
+              value={draftEditor}
+              options={[
+                { label: 'All Editors', value: 'All Editors' },
+                { label: 'Deepa (Lead Editor)', value: 'Deepa (Lead Editor)' },
+                { label: 'Rahul Video Editor', value: 'Rahul Video Editor' },
+                { label: 'Arun Retoucher', value: 'Arun Retoucher' }
+              ]}
+              onChange={(e) => setDraftEditor(e.value)}
+              placeholder="Assigned Editor"
+              showClear
+            />
+          </div>
+        </div>
+
+        <div className="mobile-filter-dialog-footer pt-3">
+          <Button
+            label="Reset"
+            icon="pi pi-refresh"
+            className="p-button-outlined p-button-secondary"
+            onClick={handleResetMobileFilter}
+          />
+          <Button
+            label="Apply Filters"
+            icon="pi pi-check"
+            className="p-button-primary"
+            onClick={handleApplyMobileFilter}
+          />
+        </div>
+      </Dialog>
+
 
       {/* ── TAB 1: KANBAN WORKFLOW ── */}
       {activeTab === 'kanban' && (

@@ -653,3 +653,52 @@
   color: #1e293b !important;
   border-color: #94a3b8 !important;
 }
+
+/* ── Responsive: Workflow Management ── */
+@media (max-width: 768px) {
+  .wf-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .wf-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+
+  .wf-metric-box {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .wf-metric-num {
+    font-size: 1.2rem;
+  }
+
+  .events-datatable .p-paginator {
+    left: 0;
+  }
+
+  .wf-table__progress-box {
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wf-header__title {
+    font-size: 1.25rem;
+  }
+
+  .wf-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .wf-metric-num {
+    font-size: 1rem;
+  }
+
+  .wf-metric-label {
+    font-size: 0.65rem;
+  }
+}

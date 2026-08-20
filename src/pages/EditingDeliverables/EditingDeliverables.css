@@ -80,3 +80,49 @@
   padding: 0.85rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
+
+/* ── Responsive: Editing & Deliverables ── */
+@media (max-width: 768px) {
+  .editing-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .editing-header__actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .kanban-board {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 0.5rem;
+  }
+
+  .kanban-board::-webkit-scrollbar {
+    display: none;
+  }
+
+  .kanban-column {
+    min-width: 240px;
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 480px) {
+  .editing-header__title {
+    font-size: 1.25rem;
+  }
+
+  .kanban-column {
+    min-width: 220px;
+    max-width: 220px;
+    padding: 0.65rem;
+  }
+
+  .kanban-card {
+    padding: 0.65rem;
+  }
+}

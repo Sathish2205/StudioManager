@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const API_BASE = import.meta.env.VITE_API_URL || 'https://student-data-manager-ruc1.onrender.com/api'
 
 // Helper to acquire a valid JWT token automatically if missing or expired
 export const getOrFetchToken = async () => {

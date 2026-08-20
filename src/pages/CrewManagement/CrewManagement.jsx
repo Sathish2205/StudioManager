@@ -27,14 +27,18 @@ export default function CrewManagement({ onShowToast }) {
         id: st._id ? `CREW-${st._id.slice(-4).toUpperCase()}` : `CREW-${Date.now()}`,
         name: st.name || 'Staff Member',
         role: st.role || 'Photographer',
-        phone: st.phone || '',
-        email: st.email || '',
+        phone: st.phone || '+91 98765 43210',
+        email: st.email || 'crew@studio.com',
         status: st.status === 'Active' ? 'Available' : st.status || 'Available',
         eventsCompleted: Math.floor(Math.random() * 20) + 5,
         rating: 4.9,
         specialization: st.specialization || 'Wedding Photography',
+        experience: st.experience || '3+ Years',
+        workload: st.workload || Math.floor(Math.random() * 60) + 20,
+        skills: st.skills && st.skills.length > 0 ? st.skills : ['Wedding Photography', 'Portrait', 'Outdoor Shoots'],
+        avatar: st.avatar || null,
         upcomingEventsCount: 0,
-        assignments: []
+        assignments: st.assignments || []
       }))
       setCrewList(mapped)
     }

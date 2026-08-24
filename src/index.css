@@ -404,21 +404,16 @@ img {
   color: #1d4ed8;
 }
 
-/* ── GLOBAL EXACT EVENTS PAGE PAGINATOR (Fixed Bottom Bar) ── */
+/* ── GLOBAL PAGINATOR STYLING ── */
 .events-datatable .p-paginator {
-  position: fixed !important;
-  bottom: 0 !important;
-  left: 250px !important;
-  right: 0 !important;
-  z-index: 100 !important;
+  position: relative !important;
   background: #ffffff !important;
   border-top: 1px solid #e2e8f0 !important;
   border-left: none !important;
   border-right: none !important;
   border-bottom: none !important;
-  border-radius: 0 !important;
-  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.04) !important;
-  padding: 0.4rem 1.25rem !important;
+  border-radius: 0 0 12px 12px !important;
+  padding: 0.6rem 1.25rem !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;

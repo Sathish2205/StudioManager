@@ -1,3 +1,7 @@
+/* =========================================================
+   CREATE & EDIT QUOTATION PROPOSAL STYLES (UNIFIED UI & MOBILE)
+   ========================================================= */
+
 .create-quote-container {
   max-width: 1100px;
   margin: 0 auto;
@@ -5,11 +9,13 @@
   animation: pageLoaderFadeIn 0.3s ease-out;
 }
 
+/* Header Action Bar */
 .create-quote-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+  gap: 1rem;
 }
 
 .create-quote__back-btn {
@@ -24,9 +30,11 @@
   gap: 0.4rem;
   padding: 0;
   margin-bottom: 0.35rem;
+  transition: color 0.15s ease;
 }
 
 .create-quote__back-btn:hover {
+  color: #0369a1;
   text-decoration: underline;
 }
 
@@ -34,6 +42,7 @@
   font-size: 1.6rem;
   font-weight: 800;
   color: #1e3a8a;
+  letter-spacing: -0.01em;
 }
 
 .create-quote-header__sub {
@@ -43,7 +52,9 @@
 
 .create-quote-header__actions {
   display: flex;
+  align-items: center;
   gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .create-quote-grid {
@@ -57,7 +68,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .create-quote-card__header {
@@ -72,24 +83,133 @@
 
 .quote-form-label {
   display: block;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: #475569;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   margin-bottom: 0.35rem;
 }
 
+/* ── UNIFORM INPUT CONTROL STYLING FOR ALL PRIMEREACT CONTROLS ── */
+
+/* Text Inputs */
+.create-quote-container .p-inputtext {
+  height: 38px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
+  color: #1e293b !important;
+  background: #ffffff !important;
+  padding: 0 0.85rem !important;
+  transition: all 0.15s ease !important;
+  box-shadow: none !important;
+}
+
+.create-quote-container .p-inputtext:hover {
+  border-color: #94a3b8 !important;
+}
+
+.create-quote-container .p-inputtext:focus,
+.create-quote-container .p-inputtext.p-focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15) !important;
+  outline: none !important;
+}
+
+/* Dropdown Inputs */
+.create-quote-container .p-dropdown {
+  height: 38px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  transition: all 0.15s ease !important;
+  box-shadow: none !important;
+}
+
+.create-quote-container .p-dropdown:hover {
+  border-color: #94a3b8 !important;
+}
+
+.create-quote-container .p-dropdown.p-focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15) !important;
+}
+
+.create-quote-container .p-dropdown .p-dropdown-label {
+  font-size: 0.875rem !important;
+  color: #1e293b !important;
+  padding: 0 0.85rem !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.create-quote-container .p-dropdown .p-dropdown-trigger {
+  width: 34px !important;
+  color: #64748b !important;
+}
+
+/* PrimeReact Calendar Alignment & Button Styling */
+.create-quote-container .p-calendar {
+  height: 38px !important;
+  display: flex !important;
+  width: 100% !important;
+}
+
+.create-quote-container .p-calendar .p-inputtext {
+  border-radius: 8px 0 0 8px !important;
+  border-right: none !important;
+  flex: 1 !important;
+}
+
+.create-quote-container .p-calendar .p-datepicker-trigger {
+  height: 38px !important;
+  width: 38px !important;
+  background: #0284c7 !important;
+  border: 1px solid #0284c7 !important;
+  border-radius: 0 8px 8px 0 !important;
+  color: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  box-shadow: none !important;
+}
+
+.create-quote-container .p-calendar .p-datepicker-trigger:hover {
+  background: #0369a1 !important;
+  border-color: #0369a1 !important;
+}
+
+/* PrimeReact InputNumber Controls */
+.create-quote-container .p-inputnumber {
+  height: 38px !important;
+  display: flex !important;
+  width: 100% !important;
+}
+
+.create-quote-container .p-inputnumber .p-inputtext {
+  width: 100% !important;
+  height: 38px !important;
+}
+
+/* ── SERVICE LINE ITEMS TABLE STYLING ── */
 .quote-services-table-wrap {
   overflow-x: auto;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 10px;
+  background: #ffffff;
 }
 
 .quote-services-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
+  min-width: 680px;
 }
 
 .quote-services-table th {
@@ -99,14 +219,19 @@
   font-weight: 700;
   text-transform: uppercase;
   font-size: 0.725rem;
-  letter-spacing: 0.03em;
-  border-bottom: 1px solid #e2e8f0;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #e2e8f0;
+  vertical-align: middle;
 }
 
 .quote-services-table td {
-  padding: 0.6rem 0.75rem;
+  padding: 0.65rem 0.75rem;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: middle;
+}
+
+.quote-services-table tr:last-child td {
+  border-bottom: none;
 }
 
 .quote-row-del-btn {
@@ -115,8 +240,12 @@
   color: #94a3b8;
   cursor: pointer;
   font-size: 0.95rem;
-  padding: 0.35rem;
-  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.15s ease;
 }
 
@@ -125,7 +254,7 @@
   background: #fef2f2;
 }
 
-/* Summary Totals Card */
+/* Summary Totals Box */
 .quote-summary-card {
   display: flex;
   flex-direction: column;
@@ -158,14 +287,59 @@
   margin-top: 0.5rem;
 }
 
+/* ── MOBILE RESPONSIVE STYLES ── */
+@media (max-width: 991px) {
+  .create-quote-container {
+    padding: 1rem;
+  }
+}
+
 @media (max-width: 768px) {
   .create-quote-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
+
+  .create-quote-header__title {
+    font-size: 1.35rem;
+  }
+
+  .create-quote-header__sub {
+    font-size: 0.82rem;
+  }
+
   .create-quote-header__actions {
     width: 100%;
-    justify-content: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .create-quote-header__actions .p-button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .create-quote-card {
+    padding: 1rem;
+  }
+
+  .create-quote-card__header {
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-quote-container {
+    padding: 0.75rem;
+  }
+
+  .quote-summary-row {
+    font-size: 0.8125rem;
+  }
+
+  .quote-summary-row--grand {
+    font-size: 1.05rem;
   }
 }

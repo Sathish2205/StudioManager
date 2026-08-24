@@ -494,9 +494,9 @@ export default function CreateQuotation({ onShowToast, onNavigateBack, onNavigat
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-column gap-2">
-                <Button label="Save & Send to Customer" icon="pi pi-send" className="p-button-primary w-full" onClick={() => handleSubmit('Sent')} />
-                <Button label="Save Draft" icon="pi pi-save" className="p-button-outlined p-button-secondary w-full" onClick={() => handleSubmit('Draft')} />
+              <div className="mt-4 flex justify-content-end align-items-center gap-2">
+                <Button label="Save Draft" icon="pi pi-save" className="p-button-outlined p-button-secondary p-button-sm" onClick={() => handleSubmit('Draft')} />
+                <Button label="Save & Send to Customer" icon="pi pi-send" className="p-button-primary p-button-sm" onClick={() => handleSubmit('Sent')} />
               </div>
             </div>
           </div>

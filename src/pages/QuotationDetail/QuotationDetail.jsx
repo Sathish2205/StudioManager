@@ -91,6 +91,13 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
         </div>
 
         <div className="quote-detail-actions-bar__btn-group">
+          <Button
+            label="Edit / Negotiate Price"
+            icon="pi pi-pencil"
+            className="p-button-outlined p-button-warning"
+            onClick={() => onNavigateEdit && onNavigateEdit(currentQuotation)}
+          />
+
           {currentQuotation.status !== 'Accepted' && (
             <Button
               label="Convert to Invoice"

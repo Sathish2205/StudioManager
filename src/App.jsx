@@ -277,7 +277,13 @@ function App() {
               <FinanceInvoices
                 onShowToast={showGlobalToast}
                 onNavigateCreateQuotation={(pkg) => {
+                  setSelectedQuotation(null)
                   setSelectedPackageForQuote(pkg || null)
+                  setActiveTab('create-quotation')
+                }}
+                onNavigateEditQuotation={(quote) => {
+                  setSelectedQuotation(quote)
+                  setSelectedPackageForQuote(null)
                   setActiveTab('create-quotation')
                 }}
                 onNavigateQuotationDetail={(quote) => {
@@ -323,6 +329,7 @@ function App() {
             <div className="portal-body">
               <CreateQuotation
                 initialPackage={selectedPackageForQuote}
+                quotationToEdit={selectedQuotation}
                 onShowToast={showGlobalToast}
                 onNavigateBack={() => setActiveTab('finance')}
                 onNavigateDetail={(createdQuote) => {
@@ -346,6 +353,10 @@ function App() {
                 quotation={selectedQuotation}
                 onShowToast={showGlobalToast}
                 onNavigateBack={() => setActiveTab('finance')}
+                onNavigateEdit={(quote) => {
+                  setSelectedQuotation(quote)
+                  setActiveTab('create-quotation')
+                }}
                 onNavigateInvoiceDetail={(createdInv) => {
                   setSelectedInvoice(createdInv)
                   setActiveTab('invoice-detail')

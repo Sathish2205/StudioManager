@@ -1,4 +1,5 @@
 import { apiGet, apiPost, apiPut, apiDelete } from './apiClient'
+import { createEvent } from './eventService'
 
 const LOCAL_STORAGE_KEY = 'studio_quotations'
 
@@ -122,6 +123,26 @@ export const convertQuotationToInvoice = async (id) => {
 
   localStorage.setItem('studio_invoices', JSON.stringify([newInvoice, ...localInvoices]))
   updateQuotationStatus(id, 'Accepted')
+
+  // Automatically create event record if not linked
+  try {
+    const newEventObj = {
+      eventName: quotation.eventName || 'Confirmed Wedding Shoot',
+      eventType: quotation.eventType || 'Wedding',
+      eventDate: quotation.eventDate || new Date().toISOString().split('T')[0],
+      venue: quotation.venue || 'Main Banquet Hall',
+      package: quotation.services && quotation.services.length > 0 ? quotation.services[0].name : 'Custom Package',
+      packageAmount: quotation.grandTotal || 0,
+      advanceAmount: 0,
+      totalPaid: 0,
+      remainingAmount: quotation.grandTotal || 0,
+      status: 'Confirmed'
+    }
+    await createEvent(newEventObj)
+  } catch (err) {
+    console.warn('Auto-create event from quotation warning:', err)
+  }
+
   return newInvoice
 }
 

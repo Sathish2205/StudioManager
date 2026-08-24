@@ -15,7 +15,7 @@ import { getInvoices, updateInvoice } from '../../services/invoiceService'
 import PageLoader from '../../components/PageLoader/PageLoader'
 import './FinanceInvoices.css'
 
-export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation, onNavigateQuotationDetail, onNavigateInvoiceDetail }) {
+export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation, onNavigateEditQuotation, onNavigateQuotationDetail, onNavigateInvoiceDetail }) {
   const [activeTab, setActiveTab] = useState('overview') // 'overview', 'quotations', 'invoices', 'payments', 'outstanding'
   const [loading, setLoading] = useState(true)
 
@@ -423,6 +423,17 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
                         onClick={(e) => handleConvertQuote(e, r)}
                       />
                     )}
+                    <Button
+                      icon="pi pi-pencil"
+                      rounded
+                      text
+                      severity="warning"
+                      tooltip="Edit / Negotiate Price"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (onNavigateEditQuotation) onNavigateEditQuotation(r)
+                      }}
+                    />
                     <Button
                       icon="pi pi-eye"
                       rounded

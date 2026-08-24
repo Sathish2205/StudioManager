@@ -7,10 +7,10 @@ import { Calendar } from 'primereact/calendar'
 import { getClients } from '../../services/clientService'
 import { getEvents } from '../../services/eventService'
 import { getPackages } from '../../services/packageService'
-import { createQuotation } from '../../services/quotationService'
+import { createQuotation, updateQuotation } from '../../services/quotationService'
 import './CreateQuotation.css'
 
-export default function CreateQuotation({ onShowToast, onNavigateBack, onNavigateDetail, initialPackage }) {
+export default function CreateQuotation({ onShowToast, onNavigateBack, onNavigateDetail, initialPackage, quotationToEdit }) {
   const [clients, setClients] = useState([])
   const [events, setEvents] = useState([])
   const [packages, setPackages] = useState([])
@@ -73,6 +73,25 @@ export default function CreateQuotation({ onShowToast, onNavigateBack, onNavigat
       }
     }
   }, [initialPackage])
+
+  // Populate fields if editing an existing quotation (negotiating price)
+  useEffect(() => {
+    if (quotationToEdit) {
+      setClientName(quotationToEdit.clientName || '')
+      setClientPhone(quotationToEdit.clientPhone || '')
+      setClientEmail(quotationToEdit.clientEmail || '')
+      setEventName(quotationToEdit.eventName || '')
+      if (quotationToEdit.eventDate) setEventDate(new Date(quotationToEdit.eventDate))
+      setVenue(quotationToEdit.venue || '')
+      if (quotationToEdit.validUntil) setValidUntil(new Date(quotationToEdit.validUntil))
+      if (quotationToEdit.services && quotationToEdit.services.length > 0) {
+        setServices(quotationToEdit.services.map((s, idx) => ({ ...s, id: idx + 1 })))
+      }
+      setDiscount(quotationToEdit.discount || 0)
+      setTaxPercent(quotationToEdit.taxPercent !== undefined ? quotationToEdit.taxPercent : 18)
+      if (quotationToEdit.notes) setNotes(quotationToEdit.notes)
+    }
+  }, [quotationToEdit])
 
   // Client dropdown change handler
   const handleClientSelect = (client) => {
@@ -180,13 +199,24 @@ export default function CreateQuotation({ onShowToast, onNavigateBack, onNavigat
       notes
     }
 
-    const created = await createQuotation(payload)
-    if (created) {
-      if (onShowToast) onShowToast(`Quotation ${created.quotationNumber || 'QT-2026-001'} ${status === 'Sent' ? 'created and sent to customer!' : 'saved as draft!'}`, 'success')
+    if (quotationToEdit) {
+      const updated = await updateQuotation(quotationToEdit._id || quotationToEdit.id, payload)
+      const resObj = updated || { ...quotationToEdit, ...payload }
+      if (onShowToast) onShowToast(`Quotation ${quotationToEdit.quotationNumber || 'QT'} updated successfully (Negotiated price saved)!`, 'success')
       if (onNavigateDetail) {
-        onNavigateDetail(created)
+        onNavigateDetail(resObj)
       } else if (onNavigateBack) {
         onNavigateBack()
+      }
+    } else {
+      const created = await createQuotation(payload)
+      if (created) {
+        if (onShowToast) onShowToast(`Quotation ${created.quotationNumber || 'QT-2026-001'} ${status === 'Sent' ? 'created and sent to customer!' : 'saved as draft!'}`, 'success')
+        if (onNavigateDetail) {
+          onNavigateDetail(created)
+        } else if (onNavigateBack) {
+          onNavigateBack()
+        }
       }
     }
   }
@@ -199,8 +229,12 @@ export default function CreateQuotation({ onShowToast, onNavigateBack, onNavigat
           <button className="create-quote__back-btn" onClick={onNavigateBack}>
             <i className="pi pi-arrow-left" /> Back
           </button>
-          <h1 className="create-quote-header__title">Create New Quotation Proposal</h1>
-          <p className="create-quote-header__sub">Draft a customized photography quotation for your client or event</p>
+          <h1 className="create-quote-header__title">
+            {quotationToEdit ? `Edit Quotation ${quotationToEdit.quotationNumber || ''} (Negotiate Price)` : 'Create New Quotation Proposal'}
+          </h1>
+          <p className="create-quote-header__sub">
+            {quotationToEdit ? 'Modify unit prices, services, or special discounts for client negotiation' : 'Draft a customized photography quotation for your client or event'}
+          </p>
         </div>
 
         <div className="create-quote-header__actions">

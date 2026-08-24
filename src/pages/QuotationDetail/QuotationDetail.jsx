@@ -90,52 +90,68 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
           </h2>
         </div>
 
-        <div className="quote-detail-actions-bar__btn-group">
+        {/* Sleek Icon Action Bar */}
+        <div className="quote-detail-icons-bar">
           <Button
-            label="Edit / Negotiate Price"
             icon="pi pi-pencil"
-            className="p-button-outlined p-button-warning"
+            rounded
+            outlined
+            severity="warning"
+            tooltip="Edit / Negotiate Price"
+            tooltipOptions={{ position: 'top' }}
             onClick={() => onNavigateEdit && onNavigateEdit(currentQuotation)}
           />
 
           {currentQuotation.status !== 'Accepted' && (
             <Button
-              label="Convert to Invoice"
               icon="pi pi-file-export"
-              className="p-button-success"
+              rounded
+              severity="success"
+              tooltip="Convert to Invoice"
+              tooltipOptions={{ position: 'top' }}
               onClick={handleConvertToInvoice}
             />
           )}
 
           {currentQuotation.status === 'Draft' && (
             <Button
-              label="Send to Customer"
               icon="pi pi-send"
-              className="p-button-info"
+              rounded
+              severity="info"
+              tooltip="Send to Customer"
+              tooltipOptions={{ position: 'top' }}
               onClick={() => handleStatusChange('Sent')}
             />
           )}
 
           {currentQuotation.status === 'Sent' && (
             <Button
-              label="Mark Accepted"
               icon="pi pi-check"
-              className="p-button-outlined p-button-success"
+              rounded
+              outlined
+              severity="success"
+              tooltip="Mark Accepted"
+              tooltipOptions={{ position: 'top' }}
               onClick={() => handleStatusChange('Accepted')}
             />
           )}
 
           <Button
-            label="Download PDF"
             icon="pi pi-download"
-            className="p-button-outlined p-button-secondary"
+            rounded
+            outlined
+            severity="secondary"
+            tooltip="Download PDF"
+            tooltipOptions={{ position: 'top' }}
             onClick={handleDownloadPdf}
           />
 
           <Button
-            label="Print"
             icon="pi pi-print"
-            className="p-button-primary"
+            rounded
+            severity="primary"
+            tooltip="Print Quotation"
+            tooltipOptions={{ position: 'top' }}
             onClick={handlePrint}
           />
         </div>

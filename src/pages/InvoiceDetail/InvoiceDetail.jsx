@@ -143,12 +143,15 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
           </h2>
         </div>
 
-        <div className="invoice-detail-actions-bar__btn-group">
+        {/* Sleek Icon Action Bar */}
+        <div className="invoice-detail-icons-bar">
           {currentInvoice.balance > 0 && (
             <Button
-              label="Record Payment"
               icon="pi pi-plus-circle"
-              className="p-button-success"
+              rounded
+              severity="success"
+              tooltip="Record Payment"
+              tooltipOptions={{ position: 'top' }}
               onClick={() => {
                 setPayAmount(currentInvoice.balance)
                 setIsPayModalOpen(true)
@@ -157,16 +160,21 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
           )}
 
           <Button
-            label="Download PDF"
             icon="pi pi-download"
-            className="p-button-outlined p-button-secondary"
+            rounded
+            outlined
+            severity="secondary"
+            tooltip="Download PDF"
+            tooltipOptions={{ position: 'top' }}
             onClick={handleDownloadPdf}
           />
 
           <Button
-            label="Print Invoice"
             icon="pi pi-print"
-            className="p-button-primary"
+            rounded
+            severity="primary"
+            tooltip="Print Invoice"
+            tooltipOptions={{ position: 'top' }}
             onClick={handlePrint}
           />
         </div>

@@ -143,13 +143,13 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
           </h2>
         </div>
 
-        {/* Sleek Icon Action Bar */}
+        {/* Sleek Black Icon Action Bar (No Background, No Border) */}
         <div className="invoice-detail-icons-bar">
           {currentInvoice.balance > 0 && (
             <Button
               icon="pi pi-plus-circle"
+              text
               rounded
-              severity="success"
               tooltip="Record Payment"
               tooltipOptions={{ position: 'top' }}
               onClick={() => {
@@ -161,9 +161,8 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
 
           <Button
             icon="pi pi-download"
+            text
             rounded
-            outlined
-            severity="secondary"
             tooltip="Download PDF"
             tooltipOptions={{ position: 'top' }}
             onClick={handleDownloadPdf}
@@ -171,8 +170,8 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
 
           <Button
             icon="pi pi-print"
+            text
             rounded
-            severity="primary"
             tooltip="Print Invoice"
             tooltipOptions={{ position: 'top' }}
             onClick={handlePrint}

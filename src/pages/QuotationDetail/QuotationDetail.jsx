@@ -90,13 +90,12 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
           </h2>
         </div>
 
-        {/* Sleek Icon Action Bar */}
+        {/* Sleek Black Icon Action Bar (No Background, No Border) */}
         <div className="quote-detail-icons-bar">
           <Button
             icon="pi pi-pencil"
+            text
             rounded
-            outlined
-            severity="warning"
             tooltip="Edit / Negotiate Price"
             tooltipOptions={{ position: 'top' }}
             onClick={() => onNavigateEdit && onNavigateEdit(currentQuotation)}
@@ -105,8 +104,8 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
           {currentQuotation.status !== 'Accepted' && (
             <Button
               icon="pi pi-file-export"
+              text
               rounded
-              severity="success"
               tooltip="Convert to Invoice"
               tooltipOptions={{ position: 'top' }}
               onClick={handleConvertToInvoice}
@@ -116,8 +115,8 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
           {currentQuotation.status === 'Draft' && (
             <Button
               icon="pi pi-send"
+              text
               rounded
-              severity="info"
               tooltip="Send to Customer"
               tooltipOptions={{ position: 'top' }}
               onClick={() => handleStatusChange('Sent')}
@@ -127,9 +126,8 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
           {currentQuotation.status === 'Sent' && (
             <Button
               icon="pi pi-check"
+              text
               rounded
-              outlined
-              severity="success"
               tooltip="Mark Accepted"
               tooltipOptions={{ position: 'top' }}
               onClick={() => handleStatusChange('Accepted')}
@@ -138,9 +136,8 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
 
           <Button
             icon="pi pi-download"
+            text
             rounded
-            outlined
-            severity="secondary"
             tooltip="Download PDF"
             tooltipOptions={{ position: 'top' }}
             onClick={handleDownloadPdf}
@@ -148,8 +145,8 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
 
           <Button
             icon="pi pi-print"
+            text
             rounded
-            severity="primary"
             tooltip="Print Quotation"
             tooltipOptions={{ position: 'top' }}
             onClick={handlePrint}

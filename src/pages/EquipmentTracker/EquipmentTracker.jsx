@@ -51,6 +51,39 @@ export default function EquipmentTracker({ onShowToast }) {
   const [filterCategory, setFilterCategory] = useState(null)
   const [filterStatus, setFilterStatus] = useState(null)
 
+  // Mobile Filter Dialog State
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [draftSearch, setDraftSearch] = useState('')
+  const [draftCategory, setDraftCategory] = useState(null)
+  const [draftStatus, setDraftStatus] = useState(null)
+
+  const handleOpenMobileFilter = () => {
+    setDraftSearch(searchQuery)
+    setDraftCategory(filterCategory)
+    setDraftStatus(filterStatus)
+    setIsMobileFilterOpen(true)
+  }
+
+  const handleApplyMobileFilter = () => {
+    setSearchQuery(draftSearch)
+    setFilterCategory(draftCategory)
+    setFilterStatus(draftStatus)
+    setIsMobileFilterOpen(false)
+  }
+
+  const handleResetMobileFilter = () => {
+    setDraftSearch('')
+    setDraftCategory(null)
+    setDraftStatus(null)
+    setSearchQuery('')
+    setFilterCategory(null)
+    setFilterStatus(null)
+    setIsMobileFilterOpen(false)
+  }
+
+  const activeFilterCount = (searchQuery ? 1 : 0) + (filterCategory ? 1 : 0) + (filterStatus ? 1 : 0)
+
+
   // Dialog State
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isAssignOpen, setIsAssignOpen] = useState(false)
@@ -200,7 +233,8 @@ export default function EquipmentTracker({ onShowToast }) {
       {/* ── TAB 1: INVENTORY TABLE ── */}
       {activeTab === 'inventory' && (
         <>
-          <div className="events-toolbar mb-3">
+          {/* ─── Desktop Search & Filter Toolbar ─── */}
+          <div className="events-toolbar events-toolbar--desktop mb-3">
             <div className="events-toolbar__left">
               <div className="events-search">
                 <i className="pi pi-search events-search__icon" />
@@ -236,6 +270,101 @@ export default function EquipmentTracker({ onShowToast }) {
               />
             </div>
           </div>
+
+          {/* ─── Mobile Search & Filter Toolbar ─── */}
+          <div className="events-toolbar events-toolbar--mobile">
+            <div className="events-search">
+              <i className="pi pi-search events-search__icon" />
+              <InputText
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search equipment..."
+                className="events-search__input"
+              />
+              {searchQuery && (
+                <i
+                  className="pi pi-times events-search__clear"
+                  onClick={() => setSearchQuery('')}
+                />
+              )}
+            </div>
+            <Button
+              icon="pi pi-filter"
+              label={activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+              className="mobile-filter-btn p-button-primary"
+              onClick={handleOpenMobileFilter}
+            />
+          </div>
+
+          {/* ─── Mobile Filter Dialog Modal ─── */}
+          <Dialog
+            header="🔍 Filter Equipment Inventory"
+            visible={isMobileFilterOpen}
+            style={{ width: '92vw', maxWidth: '440px' }}
+            onHide={() => setIsMobileFilterOpen(false)}
+            dismissableMask
+          >
+            <div className="mobile-filter-form">
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">Search Keyword</label>
+                <InputText
+                  value={draftSearch}
+                  onChange={(e) => setDraftSearch(e.target.value)}
+                  placeholder="Search gear name, serial #..."
+                />
+              </div>
+
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">Category</label>
+                <Dropdown
+                  value={draftCategory}
+                  options={[
+                    { label: 'All Categories', value: 'All Categories' },
+                    { label: 'Camera', value: 'Camera' },
+                    { label: 'Lens', value: 'Lens' },
+                    { label: 'Flash', value: 'Flash' },
+                    { label: 'Drone', value: 'Drone' },
+                    { label: 'Gimbal', value: 'Gimbal' }
+                  ]}
+                  onChange={(e) => setDraftCategory(e.value)}
+                  placeholder="Category"
+                  showClear
+                />
+              </div>
+
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">Status</label>
+                <Dropdown
+                  value={draftStatus}
+                  options={[
+                    { label: 'All Statuses', value: 'All Statuses' },
+                    { label: 'Available', value: 'Available' },
+                    { label: 'Assigned', value: 'Assigned' },
+                    { label: 'Maintenance', value: 'Maintenance' }
+                  ]}
+                  onChange={(e) => setDraftStatus(e.value)}
+                  placeholder="Status"
+                  showClear
+                />
+              </div>
+            </div>
+
+            <div className="mobile-filter-dialog-footer pt-3">
+              <Button
+                label="Reset"
+                icon="pi pi-refresh"
+                className="p-button-outlined p-button-secondary"
+                onClick={handleResetMobileFilter}
+              />
+              <Button
+                label="Apply Filters"
+                icon="pi pi-check"
+                className="p-button-primary"
+                onClick={handleApplyMobileFilter}
+              />
+            </div>
+          </Dialog>
+
 
           <div className="events-table-card">
             <DataTable

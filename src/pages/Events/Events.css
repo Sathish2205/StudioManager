@@ -520,3 +520,75 @@
   font-size: 0.78rem !important;
   padding: 0 0.5rem !important;
 }
+
+/* ── Responsive: Events Page ── */
+@media (max-width: 768px) {
+  .events-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .events-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding: 0.75rem;
+  }
+
+  .events-toolbar__left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .events-search {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .events-filter__dropdown.p-dropdown {
+    min-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .events-table-card {
+    border-radius: 8px 8px 0 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .events-datatable.p-datatable .p-datatable-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .events-datatable.p-datatable .p-datatable-thead > tr > th {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  .events-datatable.p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  .events-datatable .p-paginator {
+    left: 0;
+    padding: 0.35rem 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .events-header__title {
+    font-size: 1.25rem;
+  }
+
+  .events-header__sub {
+    font-size: 0.8rem;
+  }
+
+  .events-toolbar {
+    padding: 0.6rem;
+  }
+}

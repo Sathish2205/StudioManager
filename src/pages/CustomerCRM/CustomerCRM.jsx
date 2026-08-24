@@ -65,6 +65,44 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
   const [loyaltyFilter, setLoyaltyFilter] = useState(null)
   const [statusFilter, setStatusFilter] = useState(null)
 
+  // Mobile Filter Dialog State
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [draftSearch, setDraftSearch] = useState('')
+  const [draftCity, setDraftCity] = useState(null)
+  const [draftLoyalty, setDraftLoyalty] = useState(null)
+  const [draftStatus, setDraftStatus] = useState(null)
+
+  const handleOpenMobileFilter = () => {
+    setDraftSearch(searchQuery)
+    setDraftCity(cityFilter)
+    setDraftLoyalty(loyaltyFilter)
+    setDraftStatus(statusFilter)
+    setIsMobileFilterOpen(true)
+  }
+
+  const handleApplyMobileFilter = () => {
+    setSearchQuery(draftSearch)
+    setCityFilter(draftCity)
+    setLoyaltyFilter(draftLoyalty)
+    setStatusFilter(draftStatus)
+    setIsMobileFilterOpen(false)
+  }
+
+  const handleResetMobileFilter = () => {
+    setDraftSearch('')
+    setDraftCity(null)
+    setDraftLoyalty(null)
+    setDraftStatus(null)
+    setSearchQuery('')
+    setCityFilter(null)
+    setLoyaltyFilter(null)
+    setStatusFilter(null)
+    setIsMobileFilterOpen(false)
+  }
+
+  const activeFilterCount = (searchQuery ? 1 : 0) + (cityFilter ? 1 : 0) + (loyaltyFilter ? 1 : 0) + (statusFilter ? 1 : 0)
+
+
   // Tab View Mode: 'list' or 'analytics'
   const [viewMode, setViewMode] = useState('list')
 
@@ -433,8 +471,8 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
       {/* ── VIEW MODE 1: CUSTOMER LIST TABLE ── */}
       {viewMode === 'list' && (
         <>
-          {/* Toolbar Search & Filter Controls */}
-          <div className="events-toolbar">
+          {/* ─── Desktop Search & Filter Toolbar ─── */}
+          <div className="events-toolbar events-toolbar--desktop">
             <div className="events-toolbar__left">
               <div className="events-search">
                 <i className="pi pi-search events-search__icon" />
@@ -491,6 +529,100 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
               )}
             </div>
           </div>
+
+          {/* ─── Mobile Search & Filter Toolbar ─── */}
+          <div className="events-toolbar events-toolbar--mobile">
+            <div className="events-search">
+              <i className="pi pi-search events-search__icon" />
+              <InputText
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search customers..."
+                className="events-search__input"
+              />
+              {searchQuery && (
+                <i
+                  className="pi pi-times events-search__clear"
+                  onClick={() => setSearchQuery('')}
+                />
+              )}
+            </div>
+            <Button
+              icon="pi pi-filter"
+              label={activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+              className="mobile-filter-btn p-button-primary"
+              onClick={handleOpenMobileFilter}
+            />
+          </div>
+
+          {/* ─── Mobile Filter Dialog Modal ─── */}
+          <Dialog
+            header="🔍 Filter Customers"
+            visible={isMobileFilterOpen}
+            style={{ width: '92vw', maxWidth: '440px' }}
+            onHide={() => setIsMobileFilterOpen(false)}
+            dismissableMask
+          >
+            <div className="mobile-filter-form">
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">Search Keyword</label>
+                <InputText
+                  value={draftSearch}
+                  onChange={(e) => setDraftSearch(e.target.value)}
+                  placeholder="Search name, phone, email, city..."
+                />
+              </div>
+
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">City</label>
+                <Dropdown
+                  value={draftCity}
+                  options={cityOptions}
+                  onChange={(e) => setDraftCity(e.value)}
+                  placeholder="Filter by City"
+                  showClear
+                />
+              </div>
+
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">Loyalty Tier</label>
+                <Dropdown
+                  value={draftLoyalty}
+                  options={loyaltyOptions}
+                  onChange={(e) => setDraftLoyalty(e.value)}
+                  placeholder="Filter by Loyalty"
+                  showClear
+                />
+              </div>
+
+              <div className="mobile-filter-field">
+                <label className="mobile-filter-label">Status</label>
+                <Dropdown
+                  value={draftStatus}
+                  options={statusOptions}
+                  onChange={(e) => setDraftStatus(e.value)}
+                  placeholder="Filter by Status"
+                  showClear
+                />
+              </div>
+            </div>
+
+            <div className="mobile-filter-dialog-footer pt-3">
+              <Button
+                label="Reset"
+                icon="pi pi-refresh"
+                className="p-button-outlined p-button-secondary"
+                onClick={handleResetMobileFilter}
+              />
+              <Button
+                label="Apply Filters"
+                icon="pi pi-check"
+                className="p-button-primary"
+                onClick={handleApplyMobileFilter}
+              />
+            </div>
+          </Dialog>
+
 
           {/* PrimeReact DataTable with Sticky Bottom Paginator */}
           <div className="crm-table-card">

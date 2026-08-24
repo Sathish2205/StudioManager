@@ -22,6 +22,12 @@ export default function WorkflowManagement() {
   const [statusFilter, setStatusFilter] = useState(null)
   const [eventTypeFilter, setEventTypeFilter] = useState(null)
 
+  // Mobile Filter Dialog State
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [draftSearch, setDraftSearch] = useState('')
+  const [draftStatus, setDraftStatus] = useState(null)
+  const [draftEventType, setDraftEventType] = useState(null)
+
   // Selected Workflow for Status Modal
   const [selectedWorkflow, setSelectedWorkflow] = useState(null)
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false)
@@ -117,11 +123,50 @@ export default function WorkflowManagement() {
     })
   }, [workflows, searchQuery, statusFilter, eventTypeFilter])
 
+  // Workflow KPI Metrics Calculation
+  const workflowMetrics = useMemo(() => {
+    const totalWorkflows = workflows.length
+    const inProgressCount = workflows.filter((w) => w.overallStatus === 'Editing' || w.overallStatus === 'Booking').length
+    const completedCount = workflows.filter((w) => w.overallStatus === 'Completed' || w.overallStatus === 'Delivered').length
+    const avgProgress = totalWorkflows > 0
+      ? Math.round(workflows.reduce((acc, w) => acc + Math.round(((w.currentStageIndex + 1) / ALL_STAGES.length) * 100), 0) / totalWorkflows)
+      : 0
+    return { totalWorkflows, inProgressCount, completedCount, avgProgress }
+  }, [workflows])
+
+  // Mobile Filter Handlers
+  const handleOpenMobileFilter = () => {
+    setDraftSearch(searchQuery)
+    setDraftStatus(statusFilter)
+    setDraftEventType(eventTypeFilter)
+    setIsMobileFilterOpen(true)
+  }
+
+  const handleApplyMobileFilter = () => {
+    setSearchQuery(draftSearch)
+    setStatusFilter(draftStatus)
+    setEventTypeFilter(draftEventType)
+    setIsMobileFilterOpen(false)
+  }
+
+  const handleResetMobileFilter = () => {
+    setDraftSearch('')
+    setDraftStatus(null)
+    setDraftEventType(null)
+    setSearchQuery('')
+    setStatusFilter(null)
+    setEventTypeFilter(null)
+    setIsMobileFilterOpen(false)
+  }
+
+  const activeFilterCount = (searchQuery ? 1 : 0) + (statusFilter ? 1 : 0) + (eventTypeFilter ? 1 : 0)
+
   // Toast Helper
   const showToast = (msg) => {
     setToastMsg(msg)
     setTimeout(() => setToastMsg(null), 3000)
   }
+
 
   // Open Status Dialog for a Workflow Row
   const handleOpenStatusModal = (workflow) => {
@@ -346,11 +391,6 @@ export default function WorkflowManagement() {
             background: '#0284c7',
             color: '#ffffff',
             padding: '12px 20px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
             fontWeight: 600,
             fontSize: '0.875rem'
           }}
@@ -365,17 +405,17 @@ export default function WorkflowManagement() {
         <div>
           <h1 className="wf-header__title">Workflow Management Directory</h1>
           <p className="wf-header__sub">
-            Track client photography workflows, stage progress, assigned staff, and financials
+            Track post-production stages, editing milestones, deliverable progress & staff assignments
           </p>
         </div>
       </div>
 
-      {/* Dashboard Summary Metrics Cards */}
+      {/* ─── Dashboard Metrics KPI Grid ─── */}
       <div className="wf-metrics-grid">
         <div className="wf-metric-box">
           <div>
             <div className="wf-metric-label">Total Workflows</div>
-            <div className="wf-metric-num">{workflows.length}</div>
+            <div className="wf-metric-num">{workflowMetrics.totalWorkflows}</div>
           </div>
           <div className="wf-metric-icon">
             <i className="pi pi-sitemap" />
@@ -384,55 +424,45 @@ export default function WorkflowManagement() {
 
         <div className="wf-metric-box">
           <div>
-            <div className="wf-metric-label">In Editing</div>
-            <div className="wf-metric-num">{workflows.filter(w => w.overallStatus === 'Editing').length}</div>
+            <div className="wf-metric-label">In Progress</div>
+            <div className="wf-metric-num">{workflowMetrics.inProgressCount}</div>
           </div>
-          <div className="wf-metric-icon">
-            <i className="pi pi-sliders-h" />
-          </div>
-        </div>
-
-        <div className="wf-metric-box">
-          <div>
-            <div className="wf-metric-label">Booking</div>
-            <div className="wf-metric-num">{workflows.filter(w => w.overallStatus === 'Booking').length}</div>
-          </div>
-          <div className="wf-metric-icon">
-            <i className="pi pi-clock" />
-          </div>
-        </div>
-
-        <div className="wf-metric-box">
-          <div>
-            <div className="wf-metric-label">Delivered</div>
-            <div className="wf-metric-num">{workflows.filter(w => w.overallStatus === 'Delivered').length}</div>
-          </div>
-          <div className="wf-metric-icon">
-            <i className="pi pi-box" />
+          <div className="wf-metric-icon" style={{ background: '#fffbe6', color: '#d97706' }}>
+            <i className="pi pi-spinner" />
           </div>
         </div>
 
         <div className="wf-metric-box">
           <div>
             <div className="wf-metric-label">Completed</div>
-            <div className="wf-metric-num">{workflows.filter(w => w.overallStatus === 'Completed').length}</div>
+            <div className="wf-metric-num">{workflowMetrics.completedCount}</div>
           </div>
-          <div className="wf-metric-icon">
+          <div className="wf-metric-icon" style={{ background: '#f0fdf4', color: '#16a34a' }}>
             <i className="pi pi-check-circle" />
+          </div>
+        </div>
+
+        <div className="wf-metric-box">
+          <div>
+            <div className="wf-metric-label">Avg Progress</div>
+            <div className="wf-metric-num">{workflowMetrics.avgProgress}%</div>
+          </div>
+          <div className="wf-metric-icon" style={{ background: '#f0f9ff', color: '#0284c7' }}>
+            <i className="pi pi-chart-line" />
           </div>
         </div>
       </div>
 
-      {/* ─── Search & Filter Toolbar ─── */}
-      <div className="events-toolbar">
+      {/* ─── Desktop Search & Filter Toolbar ─── */}
+      <div className="events-toolbar events-toolbar--desktop">
         <div className="events-toolbar__left">
-          {/* Global Search Input */}
+          {/* Global Search */}
           <div className="events-search">
             <i className="pi pi-search events-search__icon" />
             <InputText
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by client name, ID, event, or photographer..."
+              placeholder="Search by client, ID, event title, staff name..."
               className="events-search__input"
             />
             {searchQuery && (
@@ -475,6 +505,88 @@ export default function WorkflowManagement() {
           )}
         </div>
       </div>
+
+      {/* ─── Mobile Search & Filter Toolbar ─── */}
+      <div className="events-toolbar events-toolbar--mobile">
+        <div className="events-search">
+          <i className="pi pi-search events-search__icon" />
+          <InputText
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search workflows..."
+            className="events-search__input"
+          />
+          {searchQuery && (
+            <i
+              className="pi pi-times events-search__clear"
+              onClick={() => setSearchQuery('')}
+            />
+          )}
+        </div>
+        <Button
+          icon="pi pi-filter"
+          label={activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+          className="mobile-filter-btn p-button-primary"
+          onClick={handleOpenMobileFilter}
+        />
+      </div>
+
+      {/* ─── Mobile Filter Dialog Modal ─── */}
+      <Dialog
+        header="🔍 Filter Workflows"
+        visible={isMobileFilterOpen}
+        style={{ width: '92vw', maxWidth: '440px' }}
+        onHide={() => setIsMobileFilterOpen(false)}
+        dismissableMask
+      >
+        <div className="mobile-filter-form">
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Search Keyword</label>
+            <InputText
+              value={draftSearch}
+              onChange={(e) => setDraftSearch(e.target.value)}
+              placeholder="Search client, ID, staff..."
+            />
+          </div>
+
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Status</label>
+            <Dropdown
+              value={draftStatus}
+              options={statusOptions}
+              onChange={(e) => setDraftStatus(e.value)}
+              placeholder="Filter by Status"
+              showClear
+            />
+          </div>
+
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Event Type</label>
+            <Dropdown
+              value={draftEventType}
+              options={eventTypeOptions}
+              onChange={(e) => setDraftEventType(e.value)}
+              placeholder="Filter by Event Type"
+              showClear
+            />
+          </div>
+        </div>
+
+        <div className="mobile-filter-dialog-footer pt-3">
+          <Button
+            label="Reset"
+            icon="pi pi-refresh"
+            className="p-button-outlined p-button-secondary"
+            onClick={handleResetMobileFilter}
+          />
+          <Button
+            label="Apply Filters"
+            icon="pi pi-check"
+            className="p-button-primary"
+            onClick={handleApplyMobileFilter}
+          />
+        </div>
+      </Dialog>
 
       {/* ─── PrimeReact DataTable with Sticky Bottom Paginator (Exact Events Page System) ─── */}
       <div className="events-table-card">

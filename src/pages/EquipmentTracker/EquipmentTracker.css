@@ -27,3 +27,23 @@
   align-items: center;
   gap: 0.75rem;
 }
+
+/* ── Responsive: Equipment Tracker ── */
+@media (max-width: 768px) {
+  .equipment-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .equipment-header__actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .equipment-header__title {
+    font-size: 1.25rem;
+  }
+}

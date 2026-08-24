@@ -53,3 +53,28 @@
   border-radius: 8px;
   padding: 0.6rem 0.75rem;
 }
+
+/* ── Responsive: Crew Management ── */
+@media (max-width: 768px) {
+  .crew-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .crew-header__actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .crew-header__title {
+    font-size: 1.25rem;
+  }
+
+  .crew-card {
+    padding: 0.85rem;
+    border-radius: 10px;
+  }
+}

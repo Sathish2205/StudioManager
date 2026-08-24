@@ -69,6 +69,72 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
   const [selectedCrew, setSelectedCrew] = useState(null)
   const [selectedVenue, setSelectedVenue] = useState(null)
 
+  // Mobile Filter Dialog State
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [draftSearch, setDraftSearch] = useState('')
+  const [draftType, setDraftType] = useState(null)
+  const [draftStatus, setDraftStatus] = useState(null)
+  const [draftCrew, setDraftCrew] = useState(null)
+
+  const handleOpenMobileFilter = () => {
+    setDraftSearch(searchQuery)
+    setDraftType(selectedType)
+    setDraftStatus(selectedStatus)
+    setDraftCrew(selectedCrew)
+    setIsMobileFilterOpen(true)
+  }
+
+  const handleApplyMobileFilter = () => {
+    setSearchQuery(draftSearch)
+    setSelectedType(draftType)
+    setSelectedStatus(draftStatus)
+    setSelectedCrew(draftCrew)
+    setIsMobileFilterOpen(false)
+  }
+
+  const handleResetMobileFilter = () => {
+    setDraftSearch('')
+    setDraftType(null)
+    setDraftStatus(null)
+    setDraftCrew(null)
+    setSearchQuery('')
+    setSelectedType(null)
+    setSelectedStatus(null)
+    setSelectedCrew(null)
+    setIsMobileFilterOpen(false)
+  }
+
+  const activeFilterCount = (searchQuery ? 1 : 0) + (selectedType ? 1 : 0) + (selectedStatus ? 1 : 0) + (selectedCrew ? 1 : 0)
+
+  const typeOptions = [
+    { label: 'All Event Types', value: 'All Event Types' },
+    { label: 'Wedding & Reception', value: 'Wedding & Reception' },
+    { label: 'Sangeet & Mehendi', value: 'Sangeet & Mehendi' },
+    { label: 'Destination Wedding', value: 'Destination Wedding' },
+    { label: 'Pre-Wedding Shoot', value: 'Pre-Wedding Shoot' },
+    { label: 'Gala Dinner & Cocktail', value: 'Gala Dinner & Cocktail' },
+    { label: 'Haldi & Wedding Ceremony', value: 'Haldi & Wedding Ceremony' }
+  ]
+
+  const statusOptions = [
+    { label: 'All Statuses', value: 'All Statuses' },
+    { label: 'Shooting Today', value: 'Shooting Today' },
+    { label: 'Confirmed', value: 'Confirmed' },
+    { label: 'In Post-Production', value: 'In Post-Production' },
+    { label: 'Delivered', value: 'Delivered' },
+    { label: 'Pending Deposit', value: 'Pending Deposit' }
+  ]
+
+  const crewOptions = [
+    { label: 'All Photographers', value: 'All Photographers' },
+    { label: 'Alex V.', value: 'Alex V.' },
+    { label: 'Elena R.', value: 'Elena R.' },
+    { label: 'Maya S.', value: 'Maya S.' },
+    { label: 'David P.', value: 'David P.' },
+    { label: 'Marco K.', value: 'Marco K.' }
+  ]
+
+
   // Modals & Drawers
   const [selectedEventForDetail, setSelectedEventForDetail] = useState(null)
   const [drawerVisible, setDrawerVisible] = useState(false)
@@ -277,17 +343,16 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
           </div>
 
           <Button
-            label="New Event"
-            icon="pi pi-plus"
-            className="events-header__btn-add"
-            rounded
-            onClick={() => handleTriggerNewEvent(null)}
+            label="Book New Event"
+            icon="pi pi-calendar-plus"
+            className="p-button-primary"
+            onClick={() => onNavigateAddEvent && onNavigateAddEvent()}
           />
         </div>
       </div>
 
-      {/* ── SEARCH & FILTER TOOLBAR ── */}
-      <div className="events-toolbar mb-3">
+      {/* ─── Desktop Search & Filter Toolbar ─── */}
+      <div className="events-toolbar events-toolbar--desktop mb-3">
         <div className="events-toolbar__left">
           <div className="events-search">
             <i className="pi pi-search events-search__icon" />
@@ -304,15 +369,7 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
 
           <Dropdown
             value={selectedType}
-            options={[
-              { label: 'All Event Types', value: 'All Event Types' },
-              { label: 'Wedding & Reception', value: 'Wedding & Reception' },
-              { label: 'Sangeet & Mehendi', value: 'Sangeet & Mehendi' },
-              { label: 'Destination Wedding', value: 'Destination Wedding' },
-              { label: 'Pre-Wedding Shoot', value: 'Pre-Wedding Shoot' },
-              { label: 'Gala Dinner & Cocktail', value: 'Gala Dinner & Cocktail' },
-              { label: 'Haldi & Wedding Ceremony', value: 'Haldi & Wedding Ceremony' }
-            ]}
+            options={typeOptions}
             onChange={(e) => setSelectedType(e.value)}
             placeholder="Event Type"
             showClear
@@ -321,14 +378,7 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
 
           <Dropdown
             value={selectedStatus}
-            options={[
-              { label: 'All Statuses', value: 'All Statuses' },
-              { label: 'Shooting Today', value: 'Shooting Today' },
-              { label: 'Confirmed', value: 'Confirmed' },
-              { label: 'In Post-Production', value: 'In Post-Production' },
-              { label: 'Delivered', value: 'Delivered' },
-              { label: 'Pending Deposit', value: 'Pending Deposit' }
-            ]}
+            options={statusOptions}
             onChange={(e) => setSelectedStatus(e.value)}
             placeholder="Status"
             showClear
@@ -337,14 +387,7 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
 
           <Dropdown
             value={selectedCrew}
-            options={[
-              { label: 'All Photographers', value: 'All Photographers' },
-              { label: 'Alex V.', value: 'Alex V.' },
-              { label: 'Elena R.', value: 'Elena R.' },
-              { label: 'Maya S.', value: 'Maya S.' },
-              { label: 'David P.', value: 'David P.' },
-              { label: 'Marco K.', value: 'Marco K.' }
-            ]}
+            options={crewOptions}
             onChange={(e) => setSelectedCrew(e.value)}
             placeholder="Photographer"
             showClear
@@ -366,6 +409,96 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
           )}
         </div>
       </div>
+
+      {/* ─── Mobile Search & Filter Toolbar ─── */}
+      <div className="events-toolbar events-toolbar--mobile">
+        <div className="events-search">
+          <i className="pi pi-search events-search__icon" />
+          <InputText
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search calendar..."
+            className="events-search__input"
+          />
+          {searchQuery && (
+            <i className="pi pi-times events-search__clear" onClick={() => setSearchQuery('')} />
+          )}
+        </div>
+        <Button
+          icon="pi pi-filter"
+          label={activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+          className="mobile-filter-btn p-button-primary"
+          onClick={handleOpenMobileFilter}
+        />
+      </div>
+
+      {/* ─── Mobile Filter Dialog Modal ─── */}
+      <Dialog
+        header="🔍 Filter Shoot Calendar"
+        visible={isMobileFilterOpen}
+        style={{ width: '92vw', maxWidth: '440px' }}
+        onHide={() => setIsMobileFilterOpen(false)}
+        dismissableMask
+      >
+        <div className="mobile-filter-form">
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Search Keyword</label>
+            <InputText
+              value={draftSearch}
+              onChange={(e) => setDraftSearch(e.target.value)}
+              placeholder="Search event, venue, client..."
+            />
+          </div>
+
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Event Type</label>
+            <Dropdown
+              value={draftType}
+              options={typeOptions}
+              onChange={(e) => setDraftType(e.value)}
+              placeholder="Event Type"
+              showClear
+            />
+          </div>
+
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Status</label>
+            <Dropdown
+              value={draftStatus}
+              options={statusOptions}
+              onChange={(e) => setDraftStatus(e.value)}
+              placeholder="Status"
+              showClear
+            />
+          </div>
+
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Photographer</label>
+            <Dropdown
+              value={draftCrew}
+              options={crewOptions}
+              onChange={(e) => setDraftCrew(e.value)}
+              placeholder="Photographer"
+              showClear
+            />
+          </div>
+        </div>
+
+        <div className="mobile-filter-dialog-footer pt-3">
+          <Button
+            label="Reset"
+            icon="pi pi-refresh"
+            className="p-button-outlined p-button-secondary"
+            onClick={handleResetMobileFilter}
+          />
+          <Button
+            label="Apply Filters"
+            icon="pi pi-check"
+            className="p-button-primary"
+            onClick={handleApplyMobileFilter}
+          />
+        </div>
+      </Dialog>
 
       {/* ── CALENDAR VIEW CONTAINER WITH ATTACHED NAV BAR ── */}
       <div className="month-calendar-wrapper">

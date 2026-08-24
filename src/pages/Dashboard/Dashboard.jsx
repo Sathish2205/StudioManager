@@ -8,6 +8,7 @@ import './Dashboard.css'
 export default function Dashboard({ activeTab = 'home', setActiveTab }) {
   const [showFinancials, setShowFinancials] = useState(false)
   const [toastMsg, setToastMsg] = useState(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [dashKpis, setDashKpis] = useState({
     activeShootsCount: 14,
     revenueCollected: 1420000,
@@ -68,11 +69,11 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
   return (
     <div className="portal-layout">
       {/* Left Sidebar */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
 
       {/* Main Container */}
       <div className="portal-main">
-        <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+        <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         <div className="portal-body">
           {/* Toast Notification Banner */}

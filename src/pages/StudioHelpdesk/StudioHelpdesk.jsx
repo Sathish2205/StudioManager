@@ -22,6 +22,39 @@ export default function StudioHelpdesk({ onShowToast }) {
   const [filterPriority, setFilterPriority] = useState(null)
   const [filterStatus, setFilterStatus] = useState(null)
 
+  // Mobile Filter Dialog State
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [draftSearch, setDraftSearch] = useState('')
+  const [draftCategory, setDraftCategory] = useState(null)
+  const [draftPriority, setDraftPriority] = useState(null)
+
+  const handleOpenMobileFilter = () => {
+    setDraftSearch(searchQuery)
+    setDraftCategory(filterCategory)
+    setDraftPriority(filterPriority)
+    setIsMobileFilterOpen(true)
+  }
+
+  const handleApplyMobileFilter = () => {
+    setSearchQuery(draftSearch)
+    setFilterCategory(draftCategory)
+    setFilterPriority(draftPriority)
+    setIsMobileFilterOpen(false)
+  }
+
+  const handleResetMobileFilter = () => {
+    setDraftSearch('')
+    setDraftCategory(null)
+    setDraftPriority(null)
+    setSearchQuery('')
+    setFilterCategory(null)
+    setFilterPriority(null)
+    setIsMobileFilterOpen(false)
+  }
+
+  const activeFilterCount = (searchQuery ? 1 : 0) + (filterCategory ? 1 : 0) + (filterPriority ? 1 : 0)
+
+
   // Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [tTitle, setTTitle] = useState('')
@@ -181,8 +214,8 @@ export default function StudioHelpdesk({ onShowToast }) {
         </div>
       </div>
 
-      {/* ── TOOLBAR ── */}
-      <div className="events-toolbar mb-3">
+      {/* ─── Desktop Search & Filter Toolbar ─── */}
+      <div className="events-toolbar events-toolbar--desktop mb-3">
         <div className="events-toolbar__left">
           <div className="events-search">
             <i className="pi pi-search events-search__icon" />
@@ -217,6 +250,100 @@ export default function StudioHelpdesk({ onShowToast }) {
           />
         </div>
       </div>
+
+      {/* ─── Mobile Search & Filter Toolbar ─── */}
+      <div className="events-toolbar events-toolbar--mobile">
+        <div className="events-search">
+          <i className="pi pi-search events-search__icon" />
+          <InputText
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search tickets..."
+            className="events-search__input"
+          />
+          {searchQuery && (
+            <i
+              className="pi pi-times events-search__clear"
+              onClick={() => setSearchQuery('')}
+            />
+          )}
+        </div>
+        <Button
+          icon="pi pi-filter"
+          label={activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filters'}
+          className="mobile-filter-btn p-button-primary"
+          onClick={handleOpenMobileFilter}
+        />
+      </div>
+
+      {/* ─── Mobile Filter Dialog Modal ─── */}
+      <Dialog
+        header="🔍 Filter Helpdesk Tickets"
+        visible={isMobileFilterOpen}
+        style={{ width: '92vw', maxWidth: '440px' }}
+        onHide={() => setIsMobileFilterOpen(false)}
+        dismissableMask
+      >
+        <div className="mobile-filter-form">
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Search Keyword</label>
+            <InputText
+              value={draftSearch}
+              onChange={(e) => setDraftSearch(e.target.value)}
+              placeholder="Search ticket title, ID..."
+            />
+          </div>
+
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Category</label>
+            <Dropdown
+              value={draftCategory}
+              options={[
+                { label: 'All Categories', value: 'All Categories' },
+                { label: 'Technical', value: 'Technical' },
+                { label: 'Equipment', value: 'Equipment' },
+                { label: 'Editing', value: 'Editing' },
+                { label: 'Finance', value: 'Finance' }
+              ]}
+              onChange={(e) => setDraftCategory(e.value)}
+              placeholder="Category"
+              showClear
+            />
+          </div>
+
+          <div className="mobile-filter-field">
+            <label className="mobile-filter-label">Priority</label>
+            <Dropdown
+              value={draftPriority}
+              options={[
+                { label: 'All Priorities', value: 'All Priorities' },
+                { label: 'Critical', value: 'Critical' },
+                { label: 'High', value: 'High' },
+                { label: 'Medium', value: 'Medium' }
+              ]}
+              onChange={(e) => setDraftPriority(e.value)}
+              placeholder="Priority"
+              showClear
+            />
+          </div>
+        </div>
+
+        <div className="mobile-filter-dialog-footer pt-3">
+          <Button
+            label="Reset"
+            icon="pi pi-refresh"
+            className="p-button-outlined p-button-secondary"
+            onClick={handleResetMobileFilter}
+          />
+          <Button
+            label="Apply Filters"
+            icon="pi pi-check"
+            className="p-button-primary"
+            onClick={handleApplyMobileFilter}
+          />
+        </div>
+      </Dialog>
+
 
       {/* ── TICKETS TABLE ── */}
       <div className="events-table-card">

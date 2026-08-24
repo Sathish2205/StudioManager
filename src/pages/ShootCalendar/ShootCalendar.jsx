@@ -7,6 +7,7 @@ import { Tooltip } from 'primereact/tooltip'
 import { Tag } from 'primereact/tag'
 import EventDetailDrawer from '../../components/EventDetailDrawer/EventDetailDrawer'
 import { getEvents } from '../../services/eventService'
+import PageLoader from '../../components/PageLoader/PageLoader'
 import './ShootCalendar.css'
 
 export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
@@ -16,9 +17,12 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
 
   // Events Dataset
   const [eventsList, setEventsList] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadCalendarEvents() {
+      setLoading(true)
+      try {
       const data = await getEvents()
       if (data && data.length > 0) {
         const mapped = data.map((evt) => {
@@ -58,6 +62,10 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
         })
         setEventsList(mapped)
       }
+      } catch (err) {
+        console.warn('[ShootCalendar] Failed to load events:', err)
+      }
+      setLoading(false)
     }
     loadCalendarEvents()
   }, [])
@@ -534,6 +542,9 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
 
         {/* ── MONTH CALENDAR GRID ── */}
         {calendarView === 'month' && (
+          loading ? (
+            <PageLoader />
+          ) : (
           <>
             {/* Days of Week Header */}
             <div className="calendar-week-header">
@@ -610,10 +621,14 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
               })}
             </div>
           </>
+          )
         )}
 
         {/* ── WEEK & DAY VIEWS ── */}
         {calendarView !== 'month' && (
+          loading ? (
+            <PageLoader />
+          ) : (
           <div className="p-4">
             <div className="flex justify-content-between align-items-center mb-3 pb-2 border-bottom-1 surface-border">
               <span className="text-xs font-bold uppercase text-700">
@@ -663,6 +678,7 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
               ))}
             </div>
           </div>
+          )
         )}
       </div>
 

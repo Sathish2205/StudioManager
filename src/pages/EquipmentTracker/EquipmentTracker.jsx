@@ -9,6 +9,7 @@ import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 
 import { getEquipment, createEquipment, updateEquipment, deleteEquipment } from '../../services/equipmentService'
+import PageLoader from '../../components/PageLoader/PageLoader'
 import './EquipmentTracker.css'
 
 export default function EquipmentTracker({ onShowToast }) {
@@ -232,6 +233,9 @@ export default function EquipmentTracker({ onShowToast }) {
 
       {/* ── TAB 1: INVENTORY TABLE ── */}
       {activeTab === 'inventory' && (
+        loading ? (
+          <PageLoader />
+        ) : (
         <>
           {/* ─── Desktop Search & Filter Toolbar ─── */}
           <div className="events-toolbar events-toolbar--desktop mb-3">
@@ -391,10 +395,14 @@ export default function EquipmentTracker({ onShowToast }) {
             </DataTable>
           </div>
         </>
+        )
       )}
 
       {/* ── TAB 2: ASSIGNMENTS ── */}
       {activeTab === 'assignments' && (
+        loading ? (
+          <PageLoader />
+        ) : (
         <div className="events-table-card">
           <DataTable
             value={equipmentList.filter((e) => e.status === 'Assigned')}
@@ -416,10 +424,14 @@ export default function EquipmentTracker({ onShowToast }) {
             <Column field="location" header="Current Location" style={{ minWidth: '180px' }} />
           </DataTable>
         </div>
+        )
       )}
 
       {/* ── TAB 3: MAINTENANCE ALERTS ── */}
       {activeTab === 'maintenance' && (
+        loading ? (
+          <PageLoader />
+        ) : (
         <div className="events-table-card">
           <DataTable
             value={equipmentList}
@@ -441,6 +453,7 @@ export default function EquipmentTracker({ onShowToast }) {
             <Column field="status" header="Current Status" body={(r) => <Tag value={r.status} severity={statusSeverity(r.status)} />} style={{ minWidth: '130px' }} />
           </DataTable>
         </div>
+        )
       )}
 
       {/* ── ADD EQUIPMENT DIALOG ── */}

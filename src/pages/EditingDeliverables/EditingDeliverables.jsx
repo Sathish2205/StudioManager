@@ -10,6 +10,7 @@ import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 
 import { getTasks, createTask, updateTask, deleteTask } from '../../services/taskService'
+import PageLoader from '../../components/PageLoader/PageLoader'
 import './EditingDeliverables.css'
 
 const KANBAN_STAGES = [
@@ -508,6 +509,9 @@ export default function EditingDeliverables({ onShowToast }) {
 
       {/* ── TAB 1: KANBAN WORKFLOW ── */}
       {activeTab === 'kanban' && (
+        loading ? (
+          <PageLoader />
+        ) : (
         <div className="kanban-board">
           {KANBAN_STAGES.map((stage) => {
             const stageTasks = filteredTasks.filter((t) => t.status === stage)
@@ -566,10 +570,14 @@ export default function EditingDeliverables({ onShowToast }) {
             )
           })}
         </div>
+        )
       )}
 
       {/* ── TAB 2: DELIVERABLES TABLE ── */}
       {activeTab === 'deliverables' && (
+        loading ? (
+          <PageLoader />
+        ) : (
         <div className="events-table-card">
           <DataTable
             value={filteredTasks}
@@ -611,6 +619,7 @@ export default function EditingDeliverables({ onShowToast }) {
             />
           </DataTable>
         </div>
+        )
       )}
 
       {/* ── CREATE / EDIT TASK DIALOG ── */}

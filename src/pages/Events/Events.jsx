@@ -13,6 +13,7 @@ import EventDetailDrawer from '../../components/EventDetailDrawer'
 import './Events.css'
 
 import { getEvents, deleteEvent } from '../../services/eventService'
+import PageLoader from '../../components/PageLoader/PageLoader'
 
 export default function Events({ activeTab = 'events', setActiveTab, onNavigateInvoice, onNavigateEditEvent }) {
   const [globalFilter, setGlobalFilter] = useState('')
@@ -31,9 +32,12 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
   // PhotoStudio Shoots & Events Dataset
   const [initialEvents, setInitialEvents] = useState([])
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState(false)
 
   const loadEvents = async () => {
     setLoading(true)
+    setFetchError(false)
+    try {
     const data = await getEvents()
     if (data && data.length > 0) {
       const mapped = data.map((evt) => {
@@ -74,6 +78,13 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
         }
       })
       setInitialEvents(mapped)
+    } else {
+      setInitialEvents([])
+    }
+    } catch (err) {
+      console.warn('[Events] Failed to load events:', err)
+      setFetchError(true)
+      setInitialEvents([])
     }
     setLoading(false)
   }
@@ -397,6 +408,9 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
 
           {/* ─── PrimeReact DataTable with Sticky Bottom Paginator ─── */}
           <div className="events-table-card">
+            {loading ? (
+              <PageLoader />
+            ) : (
             <DataTable
               value={filteredEvents}
               paginator
@@ -406,7 +420,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
               responsiveLayout="scroll"
               stripedRows
               className="events-datatable"
-              emptyMessage="No matching wedding events or shoots found."
+              emptyMessage={fetchError ? 'Failed to load events. Please check your connection and try again.' : 'No matching wedding events or shoots found.'}
               onRowClick={(e) => handleRowSelect(e.data)}
               selectionMode="single"
             >
@@ -419,6 +433,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
               <Column field="status" header="Status & Progress" body={statusBodyTemplate} sortable style={{ minWidth: '160px' }} />
               <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '110px' }} />
             </DataTable>
+            )}
           </div>
         </div>
       </div>

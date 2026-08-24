@@ -10,6 +10,7 @@ import { Dialog } from 'primereact/dialog'
 import { ProgressBar } from 'primereact/progressbar'
 
 import { getClients, createClient, updateClient, deleteClient } from '../../services/clientService'
+import PageLoader from '../../components/PageLoader/PageLoader'
 
 import './CustomerCRM.css'
 
@@ -17,9 +18,12 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
   // Master Customers State
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState(false)
 
   const loadClients = async () => {
     setLoading(true)
+    setFetchError(false)
+    try {
     const data = await getClients()
     if (data && data.length > 0) {
       const mapped = data.map((c) => {
@@ -51,6 +55,13 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         }
       })
       setCustomers(mapped)
+    } else {
+      setCustomers([])
+    }
+    } catch (err) {
+      console.warn('[CRM] Failed to load clients:', err)
+      setFetchError(true)
+      setCustomers([])
     }
     setLoading(false)
   }
@@ -626,6 +637,9 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
 
           {/* PrimeReact DataTable with Sticky Bottom Paginator */}
           <div className="crm-table-card">
+            {loading ? (
+              <PageLoader />
+            ) : (
             <DataTable
               value={filteredCustomers}
               paginator
@@ -635,7 +649,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
               responsiveLayout="scroll"
               stripedRows
               className="crm-datatable events-datatable"
-              emptyMessage="No matching customer records found."
+              emptyMessage={fetchError ? 'Failed to load customers. Please check your connection and try again.' : 'No matching customer records found.'}
               onRowClick={(e) => handleOpenProfile(e.data)}
               selectionMode="single"
             >
@@ -648,6 +662,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
               <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ minWidth: '110px' }} />
               <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '110px', textAlign: 'center' }} />
             </DataTable>
+            )}
           </div>
         </>
       )}

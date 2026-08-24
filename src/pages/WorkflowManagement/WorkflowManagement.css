@@ -487,21 +487,16 @@
   align-items: center;
 }
 
-/* ── EXACT EVENTS PAGE PAGINATOR (Fixed Bottom Bar) ── */
+/* ── PAGINATOR STYLING ── */
 .events-datatable .p-paginator {
-  position: fixed;
-  bottom: 0;
-  left: 250px;
-  right: 0;
-  z-index: 100;
+  position: relative;
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
   border-left: none;
   border-right: none;
   border-bottom: none;
-  border-radius: 0;
-  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.04);
-  padding: 0.4rem 1.25rem;
+  border-radius: 0 0 12px 12px;
+  padding: 0.6rem 1.25rem;
   display: flex;
   align-items: center;
 }

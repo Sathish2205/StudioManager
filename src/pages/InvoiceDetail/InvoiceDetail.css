@@ -1,0 +1,83 @@
+.invoice-detail-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  animation: pageLoaderFadeIn 0.3s ease-out;
+}
+
+.invoice-detail-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.invoice-detail__back-btn {
+  background: none;
+  border: none;
+  color: #0284c7;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  margin-bottom: 0.2rem;
+}
+
+.invoice-detail-actions-bar__title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+}
+
+.invoice-detail-actions-bar__btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Payment History Log Table inside Invoice */
+.inv-payments-history-block {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.inv-payments-history__title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 0.6rem;
+}
+
+.inv-payments-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.inv-payments-history-table th {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  color: #64748b;
+  font-size: 0.725rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.inv-payments-history-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}

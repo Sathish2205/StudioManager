@@ -10,7 +10,7 @@ import { InputNumber } from 'primereact/inputnumber'
 import { getPackages } from '../../services/packageService'
 import './PackagesQuotes.css'
 
-export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
+export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavigateCreateQuotation }) {
   const [activeTab, setActiveTab] = useState('packages') // 'packages', 'addons', 'quotes'
   const [packages, setPackages] = useState([])
   const [addons, setAddons] = useState([])
@@ -106,7 +106,10 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
             label="Create Quotation"
             icon="pi pi-file-edit"
             className="p-button-primary"
-            onClick={() => setIsQuoteOpen(true)}
+            onClick={() => {
+              if (onNavigateCreateQuotation) onNavigateCreateQuotation(null)
+              else setIsQuoteOpen(true)
+            }}
           />
         </div>
       </div>
@@ -172,8 +175,12 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent }) {
                   icon="pi pi-plus"
                   className="p-button-outlined p-button-sm w-full"
                   onClick={() => {
-                    setQAmount(pkg.price)
-                    setIsQuoteOpen(true)
+                    if (onNavigateCreateQuotation) {
+                      onNavigateCreateQuotation(pkg)
+                    } else {
+                      setQAmount(pkg.price)
+                      setIsQuoteOpen(true)
+                    }
                   }}
                 />
               </div>

@@ -205,9 +205,15 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
     </div>
   )
 
-  const paymentBodyTemplate = (rowData) => (
-    <Tag value={rowData.payment} severity={rowData.paymentSeverity} rounded />
-  )
+  const paymentBodyTemplate = (rowData) => {
+    const status = rowData.paymentStatus || rowData.payment || 'Deposit Paid'
+    let severity = 'info'
+    if (status === 'Paid in Full' || status === 'Paid') severity = 'success'
+    else if (status === 'Advance Paid' || status === 'Deposit Paid') severity = 'info'
+    else if (status === 'Pending Deposit' || status === 'Pending') severity = 'danger'
+
+    return <Tag value={status} severity={severity} rounded />
+  }
 
   const statusBodyTemplate = (rowData) => (
     <div className="events-table__status-box">
@@ -249,7 +255,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
 
   const paginatorLeftTemplate = (
     <span className="events-paginator__count">
-      Showing <strong>{filteredEvents.length}</strong> of {initialEvents.length} Shoots
+      Total: <strong>{filteredEvents.length}</strong> {filteredEvents.length === 1 ? 'Shoot' : 'Shoots'}
     </span>
   )
 

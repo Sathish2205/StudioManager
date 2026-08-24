@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
+    "html2pdf.js": "^0.14.0",
     "primeflex": "^4.0.0",
     "primeicons": "^8.0.0",
     "primereact": "^10.9.8",

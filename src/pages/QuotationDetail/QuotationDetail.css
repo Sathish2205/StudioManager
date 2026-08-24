@@ -1,0 +1,271 @@
+.quote-detail-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  animation: pageLoaderFadeIn 0.3s ease-out;
+}
+
+.quote-detail-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.quote-detail__back-btn {
+  background: none;
+  border: none;
+  color: #0284c7;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  margin-bottom: 0.2rem;
+}
+
+.quote-detail-actions-bar__title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+}
+
+.quote-detail-actions-bar__btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Printable Card */
+.quote-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  color: #1e293b;
+}
+
+.quote-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.quote-brand__name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.quote-brand__dot {
+  color: #0284c7;
+}
+
+.quote-brand__sub {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-top: 0.15rem;
+}
+
+.quote-studio-details {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 0.4rem;
+  line-height: 1.4;
+}
+
+.quote-meta-box {
+  text-align: right;
+}
+
+.quote-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0284c7;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.4rem;
+}
+
+.quote-meta-row {
+  font-size: 0.85rem;
+  color: #475569;
+  margin-bottom: 0.2rem;
+}
+
+.quote-info-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.quote-info-block__label {
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: #0284c7;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.quote-info-block__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.2rem;
+}
+
+.quote-info-block__text {
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.quote-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+.quote-items-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.quote-items-table td {
+  padding: 0.85rem 1rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.quote-item__name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.quote-item__desc {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.quote-summary-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.quote-payment-terms {
+  flex: 1;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.quote-terms__title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.quote-terms__text {
+  font-size: 0.8rem;
+  color: #64748b;
+  white-space: pre-line;
+  line-height: 1.4;
+}
+
+.quote-totals-box {
+  width: 300px;
+}
+
+.quote-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.45rem 0;
+  font-size: 0.875rem;
+  color: #475569;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.quote-total-row.is-grand {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  border-top: 2px solid #0f172a;
+  border-bottom: 2px solid #0f172a;
+  padding: 0.75rem 0;
+  margin-top: 0.35rem;
+}
+
+.quote-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 2px solid #f1f5f9;
+  padding-top: 1.5rem;
+}
+
+.quote-footer__note {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-style: italic;
+  max-width: 450px;
+}
+
+.quote-signature-box {
+  text-align: center;
+}
+
+.quote-signature__line {
+  width: 180px;
+  border-bottom: 1px solid #94a3b8;
+  margin-bottom: 0.35rem;
+}
+
+.quote-signature__title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+@media print {
+  .portal-sidebar, .portal-header, .quote-detail-actions-bar {
+    display: none !important;
+  }
+  .quote-card {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}

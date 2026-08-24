@@ -1,0 +1,171 @@
+.create-quote-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  animation: pageLoaderFadeIn 0.3s ease-out;
+}
+
+.create-quote-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.create-quote__back-btn {
+  background: none;
+  border: none;
+  color: #0284c7;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  margin-bottom: 0.35rem;
+}
+
+.create-quote__back-btn:hover {
+  text-decoration: underline;
+}
+
+.create-quote-header__title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1e3a8a;
+}
+
+.create-quote-header__sub {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.create-quote-header__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.create-quote-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.create-quote-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.create-quote-card__header {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.quote-form-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.35rem;
+}
+
+.quote-services-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.quote-services-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.quote-services-table th {
+  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  color: #475569;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.725rem;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.quote-services-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.quote-row-del-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.35rem;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.quote-row-del-btn:hover {
+  color: #dc2626;
+  background: #fef2f2;
+}
+
+/* Summary Totals Card */
+.quote-summary-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.quote-summary-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quote-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #475569;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.quote-summary-row--grand {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  border-top: 2px solid #0f172a;
+  border-bottom: 2px solid #0f172a;
+  padding: 0.75rem 0;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .create-quote-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .create-quote-header__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

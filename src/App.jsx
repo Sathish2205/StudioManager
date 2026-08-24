@@ -17,6 +17,10 @@ import EquipmentTracker from './pages/EquipmentTracker/EquipmentTracker'
 import StudioHelpdesk from './pages/StudioHelpdesk/StudioHelpdesk'
 import ClientRequests from './pages/ClientRequests/ClientRequests'
 
+import CreateQuotation from './pages/CreateQuotation/CreateQuotation'
+import QuotationDetail from './pages/QuotationDetail/QuotationDetail'
+import InvoiceDetail from './pages/InvoiceDetail/InvoiceDetail'
+
 import Sidebar from './components/Sidebar'
 import DashboardHeader from './components/DashboardHeader'
 import './App.css'
@@ -39,7 +43,10 @@ const ROUTE_MAP = {
   '/crew': 'crew',
   '/equipment': 'equipment',
   '/helpdesk': 'helpdesk',
-  '/requests': 'requests'
+  '/requests': 'requests',
+  '/create-quotation': 'create-quotation',
+  '/quotation-detail': 'quotation-detail',
+  '/invoice-detail': 'invoice-detail'
 }
 
 const TAB_TO_PATH = {
@@ -57,7 +64,10 @@ const TAB_TO_PATH = {
   'crew': '/crew',
   'equipment': '/equipment',
   'helpdesk': '/helpdesk',
-  'requests': '/requests'
+  'requests': '/requests',
+  'create-quotation': '/create-quotation',
+  'quotation-detail': '/quotation-detail',
+  'invoice-detail': '/invoice-detail'
 }
 
 function getTabFromUrl() {
@@ -70,6 +80,9 @@ function App() {
   const [activeTab, setActiveTabState] = useState(() => getTabFromUrl())
   const [selectedInvoiceEvent, setSelectedInvoiceEvent] = useState(null)
   const [selectedEditEvent, setSelectedEditEvent] = useState(null)
+  const [selectedQuotation, setSelectedQuotation] = useState(null)
+  const [selectedInvoice, setSelectedInvoice] = useState(null)
+  const [selectedPackageForQuote, setSelectedPackageForQuote] = useState(null)
   const [globalToastMsg, setGlobalToastMsg] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -261,7 +274,21 @@ function App() {
           <div className="portal-main">
             <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
-              <FinanceInvoices onShowToast={showGlobalToast} />
+              <FinanceInvoices
+                onShowToast={showGlobalToast}
+                onNavigateCreateQuotation={(pkg) => {
+                  setSelectedPackageForQuote(pkg || null)
+                  setActiveTab('create-quotation')
+                }}
+                onNavigateQuotationDetail={(quote) => {
+                  setSelectedQuotation(quote)
+                  setActiveTab('quotation-detail')
+                }}
+                onNavigateInvoiceDetail={(inv) => {
+                  setSelectedInvoice(inv)
+                  setActiveTab('invoice-detail')
+                }}
+              />
             </div>
           </div>
         </div>
@@ -277,6 +304,69 @@ function App() {
               <PackagesQuotes
                 onShowToast={showGlobalToast}
                 onNavigateAddEvent={() => setActiveTab('add-event')}
+                onNavigateCreateQuotation={(pkg) => {
+                  setSelectedPackageForQuote(pkg || null)
+                  setActiveTab('create-quotation')
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CREATE QUOTATION ── */}
+      {activeTab === 'create-quotation' && (
+        <div className="portal-layout">
+          <Sidebar activeTab="finance" setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
+          <div className="portal-main">
+            <DashboardHeader activeTab="finance" setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <div className="portal-body">
+              <CreateQuotation
+                initialPackage={selectedPackageForQuote}
+                onShowToast={showGlobalToast}
+                onNavigateBack={() => setActiveTab('finance')}
+                onNavigateDetail={(createdQuote) => {
+                  setSelectedQuotation(createdQuote)
+                  setActiveTab('quotation-detail')
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── QUOTATION DETAIL ── */}
+      {activeTab === 'quotation-detail' && (
+        <div className="portal-layout">
+          <Sidebar activeTab="finance" setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
+          <div className="portal-main">
+            <DashboardHeader activeTab="finance" setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <div className="portal-body">
+              <QuotationDetail
+                quotation={selectedQuotation}
+                onShowToast={showGlobalToast}
+                onNavigateBack={() => setActiveTab('finance')}
+                onNavigateInvoiceDetail={(createdInv) => {
+                  setSelectedInvoice(createdInv)
+                  setActiveTab('invoice-detail')
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── INVOICE DETAIL ── */}
+      {activeTab === 'invoice-detail' && (
+        <div className="portal-layout">
+          <Sidebar activeTab="finance" setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
+          <div className="portal-main">
+            <DashboardHeader activeTab="finance" setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <div className="portal-body">
+              <InvoiceDetail
+                invoice={selectedInvoice}
+                onShowToast={showGlobalToast}
+                onNavigateBack={() => setActiveTab('finance')}
               />
             </div>
           </div>

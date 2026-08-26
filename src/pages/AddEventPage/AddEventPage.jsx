@@ -2,7 +2,7 @@ import React from 'react'
 import EventForm from '../../components/EventForm'
 import './AddEventPage.css'
 
-export default function AddEventPage({ eventToEdit, onNavigateEvents, onNavigateDashboard, onNavigateInvoice }) {
+export default function AddEventPage({ eventToEdit, prefillDate, onNavigateEvents, onNavigateDashboard, onNavigateInvoice }) {
   const isEditing = !!eventToEdit
 
   return (
@@ -29,6 +29,7 @@ export default function AddEventPage({ eventToEdit, onNavigateEvents, onNavigate
       <div className="add-event-container">
         <EventForm
           eventToEdit={eventToEdit}
+          prefillDate={prefillDate}
           onSuccess={(savedEvent) => {
             if (onNavigateInvoice) {
               onNavigateInvoice(savedEvent)

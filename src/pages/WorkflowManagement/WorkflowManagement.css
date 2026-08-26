@@ -319,23 +319,28 @@
 .events-table-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 12px 12px 0 0;
+  border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-bottom: 46px;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .events-datatable.p-datatable {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .events-datatable.p-datatable .p-datatable-wrapper {
   flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .events-datatable.p-datatable .p-datatable-thead > tr > th {
@@ -487,9 +492,11 @@
   align-items: center;
 }
 
-/* ── PAGINATOR STYLING ── */
+/* ── PAGINATOR STYLING - Sticky at Bottom ── */
 .events-datatable .p-paginator {
-  position: relative;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
   border-left: none;
@@ -499,6 +506,8 @@
   padding: 0.6rem 1.25rem;
   display: flex;
   align-items: center;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
 }
 
 .events-datatable .p-paginator .p-paginator-left-content {

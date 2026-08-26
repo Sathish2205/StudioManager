@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Sidebar.css'
 
 export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onCloseMobile }) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
   const menuItems = [
     { id: 'home', label: 'Studio Overview', icon: 'pi pi-home' },
     { id: 'events', label: 'Events & Shoots', icon: 'pi pi-calendar' },
@@ -24,6 +26,12 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
     if (onCloseMobile) onCloseMobile()
   }
 
+  const sidebarClasses = [
+    'portal-sidebar',
+    isExpanded ? 'portal-sidebar--expanded' : '',
+    isMobileOpen ? 'portal-sidebar--mobile-open' : ''
+  ].filter(Boolean).join(' ')
+
   return (
     <>
       {/* Mobile Backdrop Overlay */}
@@ -31,34 +39,55 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
         <div className="portal-sidebar-backdrop" onClick={onCloseMobile} />
       )}
 
-      <aside className={`portal-sidebar ${isMobileOpen ? 'portal-sidebar--mobile-open' : ''}`}>
+      <aside className={sidebarClasses}>
         {/* Mobile Close Button */}
         <button className="portal-sidebar__close-btn" onClick={onCloseMobile} aria-label="Close menu">
           <i className="pi pi-times" />
         </button>
 
-        {/* Brand Logo Header */}
+        {/* Toggle Expand/Collapse Button */}
+        <button
+          className="portal-sidebar__toggle-btn"
+          onClick={() => setIsExpanded(!isExpanded)}
+          aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+        >
+          <i className={`pi ${isExpanded ? 'pi-angle-double-left' : 'pi-angle-double-right'}`} />
+        </button>
+
+        {/* Brand Logo Header - visible only when expanded */}
         <div className="portal-sidebar__brand">
           <div className="portal-sidebar__logo-wrap">
-            <span className="portal-sidebar__brand-name">
-              PhotoStudio<span className="portal-sidebar__brand-dot">⊙</span>PRO<sup>®</sup>
-            </span>
-            <span className="portal-sidebar__brand-sub">EVENT & FINANCE MANAGEMENT</span>
+            {isExpanded ? (
+              <>
+                <span className="portal-sidebar__brand-name">
+                  PhotoStudio<span className="portal-sidebar__brand-dot">⊙</span>PRO<sup>®</sup>
+                </span>
+                <span className="portal-sidebar__brand-sub">EVENT & FINANCE MANAGEMENT</span>
+              </>
+            ) : (
+              <span className="portal-sidebar__brand-icon">
+                <i className="pi pi-camera" />
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Profile Snippet Box */}
+        {/* Profile Snippet Box - visible only when expanded */}
         <div className="portal-sidebar__profile">
           <div className="portal-sidebar__avatar-wrap">
             <i className="pi pi-camera portal-sidebar__avatar-icon" />
           </div>
-          <div className="portal-sidebar__user-details">
-            <span className="portal-sidebar__greeting">Hi SATHISH</span>
-            <a href="#info" className="portal-sidebar__view-link">Lead Studio Manager</a>
-          </div>
-          <button className="portal-sidebar__settings-btn" aria-label="Settings">
-            <i className="pi pi-cog" />
-          </button>
+          {isExpanded && (
+            <div className="portal-sidebar__user-details">
+              <span className="portal-sidebar__greeting">Hi SATHISH</span>
+              <a href="#info" className="portal-sidebar__view-link">Lead Studio Manager</a>
+            </div>
+          )}
+          {isExpanded && (
+            <button className="portal-sidebar__settings-btn" aria-label="Settings">
+              <i className="pi pi-cog" />
+            </button>
+          )}
         </div>
 
         {/* Vertical Navigation Links */}
@@ -68,10 +97,11 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
               key={item.id}
               className={`portal-sidebar__item ${activeTab === item.id ? 'portal-sidebar__item--active' : ''}`}
               onClick={() => handleNavClick(item.id)}
+              title={!isExpanded ? item.label : undefined}
             >
               <div className="portal-sidebar__item-left">
                 <i className={`${item.icon} portal-sidebar__icon`} />
-                <span>{item.label}</span>
+                {isExpanded && <span className="portal-sidebar__label">{item.label}</span>}
               </div>
             </button>
           ))}

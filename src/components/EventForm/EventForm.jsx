@@ -21,7 +21,7 @@ import { createClient } from '../../services/clientService'
 import { createTask } from '../../services/taskService'
 import './EventForm.css'
 
-export default function EventForm({ eventToEdit, onSuccess, onCancel }) {
+export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCancel }) {
   const toastRef = useRef(null)
 
   // API Data States
@@ -138,6 +138,16 @@ export default function EventForm({ eventToEdit, onSuccess, onCancel }) {
       })
     }
   }, [eventToEdit, reset])
+
+  // Pre-fill date when navigating from calendar date click (new event only)
+  useEffect(() => {
+    if (!eventToEdit && prefillDate) {
+      const parsed = new Date(prefillDate)
+      if (!isNaN(parsed.getTime())) {
+        setValue('eventDate', parsed, { shouldDirty: false, shouldValidate: true })
+      }
+    }
+  }, [prefillDate, eventToEdit, setValue])
 
   // Watch Package Price and Advance Paid for Balance Amount calculation
   const watchPackagePrice = watch('packagePrice') || 0

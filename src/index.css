@@ -406,7 +406,9 @@ img {
 
 /* ── GLOBAL PAGINATOR STYLING ── */
 .events-datatable .p-paginator {
-  position: relative !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 10 !important;
   background: #ffffff !important;
   border-top: 1px solid #e2e8f0 !important;
   border-left: none !important;
@@ -417,6 +419,8 @@ img {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04) !important;
+  flex-shrink: 0 !important;
 }
 
 .events-datatable .p-paginator .p-paginator-left-content {
@@ -479,6 +483,35 @@ img {
 .events-datatable .p-paginator .p-dropdown .p-dropdown-label {
   line-height: 26px !important;
   font-size: 0.78rem !important;
+}
+
+/* ── GLOBAL TABLE CARD & DATATABLE LAYOUT FOR STICKY PAGINATOR ── */
+.events-table-card,
+.crm-table-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.events-datatable.p-datatable {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.events-datatable.p-datatable .p-datatable-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 /* ── Global Responsive: Tabs, Paginators, Dialogs ── */

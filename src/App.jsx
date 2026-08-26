@@ -85,6 +85,7 @@ function App() {
   const [selectedPackageForQuote, setSelectedPackageForQuote] = useState(null)
   const [globalToastMsg, setGlobalToastMsg] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [prefillEventDate, setPrefillEventDate] = useState(null)
 
   const setActiveTab = (tabKey) => {
     setActiveTabState(tabKey)
@@ -123,6 +124,7 @@ function App() {
 
   const handleNavigateEditEvent = (eventData) => {
     setSelectedEditEvent(eventData)
+    setPrefillEventDate(null)
     setActiveTab('add-event')
   }
 
@@ -203,16 +205,20 @@ function App() {
             <div className="portal-body">
               <AddEventPage
                 eventToEdit={selectedEditEvent}
+                prefillDate={prefillEventDate}
                 onNavigateEvents={() => {
                   setSelectedEditEvent(null)
+                  setPrefillEventDate(null)
                   setActiveTab('events')
                 }}
                 onNavigateDashboard={() => {
                   setSelectedEditEvent(null)
+                  setPrefillEventDate(null)
                   setActiveTab('home')
                 }}
                 onNavigateInvoice={(createdEvent) => {
                   setSelectedEditEvent(null)
+                  setPrefillEventDate(null)
                   handleNavigateInvoice(createdEvent)
                 }}
               />
@@ -247,7 +253,10 @@ function App() {
             <div className="portal-body">
               <ShootCalendar
                 onShowToast={showGlobalToast}
-                onNavigateAddEvent={() => setActiveTab('add-event')}
+                onNavigateAddEvent={(dateStr) => {
+                  setPrefillEventDate(dateStr || null)
+                  setActiveTab('add-event')
+                }}
               />
             </div>
           </div>

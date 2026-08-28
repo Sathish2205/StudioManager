@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './Sidebar.css'
 
 export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onCloseMobile }) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(true)
 
   const menuItems = [
     { id: 'home', label: 'Studio Overview', icon: 'pi pi-home' },
@@ -15,6 +15,7 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
     { id: 'packages', label: 'Packages & Quotes', icon: 'pi pi-tag' },
     { id: 'contracts', label: 'Contracts & Docs', icon: 'pi pi-file' },
     { id: 'crew', label: 'Crew & Photographers', icon: 'pi pi-users' },
+    { id: 'employees', label: 'Employee Management', icon: 'pi pi-user-plus' },
     { id: 'equipment', label: 'Equipment Tracker', icon: 'pi pi-camera' },
     { id: 'helpdesk', label: 'Studio Helpdesk', icon: 'pi pi-info-circle' },
     { id: 'requests', label: 'Client Requests', icon: 'pi pi-layers' }
@@ -45,32 +46,29 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
           <i className="pi pi-times" />
         </button>
 
-        {/* Toggle Expand/Collapse Button */}
-        <button
-          className="portal-sidebar__toggle-btn"
-          onClick={() => setIsExpanded(!isExpanded)}
-          aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-        >
-          <i className={`pi ${isExpanded ? 'pi-angle-double-left' : 'pi-angle-double-right'}`} />
-        </button>
+        {/* Top Bar: Hamburger + Brand Logo */}
+        <div className="portal-sidebar__top-bar">
+          <button
+            className="portal-sidebar__toggle-btn"
+            onClick={() => setIsExpanded(!isExpanded)}
+            aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            <i className="pi pi-bars" />
+          </button>
 
-        {/* Brand Logo Header - visible only when expanded */}
-        <div className="portal-sidebar__brand">
-          <div className="portal-sidebar__logo-wrap">
-            {isExpanded ? (
-              <>
-                <span className="portal-sidebar__brand-name">
-                  PhotoStudio<span className="portal-sidebar__brand-dot">⊙</span>PRO<sup>®</sup>
-                </span>
-                <span className="portal-sidebar__brand-sub">EVENT & FINANCE MANAGEMENT</span>
-              </>
-            ) : (
-              <span className="portal-sidebar__brand-icon">
-                <i className="pi pi-camera" />
-              </span>
-            )}
-          </div>
+          {isExpanded && (
+            <span className="portal-sidebar__brand-name">
+              PhotoStudio<span className="portal-sidebar__brand-dot">⊙</span>PRO<sup>®</sup>
+            </span>
+          )}
         </div>
+
+        {/* Subtitle - visible only when expanded */}
+        {isExpanded && (
+          <div className="portal-sidebar__brand-sub-wrap">
+            <span className="portal-sidebar__brand-sub">EVENT & FINANCE MANAGEMENT</span>
+          </div>
+        )}
 
         {/* Profile Snippet Box - visible only when expanded */}
         <div className="portal-sidebar__profile">

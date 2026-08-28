@@ -1,0 +1,1123 @@
+import React, { useState, useEffect, useRef } from 'react'
+import { DataTable } from 'primereact/datatable'
+import { Column } from 'primereact/column'
+import { InputText } from 'primereact/inputtext'
+import { Dropdown } from 'primereact/dropdown'
+import { Tag } from 'primereact/tag'
+import { Button } from 'primereact/button'
+import { Avatar } from 'primereact/avatar'
+import { Dialog } from 'primereact/dialog'
+import { Toast } from 'primereact/toast'
+import { Calendar } from 'primereact/calendar'
+import { InputNumber } from 'primereact/inputnumber'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+
+import {
+  getEmployees,
+  createEmployee,
+  updateEmployee,
+  deleteEmployee,
+  getEmployeeDashboardStats,
+} from '../../services/employeeService'
+
+import {
+  getTodayAttendance,
+  getEmployeeAttendance,
+  adjustAttendance,
+} from '../../services/attendanceService'
+
+import {
+  getLeaves,
+  applyLeave,
+  approveLeave,
+  rejectLeave,
+} from '../../services/leaveService'
+
+import {
+  getPayrolls,
+  generatePayroll,
+  updatePayrollStatus,
+} from '../../services/payrollService'
+
+import {
+  getShifts,
+  createShift,
+  updateShift,
+  deleteShift,
+} from '../../services/shiftService'
+
+import CheckinWidget from './CheckinWidget'
+import EmployeeProfileModal from './EmployeeProfileModal'
+import './EmployeeManagement.css'
+
+export default function EmployeeManagement({ activeTab = 'employees', setActiveTab }) {
+  const toastRef = useRef(null)
+
+  // Current Sub-Tab inside Employee Module
+  const [currentSubTab, setCurrentSubTab] = useState('employees') // 'employees', 'attendance', 'terminal', 'timesheets', 'leave', 'payroll', 'shifts'
+
+  // Summary Metrics State
+  const [dashboardStats, setDashboardStats] = useState(null)
+
+  // Employees Tab State
+  const [employees, setEmployees] = useState([])
+  const [loadingEmps, setLoadingEmps] = useState(true)
+  const [empSearch, setEmpSearch] = useState('')
+  const [selectedRole, setSelectedRole] = useState(null)
+  const [selectedType, setSelectedType] = useState(null)
+  const [selectedStatus, setSelectedStatus] = useState(null)
+
+  // Profile View Modal State
+  const [selectedEmpId, setSelectedEmpId] = useState(null)
+  const [profileVisible, setProfileVisible] = useState(false)
+
+  // Add/Edit Employee Form Dialog State
+  const [empDialogVisible, setEmpDialogVisible] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [empFormData, setEmpFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    role: 'Photographer',
+    employmentType: 'Full Time',
+    salary: 30000,
+    workingHours: '09:00 AM - 06:00 PM',
+    status: 'Active',
+    address: '',
+    emergencyName: '',
+    emergencyPhone: '',
+    emergencyRelation: '',
+  })
+
+  // Attendance Tab State
+  const [todayAttData, setTodayAttData] = useState({ summary: {}, attendances: [] })
+  const [loadingAtt, setLoadingAtt] = useState(true)
+
+  // Manual Adjust Attendance Dialog
+  const [adjustDialogVisible, setAdjustDialogVisible] = useState(false)
+  const [adjustRecord, setAdjustRecord] = useState(null)
+  const [adjustForm, setAdjustForm] = useState({ status: 'Present', notes: '', reason: '' })
+
+  // Leave Tab State
+  const [leaves, setLeaves] = useState([])
+  const [loadingLeaves, setLoadingLeaves] = useState(true)
+  const [leaveDialogVisible, setLeaveDialogVisible] = useState(false)
+  const [leaveForm, setLeaveForm] = useState({
+    employeeId: '',
+    leaveType: 'Casual Leave',
+    startDate: null,
+    endDate: null,
+    reason: '',
+  })
+
+  // Payroll Tab State
+  const [payrolls, setPayrolls] = useState([])
+  const [loadingPayroll, setLoadingPayroll] = useState(true)
+  const [payrollDialogVisible, setPayrollDialogVisible] = useState(false)
+  const [payrollForm, setPayrollForm] = useState({
+    employeeId: '',
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+    bonus: 0,
+    deductions: 0,
+  })
+
+  // Shifts Tab State
+  const [shifts, setShifts] = useState([])
+  const [loadingShifts, setLoadingShifts] = useState(true)
+  const [shiftDialogVisible, setShiftDialogVisible] = useState(false)
+  const [shiftForm, setShiftForm] = useState({
+    name: 'Studio Shift',
+    startTime: '09:00 AM',
+    endTime: '06:00 PM',
+    breakDuration: 60,
+    requiredMinutes: 480,
+    gracePeriod: 15,
+    overtimeEnabled: true,
+  })
+
+  // Toast Helper
+  const showToast = (severity, summary, detail) => {
+    if (toastRef.current) {
+      toastRef.current.show({ severity, summary, detail, life: 3000 })
+    }
+  }
+
+  // Load Data based on active tab
+  useEffect(() => {
+    loadDashboardStats()
+    loadEmployeesData()
+  }, [])
+
+  useEffect(() => {
+    if (currentSubTab === 'attendance') loadAttendanceData()
+    if (currentSubTab === 'leave') loadLeavesData()
+    if (currentSubTab === 'payroll') loadPayrollData()
+    if (currentSubTab === 'shifts') loadShiftsData()
+  }, [currentSubTab])
+
+  const loadDashboardStats = async () => {
+    const stats = await getEmployeeDashboardStats()
+    if (stats) setDashboardStats(stats)
+  }
+
+  const loadEmployeesData = async () => {
+    setLoadingEmps(true)
+    const query = {}
+    if (empSearch) query.search = empSearch
+    if (selectedRole) query.role = selectedRole
+    if (selectedType) query.employmentType = selectedType
+    if (selectedStatus) query.status = selectedStatus
+
+    const res = await getEmployees(query)
+    setEmployees(res.data || [])
+    setLoadingEmps(false)
+  }
+
+  const loadAttendanceData = async () => {
+    setLoadingAtt(true)
+    const res = await getTodayAttendance()
+    setTodayAttData(res || { summary: {}, attendances: [] })
+    setLoadingAtt(false)
+  }
+
+  const loadLeavesData = async () => {
+    setLoadingLeaves(true)
+    const data = await getLeaves()
+    setLeaves(data || [])
+    setLoadingLeaves(false)
+  }
+
+  const loadPayrollData = async () => {
+    setLoadingPayroll(true)
+    const data = await getPayrolls()
+    setPayrolls(data || [])
+    setLoadingPayroll(false)
+  }
+
+  const loadShiftsData = async () => {
+    setLoadingShifts(true)
+    const data = await getShifts()
+    setShifts(data || [])
+    setLoadingShifts(false)
+  }
+
+  // Handler: Open Add Employee
+  const handleOpenAddEmp = () => {
+    setEditMode(false)
+    setEmpFormData({
+      name: '',
+      email: '',
+      phone: '',
+      role: 'Photographer',
+      employmentType: 'Full Time',
+      salary: 30000,
+      workingHours: '09:00 AM - 06:00 PM',
+      status: 'Active',
+      address: '',
+      emergencyName: '',
+      emergencyPhone: '',
+      emergencyRelation: '',
+    })
+    setEmpDialogVisible(true)
+  }
+
+  // Handler: Save Employee (Create or Update)
+  const handleSaveEmployee = async () => {
+    if (!empFormData.name) {
+      showToast('warn', 'Validation Error', 'Employee name is required')
+      return
+    }
+
+    const payload = {
+      ...empFormData,
+      emergencyContact: {
+        name: empFormData.emergencyName,
+        phone: empFormData.emergencyPhone,
+        relation: empFormData.emergencyRelation,
+      },
+    }
+
+    if (editMode && empFormData._id) {
+      const res = await updateEmployee(empFormData._id, payload)
+      if (res) {
+        showToast('success', 'Updated', 'Employee updated successfully')
+        loadEmployeesData()
+        setEmpDialogVisible(false)
+      }
+    } else {
+      const res = await createEmployee(payload)
+      if (res) {
+        showToast('success', 'Created', 'Employee added successfully')
+        loadEmployeesData()
+        loadDashboardStats()
+        setEmpDialogVisible(false)
+      }
+    }
+  }
+
+  // Handler: Edit Employee
+  const handleEditEmployee = (emp) => {
+    setEditMode(true)
+    setEmpFormData({
+      _id: emp._id,
+      name: emp.name || '',
+      email: emp.email || '',
+      phone: emp.phone || '',
+      role: emp.role || 'Photographer',
+      employmentType: emp.employmentType || 'Full Time',
+      salary: emp.salary || 0,
+      workingHours: emp.workingHours || '09:00 AM - 06:00 PM',
+      status: emp.status || 'Active',
+      address: emp.address || '',
+      emergencyName: emp.emergencyContact?.name || '',
+      emergencyPhone: emp.emergencyContact?.phone || '',
+      emergencyRelation: emp.emergencyContact?.relation || '',
+    })
+    setEmpDialogVisible(true)
+  }
+
+  // Handler: Delete Employee
+  const handleDeleteEmployee = (emp) => {
+    confirmDialog({
+      message: `Are you sure you want to delete employee "${emp.name}"?`,
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
+      acceptClassName: 'p-button-danger',
+      accept: async () => {
+        const success = await deleteEmployee(emp._id)
+        if (success) {
+          showToast('info', 'Deleted', 'Employee removed')
+          loadEmployeesData()
+          loadDashboardStats()
+        }
+      },
+    })
+  }
+
+  // Handler: View Profile
+  const handleViewProfile = (empId) => {
+    setSelectedEmpId(empId)
+    setProfileVisible(true)
+  }
+
+  // Handler: Save Manual Attendance Adjustment
+  const handleSaveAttendanceAdjust = async () => {
+    if (!adjustRecord) return
+    const res = await adjustAttendance(adjustRecord._id, adjustForm)
+    if (res && res.success) {
+      showToast('success', 'Adjusted', 'Attendance record updated')
+      loadAttendanceData()
+      setAdjustDialogVisible(false)
+    } else {
+      showToast('error', 'Failed', res?.message || 'Adjustment failed')
+    }
+  }
+
+  // Handler: Apply Leave
+  const handleSaveLeave = async () => {
+    if (!leaveForm.employeeId || !leaveForm.startDate || !leaveForm.endDate || !leaveForm.reason) {
+      showToast('warn', 'Validation Error', 'Please complete all required fields')
+      return
+    }
+
+    const res = await applyLeave(leaveForm)
+    if (res) {
+      showToast('success', 'Submitted', 'Leave application submitted')
+      loadLeavesData()
+      setLeaveDialogVisible(false)
+    }
+  }
+
+  // Handler: Approve / Reject Leave
+  const handleApproveLeave = async (leaveId) => {
+    const res = await approveLeave(leaveId, 'Approved by manager')
+    if (res) {
+      showToast('success', 'Approved', 'Leave request approved')
+      loadLeavesData()
+    }
+  }
+
+  const handleRejectLeave = async (leaveId) => {
+    const res = await rejectLeave(leaveId, 'Rejected by manager')
+    if (res) {
+      showToast('info', 'Rejected', 'Leave request rejected')
+      loadLeavesData()
+    }
+  }
+
+  // Handler: Generate Payroll
+  const handleGeneratePayroll = async () => {
+    if (!payrollForm.employeeId) {
+      showToast('warn', 'Validation Error', 'Please select an employee')
+      return
+    }
+
+    const res = await generatePayroll(payrollForm)
+    if (res) {
+      showToast('success', 'Generated', 'Monthly payroll calculated')
+      loadPayrollData()
+      setPayrollDialogVisible(false)
+    }
+  }
+
+  // Handler: Create Shift
+  const handleSaveShift = async () => {
+    if (!shiftForm.name) {
+      showToast('warn', 'Validation Error', 'Shift name is required')
+      return
+    }
+
+    const res = await createShift(shiftForm)
+    if (res) {
+      showToast('success', 'Created', 'Shift configured successfully')
+      loadShiftsData()
+      setShiftDialogVisible(false)
+    }
+  }
+
+  const roleOptions = [
+    'Photographer', 'Videographer', 'Photo Editor', 'Video Editor',
+    'Album Designer', 'Manager', 'Assistant', 'Driver', 'Accountant', 'Other',
+  ]
+  const typeOptions = ['Full Time', 'Part Time', 'Freelancer', 'Contract']
+  const statusOptions = ['Active', 'Inactive', 'On Leave']
+
+  return (
+    <div className="emp-page-container">
+      <Toast ref={toastRef} />
+      <ConfirmDialog />
+
+      {/* Header Bar */}
+      <div className="emp-header-bar">
+        <div>
+          <h1 className="emp-header-title">
+            <i className="pi pi-users text-primary" /> Employee Management & Attendance
+          </h1>
+          <p className="emp-header-sub">
+            Manage staff profiles, shifts, daily check-ins, working hours, leave applications, and payroll.
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          {currentSubTab === 'employees' && (
+            <Button
+              label="Add New Employee"
+              icon="pi pi-user-plus"
+              severity="primary"
+              onClick={handleOpenAddEmp}
+            />
+          )}
+          {currentSubTab === 'leave' && (
+            <Button
+              label="Apply Leave"
+              icon="pi pi-calendar-plus"
+              severity="primary"
+              onClick={() => {
+                if (employees.length > 0) setLeaveForm(prev => ({ ...prev, employeeId: employees[0]._id }))
+                setLeaveDialogVisible(true)
+              }}
+            />
+          )}
+          {currentSubTab === 'payroll' && (
+            <Button
+              label="Calculate Payroll"
+              icon="pi pi-calculator"
+              severity="success"
+              onClick={() => {
+                if (employees.length > 0) setPayrollForm(prev => ({ ...prev, employeeId: employees[0]._id }))
+                setPayrollDialogVisible(true)
+              }}
+            />
+          )}
+          {currentSubTab === 'shifts' && (
+            <Button
+              label="Create Shift"
+              icon="pi pi-plus"
+              severity="primary"
+              onClick={() => setShiftDialogVisible(true)}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Dashboard Top Metric Cards */}
+      <div className="emp-stats-grid">
+        <div className="emp-stat-card">
+          <div>
+            <div className="emp-stat-lbl">Total Staff</div>
+            <div className="emp-stat-val text-primary">{dashboardStats?.totalEmployees || employees.length || 0}</div>
+          </div>
+          <i className="pi pi-users text-blue-500 text-3xl opacity-60" />
+        </div>
+
+        <div className="emp-stat-card">
+          <div>
+            <div className="emp-stat-lbl">Present Today</div>
+            <div className="emp-stat-val text-green-600">{dashboardStats?.presentToday || 0}</div>
+          </div>
+          <i className="pi pi-check-circle text-green-500 text-3xl opacity-60" />
+        </div>
+
+        <div className="emp-stat-card">
+          <div>
+            <div className="emp-stat-lbl">Absent / Leave</div>
+            <div className="emp-stat-val text-orange-600">{dashboardStats?.absentToday || 0} / {dashboardStats?.onLeaveToday || 0}</div>
+          </div>
+          <i className="pi pi-exclamation-circle text-orange-500 text-3xl opacity-60" />
+        </div>
+
+        <div className="emp-stat-card">
+          <div>
+            <div className="emp-stat-lbl">Working Hours (Month)</div>
+            <div className="emp-stat-val text-purple-600">{dashboardStats?.monthWorkingHours || 0}h</div>
+          </div>
+          <i className="pi pi-clock text-purple-500 text-3xl opacity-60" />
+        </div>
+      </div>
+
+      {/* Sub Navigation Bar */}
+      <div className="emp-nav-tabs">
+        <button
+          className={`emp-tab-btn ${currentSubTab === 'employees' ? 'active' : ''}`}
+          onClick={() => setCurrentSubTab('employees')}
+        >
+          <i className="pi pi-users" /> Employee List
+        </button>
+        <button
+          className={`emp-tab-btn ${currentSubTab === 'terminal' ? 'active' : ''}`}
+          onClick={() => setCurrentSubTab('terminal')}
+        >
+          <i className="pi pi-mobile" /> Check-In Terminal
+        </button>
+        <button
+          className={`emp-tab-btn ${currentSubTab === 'attendance' ? 'active' : ''}`}
+          onClick={() => setCurrentSubTab('attendance')}
+        >
+          <i className="pi pi-clock" /> Daily Attendance Log
+        </button>
+        <button
+          className={`emp-tab-btn ${currentSubTab === 'leave' ? 'active' : ''}`}
+          onClick={() => setCurrentSubTab('leave')}
+        >
+          <i className="pi pi-calendar-minus" /> Leave Management
+        </button>
+        <button
+          className={`emp-tab-btn ${currentSubTab === 'payroll' ? 'active' : ''}`}
+          onClick={() => setCurrentSubTab('payroll')}
+        >
+          <i className="pi pi-money-bill" /> Payroll Preparation
+        </button>
+        <button
+          className={`emp-tab-btn ${currentSubTab === 'shifts' ? 'active' : ''}`}
+          onClick={() => setCurrentSubTab('shifts')}
+        >
+          <i className="pi pi-sliders-h" /> Shift Management
+        </button>
+      </div>
+
+      {/* ──────────────── TAB 1: EMPLOYEES LIST ──────────────── */}
+      {currentSubTab === 'employees' && (
+        <div className="emp-table-card">
+          {/* Filters Bar */}
+          <div className="p-3 surface-100 border-bottom-1 surface-border flex flex-wrap gap-3 align-items-center justify-content-between">
+            <span className="p-input-icon-left w-full sm:w-20rem">
+              <i className="pi pi-search" />
+              <InputText
+                value={empSearch}
+                onChange={(e) => setEmpSearch(e.target.value)}
+                placeholder="Search employee name, ID, phone..."
+                className="w-full p-inputtext-sm"
+              />
+            </span>
+
+            <div className="flex flex-wrap gap-2">
+              <Dropdown
+                value={selectedRole}
+                options={roleOptions.map(r => ({ label: r, value: r }))}
+                onChange={(e) => setSelectedRole(e.value)}
+                placeholder="All Roles"
+                showClear
+                className="p-inputtext-sm w-11rem"
+              />
+              <Dropdown
+                value={selectedType}
+                options={typeOptions.map(t => ({ label: t, value: t }))}
+                onChange={(e) => setSelectedType(e.value)}
+                placeholder="All Employment Types"
+                showClear
+                className="p-inputtext-sm w-12rem"
+              />
+              <Dropdown
+                value={selectedStatus}
+                options={statusOptions.map(s => ({ label: s, value: s }))}
+                onChange={(e) => setSelectedStatus(e.value)}
+                placeholder="All Statuses"
+                showClear
+                className="p-inputtext-sm w-10rem"
+              />
+              <Button
+                icon="pi pi-refresh"
+                outlined
+                size="small"
+                onClick={loadEmployeesData}
+                tooltip="Refresh"
+              />
+            </div>
+          </div>
+
+          <DataTable
+            value={employees}
+            loading={loadingEmps}
+            paginator
+            rows={10}
+            rowsPerPageOptions={[10, 20, 50]}
+            className="events-datatable p-datatable-sm"
+            emptyMessage="No employees found."
+          >
+            <Column
+              field="employeeId"
+              header="Employee ID"
+              sortable
+              body={(rd) => <strong className="text-primary">{rd.employeeId || 'EMP-0000'}</strong>}
+            />
+            <Column
+              field="name"
+              header="Employee Name"
+              sortable
+              body={(rd) => (
+                <div className="flex align-items-center gap-2">
+                  <Avatar image={rd.avatar} icon={!rd.avatar ? 'pi pi-user' : undefined} shape="circle" />
+                  <div>
+                    <div className="font-semibold text-900">{rd.name}</div>
+                    <div className="text-xs text-500">{rd.email || 'No email'}</div>
+                  </div>
+                </div>
+              )}
+            />
+            <Column field="role" header="Role" sortable />
+            <Column field="phone" header="Phone" />
+            <Column
+              field="employmentType"
+              header="Type"
+              sortable
+              body={(rd) => <Tag value={rd.employmentType || 'Full Time'} severity="info" />}
+            />
+            <Column
+              field="joiningDate"
+              header="Joining Date"
+              sortable
+              body={(rd) => (rd.joiningDate ? new Date(rd.joiningDate).toLocaleDateString() : 'N/A')}
+            />
+            <Column
+              field="status"
+              header="Status"
+              sortable
+              body={(rd) => (
+                <Tag
+                  value={rd.status || 'Active'}
+                  severity={rd.status === 'Active' ? 'success' : 'danger'}
+                />
+              )}
+            />
+            <Column
+              header="Actions"
+              body={(rd) => (
+                <div className="flex gap-1">
+                  <Button
+                    icon="pi pi-eye"
+                    rounded
+                    text
+                    severity="info"
+                    tooltip="View Profile"
+                    onClick={() => handleViewProfile(rd._id)}
+                  />
+                  <Button
+                    icon="pi pi-pencil"
+                    rounded
+                    text
+                    severity="warning"
+                    tooltip="Edit Employee"
+                    onClick={() => handleEditEmployee(rd)}
+                  />
+                  <Button
+                    icon="pi pi-trash"
+                    rounded
+                    text
+                    severity="danger"
+                    tooltip="Delete"
+                    onClick={() => handleDeleteEmployee(rd)}
+                  />
+                </div>
+              )}
+            />
+          </DataTable>
+        </div>
+      )}
+
+      {/* ──────────────── TAB 2: CHECK-IN TERMINAL WIDGET ──────────────── */}
+      {currentSubTab === 'terminal' && (
+        <CheckinWidget onToast={showToast} />
+      )}
+
+      {/* ──────────────── TAB 3: DAILY ATTENDANCE LOG ──────────────── */}
+      {currentSubTab === 'attendance' && (
+        <div className="emp-table-card">
+          <div className="p-3 surface-100 border-bottom-1 surface-border flex justify-content-between align-items-center">
+            <h4 className="m-0 text-base font-bold text-900">
+              Today's Attendance Logs ({new Date().toLocaleDateString()})
+            </h4>
+            <Button label="Refresh Log" icon="pi pi-refresh" size="small" outlined onClick={loadAttendanceData} />
+          </div>
+
+          <DataTable
+            value={todayAttData.attendances}
+            loading={loadingAtt}
+            paginator
+            rows={10}
+            className="events-datatable p-datatable-sm"
+            emptyMessage="No attendance records logged for today."
+          >
+            <Column
+              header="Employee"
+              body={(rd) => (
+                <div className="flex align-items-center gap-2">
+                  <Avatar image={rd.employeeId?.avatar} icon={!rd.employeeId?.avatar ? 'pi pi-user' : undefined} shape="circle" />
+                  <div>
+                    <div className="font-semibold">{rd.employeeId?.name || 'Staff'}</div>
+                    <div className="text-xs text-500">{rd.employeeId?.role}</div>
+                  </div>
+                </div>
+              )}
+            />
+            <Column
+              header="Shift"
+              body={(rd) => rd.shiftId?.name || 'Studio Shift'}
+            />
+            <Column
+              header="Check In"
+              body={(rd) => (rd.checkIn ? new Date(rd.checkIn).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--')}
+            />
+            <Column
+              header="Check Out"
+              body={(rd) => (rd.checkOut ? new Date(rd.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--')}
+            />
+            <Column
+              header="Break Duration"
+              body={(rd) => `${rd.totalBreakMinutes || 0} mins`}
+            />
+            <Column
+              header="Working Hours"
+              body={(rd) => `${((rd.workingMinutes || 0) / 60).toFixed(1)}h`}
+            />
+            <Column
+              field="status"
+              header="Status"
+              body={(rd) => (
+                <Tag
+                  value={rd.status}
+                  severity={
+                    rd.status === 'Present'
+                      ? 'success'
+                      : rd.status === 'Late'
+                      ? 'warning'
+                      : rd.status === 'On Leave'
+                      ? 'info'
+                      : 'danger'
+                  }
+                />
+              )}
+            />
+            <Column
+              header="Actions"
+              body={(rd) => (
+                <Button
+                  label="Adjust"
+                  icon="pi pi-cog"
+                  size="small"
+                  outlined
+                  onClick={() => {
+                    setAdjustRecord(rd)
+                    setAdjustForm({ status: rd.status || 'Present', notes: rd.notes || '', reason: '' })
+                    setAdjustDialogVisible(true)
+                  }}
+                />
+              )}
+            />
+          </DataTable>
+        </div>
+      )}
+
+      {/* ──────────────── TAB 4: LEAVE MANAGEMENT ──────────────── */}
+      {currentSubTab === 'leave' && (
+        <div className="emp-table-card">
+          <DataTable
+            value={leaves}
+            loading={loadingLeaves}
+            paginator
+            rows={10}
+            className="events-datatable p-datatable-sm"
+            emptyMessage="No leave requests."
+          >
+            <Column
+              header="Employee"
+              body={(rd) => (
+                <div className="font-semibold text-900">
+                  {rd.employeeId?.name || 'Staff'} ({rd.employeeId?.role})
+                </div>
+              )}
+            />
+            <Column field="leaveType" header="Leave Type" />
+            <Column
+              header="Dates"
+              body={(rd) =>
+                `${new Date(rd.startDate).toLocaleDateString()} to ${new Date(rd.endDate).toLocaleDateString()} (${rd.totalDays || 1} days)`
+              }
+            />
+            <Column field="reason" header="Reason" />
+            <Column
+              field="status"
+              header="Status"
+              body={(rd) => (
+                <Tag
+                  value={rd.status}
+                  severity={
+                    rd.status === 'Approved' ? 'success' : rd.status === 'Pending' ? 'warning' : 'danger'
+                  }
+                />
+              )}
+            />
+            <Column
+              header="Actions"
+              body={(rd) => (
+                <div className="flex gap-2">
+                  {rd.status === 'Pending' && (
+                    <>
+                      <Button
+                        icon="pi pi-check"
+                        severity="success"
+                        rounded
+                        text
+                        tooltip="Approve"
+                        onClick={() => handleApproveLeave(rd._id)}
+                      />
+                      <Button
+                        icon="pi pi-times"
+                        severity="danger"
+                        rounded
+                        text
+                        tooltip="Reject"
+                        onClick={() => handleRejectLeave(rd._id)}
+                      />
+                    </>
+                  )}
+                </div>
+              )}
+            />
+          </DataTable>
+        </div>
+      )}
+
+      {/* ──────────────── TAB 5: PAYROLL ──────────────── */}
+      {currentSubTab === 'payroll' && (
+        <div className="emp-table-card">
+          <DataTable
+            value={payrolls}
+            loading={loadingPayroll}
+            paginator
+            rows={10}
+            className="events-datatable p-datatable-sm"
+            emptyMessage="No payroll records generated yet."
+          >
+            <Column
+              header="Employee"
+              body={(rd) => rd.employeeId?.name || 'Staff'}
+            />
+            <Column header="Month / Year" body={(rd) => `${rd.month}/${rd.year}`} />
+            <Column header="Base Salary" body={(rd) => `₹${rd.baseSalary?.toLocaleString() || 0}`} />
+            <Column header="Present Days" body={(rd) => `${rd.presentDays || 0} days`} />
+            <Column header="Overtime Pay" body={(rd) => `₹${rd.overtimeAmount?.toLocaleString() || 0}`} />
+            <Column header="Deductions" body={(rd) => `₹${rd.deductions?.toLocaleString() || 0}`} />
+            <Column
+              header="Net Salary"
+              body={(rd) => <strong className="text-green-600">₹{rd.netSalary?.toLocaleString() || 0}</strong>}
+            />
+            <Column
+              field="status"
+              header="Status"
+              body={(rd) => <Tag value={rd.status} severity="success" />}
+            />
+          </DataTable>
+        </div>
+      )}
+
+      {/* ──────────────── TAB 6: SHIFTS ──────────────── */}
+      {currentSubTab === 'shifts' && (
+        <div className="emp-table-card">
+          <DataTable
+            value={shifts}
+            loading={loadingShifts}
+            paginator
+            rows={10}
+            className="events-datatable p-datatable-sm"
+            emptyMessage="No shift configurations."
+          >
+            <Column field="name" header="Shift Name" body={(rd) => <strong>{rd.name}</strong>} />
+            <Column header="Timing" body={(rd) => `${rd.startTime} – ${rd.endTime}`} />
+            <Column header="Break Duration" body={(rd) => `${rd.breakDuration || 60} mins`} />
+            <Column header="Grace Period" body={(rd) => `${rd.gracePeriod || 15} mins`} />
+            <Column
+              header="Overtime"
+              body={(rd) => (rd.overtimeEnabled ? <Tag value="Enabled" severity="success" /> : <Tag value="Disabled" severity="warning" />)}
+            />
+          </DataTable>
+        </div>
+      )}
+
+      {/* ──────────────── DIALOG: ADD/EDIT EMPLOYEE ──────────────── */}
+      <Dialog
+        visible={empDialogVisible}
+        onHide={() => setEmpDialogVisible(false)}
+        header={editMode ? 'Edit Employee Profile' : 'Add New Employee'}
+        style={{ width: '600px' }}
+        modal
+        className="emp-dialog"
+      >
+        <div className="grid p-fluid">
+          <div className="col-12 md:col-6">
+            <label className="font-bold text-sm">Full Name *</label>
+            <InputText
+              value={empFormData.name}
+              onChange={(e) => setEmpFormData({ ...empFormData, name: e.target.value })}
+              placeholder="e.g. Sathish Kumar"
+            />
+          </div>
+
+          <div className="col-12 md:col-6">
+            <label className="font-bold text-sm">Role *</label>
+            <Dropdown
+              value={empFormData.role}
+              options={roleOptions.map(r => ({ label: r, value: r }))}
+              onChange={(e) => setEmpFormData({ ...empFormData, role: e.value })}
+            />
+          </div>
+
+          <div className="col-12 md:col-6">
+            <label className="font-bold text-sm">Email Address</label>
+            <InputText
+              value={empFormData.email}
+              onChange={(e) => setEmpFormData({ ...empFormData, email: e.target.value })}
+              placeholder="e.g. sathish@studio.com"
+            />
+          </div>
+
+          <div className="col-12 md:col-6">
+            <label className="font-bold text-sm">Phone Number</label>
+            <InputText
+              value={empFormData.phone}
+              onChange={(e) => setEmpFormData({ ...empFormData, phone: e.target.value })}
+              placeholder="+91 98765 43210"
+            />
+          </div>
+
+          <div className="col-12 md:col-6">
+            <label className="font-bold text-sm">Employment Type</label>
+            <Dropdown
+              value={empFormData.employmentType}
+              options={typeOptions.map(t => ({ label: t, value: t }))}
+              onChange={(e) => setEmpFormData({ ...empFormData, employmentType: e.value })}
+            />
+          </div>
+
+          <div className="col-12 md:col-6">
+            <label className="font-bold text-sm">Monthly Base Salary (₹)</label>
+            <InputNumber
+              value={empFormData.salary}
+              onValueChange={(e) => setEmpFormData({ ...empFormData, salary: e.value })}
+              mode="currency"
+              currency="INR"
+              locale="en-IN"
+            />
+          </div>
+
+          <div className="col-12">
+            <label className="font-bold text-sm">Address</label>
+            <InputTextarea
+              value={empFormData.address}
+              onChange={(e) => setEmpFormData({ ...empFormData, address: e.target.value })}
+              rows={2}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-content-end gap-2 mt-4">
+          <Button label="Cancel" outlined onClick={() => setEmpDialogVisible(false)} />
+          <Button label={editMode ? 'Update Employee' : 'Save Employee'} icon="pi pi-check" onClick={handleSaveEmployee} />
+        </div>
+      </Dialog>
+
+      {/* ──────────────── DIALOG: APPLY LEAVE ──────────────── */}
+      <Dialog
+        visible={leaveDialogVisible}
+        onHide={() => setLeaveDialogVisible(false)}
+        header="Apply for Leave"
+        style={{ width: '500px' }}
+        modal
+      >
+        <div className="flex flex-column gap-3 p-fluid">
+          <div>
+            <label className="font-bold text-sm mb-1 block">Employee *</label>
+            <Dropdown
+              value={leaveForm.employeeId}
+              options={employees.map(e => ({ label: `${e.name} (${e.role})`, value: e._id }))}
+              onChange={(e) => setLeaveForm({ ...leaveForm, employeeId: e.value })}
+            />
+          </div>
+
+          <div>
+            <label className="font-bold text-sm mb-1 block">Leave Type *</label>
+            <Dropdown
+              value={leaveForm.leaveType}
+              options={['Casual Leave', 'Sick Leave', 'Paid Leave', 'Unpaid Leave', 'Emergency Leave'].map(l => ({ label: l, value: l }))}
+              onChange={(e) => setLeaveForm({ ...leaveForm, leaveType: e.value })}
+            />
+          </div>
+
+          <div className="grid">
+            <div className="col-6">
+              <label className="font-bold text-sm mb-1 block">Start Date *</label>
+              <Calendar
+                value={leaveForm.startDate}
+                onChange={(e) => setLeaveForm({ ...leaveForm, startDate: e.value })}
+                showIcon
+              />
+            </div>
+            <div className="col-6">
+              <label className="font-bold text-sm mb-1 block">End Date *</label>
+              <Calendar
+                value={leaveForm.endDate}
+                onChange={(e) => setLeaveForm({ ...leaveForm, endDate: e.value })}
+                showIcon
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="font-bold text-sm mb-1 block">Reason *</label>
+            <InputTextarea
+              value={leaveForm.reason}
+              onChange={(e) => setLeaveForm({ ...leaveForm, reason: e.target.value })}
+              rows={3}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-content-end gap-2 mt-4">
+          <Button label="Cancel" outlined onClick={() => setLeaveDialogVisible(false)} />
+          <Button label="Submit Leave" icon="pi pi-check" onClick={handleSaveLeave} />
+        </div>
+      </Dialog>
+
+      {/* ──────────────── DIALOG: CALCULATE PAYROLL ──────────────── */}
+      <Dialog
+        visible={payrollDialogVisible}
+        onHide={() => setPayrollDialogVisible(false)}
+        header="Calculate Monthly Payroll"
+        style={{ width: '450px' }}
+        modal
+      >
+        <div className="flex flex-column gap-3 p-fluid">
+          <div>
+            <label className="font-bold text-sm mb-1 block">Select Employee *</label>
+            <Dropdown
+              value={payrollForm.employeeId}
+              options={employees.map(e => ({ label: `${e.name} (${e.role})`, value: e._id }))}
+              onChange={(e) => setPayrollForm({ ...payrollForm, employeeId: e.value })}
+            />
+          </div>
+
+          <div className="grid">
+            <div className="col-6">
+              <label className="font-bold text-sm mb-1 block">Month</label>
+              <InputNumber
+                value={payrollForm.month}
+                onValueChange={(e) => setPayrollForm({ ...payrollForm, month: e.value })}
+                min={1}
+                max={12}
+              />
+            </div>
+            <div className="col-6">
+              <label className="font-bold text-sm mb-1 block">Year</label>
+              <InputNumber
+                value={payrollForm.year}
+                onValueChange={(e) => setPayrollForm({ ...payrollForm, year: e.value })}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="font-bold text-sm mb-1 block">Bonus Amount (₹)</label>
+            <InputNumber
+              value={payrollForm.bonus}
+              onValueChange={(e) => setPayrollForm({ ...payrollForm, bonus: e.value })}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-content-end gap-2 mt-4">
+          <Button label="Cancel" outlined onClick={() => setPayrollDialogVisible(false)} />
+          <Button label="Generate Slip" icon="pi pi-calculator" severity="success" onClick={handleGeneratePayroll} />
+        </div>
+      </Dialog>
+
+      {/* ──────────────── DIALOG: CREATE SHIFT ──────────────── */}
+      <Dialog
+        visible={shiftDialogVisible}
+        onHide={() => setShiftDialogVisible(false)}
+        header="Configure Shift"
+        style={{ width: '450px' }}
+        modal
+      >
+        <div className="flex flex-column gap-3 p-fluid">
+          <div>
+            <label className="font-bold text-sm mb-1 block">Shift Name *</label>
+            <InputText
+              value={shiftForm.name}
+              onChange={(e) => setShiftForm({ ...shiftForm, name: e.target.value })}
+            />
+          </div>
+
+          <div className="grid">
+            <div className="col-6">
+              <label className="font-bold text-sm mb-1 block">Start Time</label>
+              <InputText
+                value={shiftForm.startTime}
+                onChange={(e) => setShiftForm({ ...shiftForm, startTime: e.target.value })}
+              />
+            </div>
+            <div className="col-6">
+              <label className="font-bold text-sm mb-1 block">End Time</label>
+              <InputText
+                value={shiftForm.endTime}
+                onChange={(e) => setShiftForm({ ...shiftForm, endTime: e.target.value })}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-content-end gap-2 mt-4">
+          <Button label="Cancel" outlined onClick={() => setShiftDialogVisible(false)} />
+          <Button label="Save Shift" icon="pi pi-check" onClick={handleSaveShift} />
+        </div>
+      </Dialog>
+
+      {/* ──────────────── MODAL: PROFILE DETAILS ──────────────── */}
+      <EmployeeProfileModal
+        visible={profileVisible}
+        onHide={() => setProfileVisible(false)}
+        employeeId={selectedEmpId}
+      />
+    </div>
+  )
+}

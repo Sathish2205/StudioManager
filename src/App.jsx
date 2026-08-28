@@ -20,6 +20,7 @@ import ClientRequests from './pages/ClientRequests/ClientRequests'
 import CreateQuotation from './pages/CreateQuotation/CreateQuotation'
 import QuotationDetail from './pages/QuotationDetail/QuotationDetail'
 import InvoiceDetail from './pages/InvoiceDetail/InvoiceDetail'
+import EmployeeManagement from './pages/EmployeeManagement/EmployeeManagement'
 
 import Sidebar from './components/Sidebar'
 import DashboardHeader from './components/DashboardHeader'
@@ -41,6 +42,8 @@ const ROUTE_MAP = {
   '/packages': 'packages',
   '/contracts': 'contracts',
   '/crew': 'crew',
+  '/employees': 'employees',
+  '/attendance': 'employees',
   '/equipment': 'equipment',
   '/helpdesk': 'helpdesk',
   '/requests': 'requests',
@@ -62,6 +65,7 @@ const TAB_TO_PATH = {
   'packages': '/packages',
   'contracts': '/contracts',
   'crew': '/crew',
+  'employees': '/employees',
   'equipment': '/equipment',
   'helpdesk': '/helpdesk',
   'requests': '/requests',
@@ -414,6 +418,19 @@ function App() {
             <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             <div className="portal-body">
               <CrewManagement onShowToast={showGlobalToast} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── EMPLOYEE MANAGEMENT & ATTENDANCE MODULE ── */}
+      {activeTab === 'employees' && (
+        <div className="portal-layout">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
+          <div className="portal-main">
+            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+            <div className="portal-body">
+              <EmployeeManagement activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
           </div>
         </div>

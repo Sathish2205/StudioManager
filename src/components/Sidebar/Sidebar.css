@@ -4,9 +4,9 @@
   --sidebar-expanded-width: 250px;
 }
 
-/* ── Base Sidebar (Collapsed by default) ── */
+/* ── Base Sidebar (Expanded by default) ── */
 .portal-sidebar {
-  width: var(--sidebar-collapsed-width);
+  width: var(--sidebar-expanded-width);
   height: 100vh;
   background: #ffffff;
   border-right: 1px solid #e2e8f0;
@@ -16,83 +16,81 @@
   top: 0;
   left: 0;
   z-index: 100;
-  padding: 1.25rem 0.6rem;
+  padding: 1.25rem 0.85rem;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.02);
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
-/* ── Expanded State ── */
-.portal-sidebar--expanded {
-  width: var(--sidebar-expanded-width);
-  padding: 1.25rem 0.85rem;
+/* ── Collapsed State (only when user collapses) ── */
+.portal-sidebar:not(.portal-sidebar--expanded) {
+  width: var(--sidebar-collapsed-width);
+  padding: 1.25rem 0.6rem;
 }
 
-/* ── Toggle Button ── */
+/* ── Top Bar: Hamburger + Logo (Gmail-style) ── */
+.portal-sidebar__top-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.15rem 0.25rem;
+  margin-bottom: 0.25rem;
+  min-height: 40px;
+}
+
+/* When collapsed, center the hamburger */
+.portal-sidebar:not(.portal-sidebar--expanded) .portal-sidebar__top-bar {
+  justify-content: center;
+  padding: 0.15rem 0 0.6rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* ── Hamburger Toggle Button ── */
 .portal-sidebar__toggle-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  color: #64748b;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #475569;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-bottom: 0.75rem;
-  align-self: center;
   flex-shrink: 0;
 }
 
 .portal-sidebar__toggle-btn:hover {
-  background: #e0f2fe;
-  color: #0284c7;
-  border-color: #bae6fd;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 .portal-sidebar__toggle-btn i {
-  font-size: 0.9rem;
-  transition: transform 0.3s ease;
+  font-size: 1.15rem;
 }
 
-/* ── Brand Header ── */
-.portal-sidebar__brand {
-  padding: 0.25rem 0.5rem 1rem;
-  border-bottom: 1px solid #f1f5f9;
-  margin-bottom: 0.75rem;
-  min-height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.portal-sidebar__logo-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.portal-sidebar--expanded .portal-sidebar__logo-wrap {
-  align-items: flex-start;
-}
-
+/* ── Brand Name (inline with hamburger) ── */
 .portal-sidebar__brand-name {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.02em;
-  opacity: 1;
-  transition: opacity 0.2s ease;
+  white-space: nowrap;
 }
 
 .portal-sidebar__brand-dot {
   color: #0284c7;
-  font-size: 1.1rem;
+  font-size: 1rem;
+}
+
+/* ── Brand Subtitle ── */
+.portal-sidebar__brand-sub-wrap {
+  padding: 0 0.5rem 0.6rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 0.75rem;
 }
 
 .portal-sidebar__brand-sub {
@@ -101,22 +99,6 @@
   letter-spacing: 0.08em;
   color: #64748b;
   text-transform: uppercase;
-  opacity: 1;
-  transition: opacity 0.2s ease;
-}
-
-/* Brand icon shown when collapsed */
-.portal-sidebar__brand-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #0284c7, #0369a1);
-  color: #ffffff;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
 }
 
 /* ── Profile Snippet ── */

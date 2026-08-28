@@ -185,7 +185,7 @@ export default function ContractsDocs({ onShowToast }) {
       {/* ── TAB 2: DOCUMENT VAULT ── */}
       {activeTab === 'docs' && (
         <>
-          <div className="events-toolbar mb-3">
+          <div className="events-toolbar">
             <div className="events-toolbar__left">
               <div className="events-search">
                 <i className="pi pi-search events-search__icon" />

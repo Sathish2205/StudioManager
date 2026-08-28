@@ -360,7 +360,7 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
       </div>
 
       {/* ─── Desktop Search & Filter Toolbar ─── */}
-      <div className="events-toolbar events-toolbar--desktop mb-3">
+      <div className="events-toolbar events-toolbar--desktop">
         <div className="events-toolbar__left">
           <div className="events-search">
             <i className="pi pi-search events-search__icon" />

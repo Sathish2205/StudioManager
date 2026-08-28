@@ -6,7 +6,7 @@
 .wf-container {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.65rem;
   padding: 0;
 }
 
@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
 }
 
 .wf-header__title {
@@ -34,8 +34,8 @@
 .wf-metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
-  margin-bottom: 0.5rem;
+  gap: 0.65rem;
+  margin-bottom: 0;
 }
 
 .wf-metric-box {
@@ -88,7 +88,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 0.85rem 1.25rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;

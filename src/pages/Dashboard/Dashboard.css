@@ -22,11 +22,11 @@
 }
 
 .portal-body {
-  padding: 1.5rem 1.5rem 0.5rem;
+  padding: 1rem 1.5rem 0.5rem;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.65rem;
   min-height: 0;
   overflow-y: auto;
 }

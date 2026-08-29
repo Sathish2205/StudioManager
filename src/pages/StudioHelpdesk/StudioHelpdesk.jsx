@@ -160,15 +160,6 @@ export default function StudioHelpdesk({ onShowToast }) {
             Report studio equipment issues, editing bugs, client escalation tickets, and technical help
           </p>
         </div>
-
-        <div className="helpdesk-header__actions">
-          <Button
-            label="Create Support Ticket"
-            icon="pi pi-plus"
-            className="p-button-primary"
-            onClick={() => setIsCreateOpen(true)}
-          />
-        </div>
       </div>
 
       {/* ── 5 DASHBOARD METRIC CARDS ── */}
@@ -247,6 +238,14 @@ export default function StudioHelpdesk({ onShowToast }) {
             placeholder="Priority"
             showClear
             className="events-filter__dropdown"
+          />
+        </div>
+        <div className="events-toolbar__right">
+          <Button
+            label="Create Support Ticket"
+            icon="pi pi-plus"
+            className="p-button-primary"
+            onClick={() => setIsCreateOpen(true)}
           />
         </div>
       </div>

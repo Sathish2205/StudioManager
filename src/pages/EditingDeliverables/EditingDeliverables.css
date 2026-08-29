@@ -1,128 +1,115 @@
+/* ══════════════════════════════════════════════════════════
+   EDITING & DELIVERABLES MODULE STYLES
+   ══════════════════════════════════════════════════════════ */
+
 .editing-container {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: var(--space-4);
+  padding: 0;
 }
 
+/* ── Page Header ── */
 .editing-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: var(--space-4);
+  flex-shrink: 0;
 }
 
 .editing-header__title {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: #1e3a8a;
-  margin-bottom: 0.2rem;
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
 }
 
 .editing-header__sub {
-  font-size: 0.88rem;
-  color: #64748b;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
-.editing-header__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* Tab Navigation uses global .studio-tab-bar design system in index.css */
-
-/* Kanban Board Styling */
+/* ── Kanban Board ── */
 .kanban-board {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-3);
   overflow-x: auto;
-  padding-bottom: 1rem;
+  padding-bottom: var(--space-3);
+  min-height: 500px;
 }
 
 .kanban-column {
   min-width: 260px;
-  max-width: 260px;
-  background: #f1f5f9;
-  border-radius: 12px;
-  padding: 0.85rem;
+  max-width: 290px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  border: 1px solid #e2e8f0;
+  gap: var(--space-2);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2);
 }
 
 .kanban-column-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #cbd5e1;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .kanban-count-badge {
-  background: #e2e8f0;
-  color: #334155;
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 0.15rem 0.5rem;
-  border-radius: 50px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  padding: 1px 6px;
+  border-radius: 10px;
 }
 
 .kanban-tasks-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-2);
+  overflow-y: auto;
+  flex: 1;
 }
 
 .kanban-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 0.85rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  transition: all var(--transition-fast);
 }
 
-/* ── Responsive: Editing & Deliverables ── */
+.kanban-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .editing-header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .editing-header__actions {
-    width: 100%;
-    flex-wrap: wrap;
+    gap: var(--space-3);
   }
 
   .kanban-board {
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding-bottom: 0.5rem;
-  }
-
-  .kanban-board::-webkit-scrollbar {
-    display: none;
+    gap: var(--space-2);
   }
 
   .kanban-column {
     min-width: 240px;
-    max-width: 240px;
-  }
-}
-
-@media (max-width: 480px) {
-  .editing-header__title {
-    font-size: 1.25rem;
-  }
-
-  .kanban-column {
-    min-width: 220px;
-    max-width: 220px;
-    padding: 0.65rem;
-  }
-
-  .kanban-card {
-    padding: 0.65rem;
   }
 }

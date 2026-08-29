@@ -1,40 +1,61 @@
 import React from 'react'
 import { Tag } from 'primereact/tag'
+import { Button } from 'primereact/button'
 import './InvoicePage.css'
 
 export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflow }) {
-  // Default Fallback Event if none passed
-  const invoiceData = event || {
-    id: 'EVT-2026-0891',
-    couple: 'Ananya & Vikram Sharma',
-    clientName: 'Ananya Sharma',
-    clientPhone: '+91 98765 43210',
-    clientEmail: 'ananya.sharma@example.com',
-    eventType: 'Royal Wedding & Reception',
-    date: '2026-08-20',
-    time: '08:00 AM - 11:00 PM',
-    venue: 'Leela Palace Ballroom, Bengaluru',
-    package: 'Royal Cinematic 4K + Album Luxe',
-    amount: '₹1,85,000',
-    advancePaid: '₹75,000',
-    balanceAmount: '₹1,10,000',
-    paymentStatus: 'Deposit Paid (40%)',
-    photographer: 'Sathish Kumar & Lead Team'
-  }
+  // Extract Raw Event Data (passed dynamically from AddEventPage / Events List / Props)
+  const raw = event?.rawEvent || event?.data || event || {}
 
-  const rawId = String(invoiceData.id || invoiceData._id || 'EVT-2026-0891')
-  const invoiceNumStr = rawId.includes('EVT') ? rawId.replace('EVT', 'INV') : `INV-${rawId.replace(/[^a-zA-Z0-9]/g, '').slice(-8).toUpperCase()}`
-
-  // Calculate Numerical Totals
+  // Parse Numerical Amounts
   const parseAmt = (val) => {
     if (!val && val !== 0) return 0
     if (typeof val === 'number') return val
     return parseFloat(val.toString().replace(/[^0-9.]/g, '')) || 0
   }
 
-  const totalCost = parseAmt(invoiceData.amount || invoiceData.packageAmount || '185000')
-  const advancePaid = parseAmt(invoiceData.advancePaid || invoiceData.advanceAmount || '75000')
-  const balanceDue = Math.max(0, parseAmt(invoiceData.balanceAmount) || (totalCost - advancePaid))
+  // Dynamic Fields
+  const rawId = String(raw._id || raw.id || raw.eventId || 'EVT-2026-0891')
+  const invoiceNumStr = rawId.includes('EVT') ? rawId.replace('EVT', 'INV') : `INV-${rawId.replace(/[^a-zA-Z0-9]/g, '').slice(-8).toUpperCase()}`
+
+  const clientName = raw.clientName || raw.couple || (raw.clientId ? `${raw.clientId.firstName || ''} ${raw.clientId.lastName || ''}`.trim() : '') || 'Ananya & Vikram Sharma'
+  const clientPhone = raw.clientPhone || raw.clientId?.phone || '+91 98765 43210'
+  const clientEmail = raw.clientEmail || raw.clientId?.email || 'client@example.com'
+
+  const eventName = raw.eventName || raw.couple || 'Royal Wedding & Reception'
+  const eventType = raw.eventType || 'Wedding & Reception'
+  
+  let formattedDate = '2026-08-20'
+  if (raw.eventDate || raw.date) {
+    const d = new Date(raw.eventDate || raw.date)
+    if (!isNaN(d.getTime())) {
+      formattedDate = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+    } else {
+      formattedDate = String(raw.eventDate || raw.date)
+    }
+  }
+
+  const venueLocation = raw.venue || raw.venueName ? `${raw.venueName || raw.venue}${raw.city ? `, ${raw.city}` : ''}` : 'Leela Palace Ballroom, Bengaluru'
+  const packageName = raw.package || raw.packageName || 'Royal Cinematic 4K Photography & Film Package'
+  const leadPhotographer = raw.photographer || (raw.assignedPhotographers?.[0]?.name) || 'Sathish Kumar & Lead Team'
+
+  // Dynamic Included Services List
+  const serviceItems = []
+  if (raw.droneRequired) serviceItems.push('Drone 4K Aerial Coverage')
+  if (raw.liveStreaming) serviceItems.push('YouTube Live Stream Webcast')
+  if (raw.albumRequired) serviceItems.push('Printed Canvera Hardbound Album')
+  if (raw.candidPhotography) serviceItems.push('Candid Cinematic Photography')
+  if (raw.traditionalPhotography) serviceItems.push('Traditional Stage Photography')
+  if (raw.traditionalVideo) serviceItems.push('Traditional Video Recording')
+
+  const deliverablesDescription = serviceItems.length > 0
+    ? `Includes: ${serviceItems.join(', ')}. Lead Photographer: ${leadPhotographer}.`
+    : `Includes 4K Cinematic Highlights, Full Event Coverage, Lead Photographer (${leadPhotographer}), Drone Aerial Views, Luxe Hardbound Album.`
+
+  // Dynamic Financial Calculations
+  const totalCost = parseAmt(raw.packageAmount || raw.packagePrice || raw.amount || raw.totalAmount || 185000)
+  const advancePaid = parseAmt(raw.advanceAmount || raw.advancePaid || raw.totalPaid || raw.paidAmount || 75000)
+  const balanceDue = Math.max(0, parseAmt(raw.balanceAmount) || (totalCost - advancePaid))
   const gstTax = Math.round(totalCost * 0.18)
   const grandTotal = totalCost + gstTax
 
@@ -45,86 +66,103 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
   return (
     <div className="invoice-page-container">
       {/* ── Actions Header Bar (Hidden when printing) ── */}
-      <div className="invoice-actions-bar">
+      <div className="invoice-actions-bar no-print">
         <div>
           <h2 className="invoice-actions-bar__title">
             <i className="pi pi-check-circle text-green-600 mr-2" />
-            Event Created & Invoice Generated
+            Event Created & Tax Invoice Generated
           </h2>
           <p className="invoice-actions-bar__subtitle">
-            Invoice #{invoiceNumStr} ready for client delivery and printing
+            Official Invoice #{invoiceNumStr} ready for client delivery, email, and printing
           </p>
         </div>
 
         <div className="invoice-actions-bar__btn-group">
           {onNavigateEvents && (
-            <button className="inv-btn inv-btn-secondary" onClick={onNavigateEvents}>
-              <i className="pi pi-arrow-left" />
-              <span>Back to Events</span>
-            </button>
+            <Button
+              label="Back to Events"
+              icon="pi pi-arrow-left"
+              className="p-button-outlined p-button-secondary"
+              onClick={onNavigateEvents}
+            />
           )}
           {onNavigateWorkflow && (
-            <button className="inv-btn inv-btn-info" onClick={onNavigateWorkflow}>
-              <i className="pi pi-sitemap" />
-              <span>Workflow List</span>
-            </button>
+            <Button
+              label="Workflow List"
+              icon="pi pi-sitemap"
+              className="p-button-outlined p-button-secondary"
+              onClick={onNavigateWorkflow}
+            />
           )}
-          <button className="inv-btn inv-btn-primary" onClick={handlePrint}>
-            <i className="pi pi-print" />
-            <span>Print Invoice</span>
-          </button>
+          <Button
+            label="Print Invoice"
+            icon="pi pi-print"
+            className="p-button-primary"
+            onClick={handlePrint}
+          />
         </div>
       </div>
 
-      {/* ── Printable A4 Invoice Card ── */}
+      {/* ── Printable A4 Invoice Document Card ── */}
       <div className="invoice-card">
-        {/* Studio Branding & Invoice Details */}
+        {/* Studio Branding & Invoice Details Header */}
         <div className="invoice-header">
-          <div>
+          <div className="invoice-brand-col">
             <div className="invoice-brand__name">
-              PhotoStudio<span className="invoice-brand__dot">⊙</span>PRO<sup>®</sup>
+              PhotoStudio <i className="pi pi-camera text-primary mx-1" /> PRO<sup>®</sup>
             </div>
             <div className="invoice-brand__sub">PREMIUM CINEMATIC PHOTOGRAPHY & ALBUMS</div>
             <div className="invoice-studio-details">
               Studio #42, Luxury Plaza, Residency Road, Bengaluru, 560025
               <br />
-              GSTIN: 29AAACP9988C1Z4 | Contact: +91 98450 12345 | info@photostudiopro.com
+              GSTIN: <strong>29AAACP9988C1Z4</strong> | Contact: <strong>+91 98450 12345</strong> | info@photostudiopro.com
             </div>
           </div>
 
           <div className="invoice-meta-box">
             <div className="invoice-title">TAX INVOICE</div>
             <div className="invoice-meta-row">
-              Invoice No: <strong>{invoiceNumStr}</strong>
+              <span className="invoice-meta-label">Invoice No:</span>
+              <strong className="invoice-meta-val">{invoiceNumStr}</strong>
             </div>
             <div className="invoice-meta-row">
-              Date: <strong>{new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</strong>
+              <span className="invoice-meta-label">Date:</span>
+              <strong className="invoice-meta-val">{new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</strong>
             </div>
             <div className="invoice-meta-row">
-              Status: <Tag value={balanceDue === 0 ? 'PAID IN FULL' : 'DEPOSIT PAID'} severity={balanceDue === 0 ? 'success' : 'warning'} />
+              <span className="invoice-meta-label">Status:</span>
+              <Tag
+                value={balanceDue === 0 ? 'PAID IN FULL' : 'DEPOSIT PAID'}
+                severity={balanceDue === 0 ? 'success' : 'warning'}
+                className="invoice-status-tag"
+              />
             </div>
           </div>
         </div>
 
-        {/* Client & Event Info Section */}
+        {/* Client & Event Info Cards */}
         <div className="invoice-info-section">
-          <div>
-            <div className="invoice-info-block__label">BILLED TO CLIENT</div>
-            <div className="invoice-info-block__title">{invoiceData.clientName || invoiceData.couple}</div>
+          <div className="invoice-info-card">
+            <div className="invoice-info-block__label">
+              <i className="pi pi-user mr-1 text-primary" /> BILLED TO CLIENT
+            </div>
+            <div className="invoice-info-block__title">{clientName}</div>
             <div className="invoice-info-block__text">
-              Phone: {invoiceData.clientPhone || '+91 98765 43210'}
+              <strong>Phone:</strong> {clientPhone}
               <br />
-              Email: {invoiceData.clientEmail || 'client@example.com'}
+              <strong>Email:</strong> {clientEmail}
             </div>
           </div>
 
-          <div>
-            <div className="invoice-info-block__label">EVENT & VENUE DETAILS</div>
-            <div className="invoice-info-block__title">{invoiceData.eventType || 'Wedding & Reception'}</div>
+          <div className="invoice-info-card">
+            <div className="invoice-info-block__label">
+              <i className="pi pi-calendar mr-1 text-primary" /> EVENT & VENUE DETAILS
+            </div>
+            <div className="invoice-info-block__title">{eventName} ({eventType})</div>
             <div className="invoice-info-block__text">
-              Date: {invoiceData.date || invoiceData.eventDate || '2026-08-20'}
+              <strong>Date:</strong> {formattedDate}
               <br />
-              Venue: {invoiceData.venue || 'Main Banquet Hall'}
+              <strong>Venue:</strong> {venueLocation}
             </div>
           </div>
         </div>
@@ -133,21 +171,21 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
         <table className="invoice-items-table">
           <thead>
             <tr>
-              <th>Description & Photography Package</th>
-              <th className="text-right">Qty / Event</th>
-              <th className="text-right">Amount (₹)</th>
+              <th className="text-left">Description & Photography Package</th>
+              <th className="text-center" style={{ width: '120px' }}>Qty</th>
+              <th className="text-right" style={{ width: '150px' }}>Amount (₹)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>
-                <div className="invoice-item__name">{invoiceData.package || 'Royal Cinematic 4K Photography & Film Package'}</div>
+                <div className="invoice-item__name">{packageName}</div>
                 <div className="invoice-item__desc">
-                  Includes 4K Cinematic Highlights, Full Event Coverage, Lead Photographer ({invoiceData.photographer || 'Sathish Kumar'}), Drone Aerial Views, Luxe Hardbound Album.
+                  {deliverablesDescription}
                 </div>
               </td>
-              <td className="text-right">1 Shoot</td>
-              <td className="text-right font-semibold">₹{totalCost.toLocaleString()}</td>
+              <td className="text-center font-semibold">1 Shoot</td>
+              <td className="text-right font-bold text-primary">₹{totalCost.toLocaleString()}</td>
             </tr>
           </tbody>
         </table>
@@ -155,30 +193,33 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
         {/* Summary & Totals Block */}
         <div className="invoice-summary-container">
           <div className="invoice-payment-terms">
-            <div className="invoice-terms__title">Payment Terms & Notes</div>
+            <div className="invoice-terms__title">
+              <i className="pi pi-shield mr-1 text-primary" /> Payment Terms & Studio Policies
+            </div>
             <div className="invoice-terms__text">
-              • 50% advance required upon booking to confirm camera crew.
+              • 50% advance required upon booking confirmation to lock camera crew dates.
               <br />
-              • Balance payment payable prior to album printing & final video delivery.
-              <br />• All payments made via Bank Transfer, UPI, or Cheque to PhotoStudio PRO.
+              • Balance payment payable prior to Canvera album printing & final 4K video delivery.
+              <br />
+              • All payments made via Bank Transfer, HDFC UPI, or Cheque to <strong>PhotoStudio PRO</strong>.
             </div>
           </div>
 
           <div className="invoice-totals-box">
             <div className="invoice-total-row">
-              <span>Subtotal</span>
+              <span>Package Subtotal</span>
               <span>₹{totalCost.toLocaleString()}</span>
             </div>
             <div className="invoice-total-row">
-              <span>GST (18% Tax)</span>
+              <span>GST (18% Govt Tax)</span>
               <span>₹{gstTax.toLocaleString()}</span>
             </div>
             <div className="invoice-total-row is-grand">
-              <span>Grand Total</span>
+              <span>Grand Total (Incl Tax)</span>
               <span>₹{grandTotal.toLocaleString()}</span>
             </div>
             <div className="invoice-total-row is-paid">
-              <span>Advance Paid</span>
+              <span>Advance Deposit Paid</span>
               <span>- ₹{advancePaid.toLocaleString()}</span>
             </div>
             <div className="invoice-total-row is-due">
@@ -191,12 +232,15 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
         {/* Footer Signoff */}
         <div className="invoice-footer">
           <div className="invoice-footer__note">
-            Thank you for choosing PhotoStudio PRO to capture your precious wedding memories!
+            Thank you for choosing <strong>PhotoStudio PRO</strong> to capture your precious wedding memories!
+            <br />
+            <span className="text-xs text-muted">This is a computer-generated official tax invoice.</span>
           </div>
 
           <div className="invoice-signature-box">
             <div className="invoice-signature__line" />
             <div className="invoice-signature__title">Authorized Signatory</div>
+            <div className="invoice-signature__sub">PhotoStudio PRO Management</div>
           </div>
         </div>
       </div>

@@ -1,55 +1,65 @@
-/* =========================================================
-   ADD EVENT PAGE STYLES
-   ========================================================= */
+/* ══════════════════════════════════════════════════════════
+   ENTERPRISE ADD EVENT PAGE STYLES
+   ══════════════════════════════════════════════════════════ */
 
 .add-event-page {
-  padding-bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
 }
 
 .add-event-topbar {
-  margin-bottom: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-xs);
 }
 
 .add-event-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.add-event-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.add-event-breadcrumb i {
+  font-size: 0.75rem;
 }
 
 .add-event-title {
-  font-size: 1.6rem;
+  font-size: var(--font-size-xl);
   font-weight: 700;
-  color: #1e3a8a;
-  margin-bottom: 0.25rem;
-  letter-spacing: -0.01em;
+  color: var(--color-text);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
 }
 
 .add-event-subtitle {
-  font-size: 0.88rem;
-  color: #64748b;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 720px;
 }
 
-.back-btn {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #475569;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
+.add-event-actions {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  transition: all 0.15s ease;
-}
-
-.back-btn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-  border-color: #94a3b8;
+  gap: var(--space-3);
+  flex-shrink: 0;
 }
 
 .add-event-container {
-  max-width: 1000px;
+  width: 100%;
 }

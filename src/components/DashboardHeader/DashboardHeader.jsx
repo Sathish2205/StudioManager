@@ -31,26 +31,43 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab, onTo
       case 'crm':
         return [{ label: 'Customer CRM', active: true }]
       case 'workflow':
-        return [{ label: 'Workflow Management', active: true }]
+        return [{ label: 'Workflow', active: true }]
       case 'tasks':
         return [{ label: 'Editing & Deliverables', active: true }]
       case 'finance':
         return [{ label: 'Finance & Invoices', active: true }]
+      case 'create-quotation':
+        return [
+          { label: 'Finance & Invoices', onClick: () => setActiveTab && setActiveTab('finance') },
+          { label: 'Create Quotation', active: true }
+        ]
+      case 'quotation-detail':
+        return [
+          { label: 'Finance & Invoices', onClick: () => setActiveTab && setActiveTab('finance') },
+          { label: 'Quotation Detail', active: true }
+        ]
+      case 'invoice-detail':
+        return [
+          { label: 'Finance & Invoices', onClick: () => setActiveTab && setActiveTab('finance') },
+          { label: 'Invoice Detail', active: true }
+        ]
       case 'packages':
         return [{ label: 'Packages & Quotes', active: true }]
       case 'contracts':
         return [{ label: 'Contracts & Docs', active: true }]
       case 'crew':
-        return [{ label: 'Crew & Photographers', active: true }]
+        return [{ label: 'Crew & Staff', active: true }]
+      case 'employees':
+        return [{ label: 'Employees', active: true }]
       case 'equipment':
-        return [{ label: 'Equipment Tracker', active: true }]
+        return [{ label: 'Equipment', active: true }]
       case 'helpdesk':
         return [{ label: 'Studio Helpdesk', active: true }]
       case 'requests':
         return [{ label: 'Client Requests', active: true }]
       case 'home':
       default:
-        return [{ label: 'Studio Overview', active: true }]
+        return [{ label: 'Dashboard', active: true }]
     }
   }
 
@@ -59,31 +76,14 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab, onTo
   return (
     <>
       {toastMsg && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '24px',
-            zIndex: 99999,
-            background: '#2563eb',
-            color: '#ffffff',
-            padding: '12px 20px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            fontWeight: 600,
-            fontSize: '0.875rem'
-          }}
-        >
+        <div className="enterprise-toast">
           <i className="pi pi-check-circle" />
           <span>{toastMsg}</span>
         </div>
       )}
 
       <header className="portal-header">
-        {/* Mobile Hamburger Toggle */}
+        {/* Mobile Hamburger */}
         <button
           className="portal-header__hamburger"
           onClick={onToggleSidebar}
@@ -92,21 +92,27 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab, onTo
           <i className="pi pi-bars" />
         </button>
 
-        {/* Left Title / Interactive Breadcrumb with Home Icon Only */}
+        {/* Breadcrumb */}
         <div className="portal-header__left">
           <div className="portal-header__breadcrumb">
             <i
-              className="pi pi-home header-crumb-home-icon"
+              className="pi pi-home portal-header__crumb-home"
               onClick={() => setActiveTab && setActiveTab('home')}
-              title="Go to Home Overview"
+              title="Dashboard"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && setActiveTab && setActiveTab('home')}
             />
 
             {breadcrumbs.map((crumb, idx) => (
               <React.Fragment key={idx}>
-                <i className="pi pi-angle-right header-crumb-arrow" />
+                <i className="pi pi-angle-right portal-header__crumb-sep" />
                 <span
-                  className={`header-crumb-item ${crumb.active ? 'is-active' : 'is-link'}`}
+                  className={`portal-header__crumb-item ${crumb.active ? 'is-active' : 'is-link'}`}
                   onClick={crumb.onClick}
+                  role={crumb.onClick ? 'button' : undefined}
+                  tabIndex={crumb.onClick ? 0 : undefined}
+                  onKeyDown={crumb.onClick ? (e) => e.key === 'Enter' && crumb.onClick() : undefined}
                 >
                   {crumb.label}
                 </span>
@@ -117,36 +123,35 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab, onTo
 
         {/* Right Controls */}
         <div className="portal-header__right">
-          <div className="portal-header__dropdown">
-            <span>Quick Actions</span>
-            <i className="pi pi-chevron-down" />
-          </div>
-
           <button
             className="portal-header__icon-btn"
-            aria-label="Smart Reminders & Notifications"
-            title="Smart Studio Reminders"
+            aria-label="Notifications"
+            title="Notifications"
             onClick={() => setIsRemindersOpen(true)}
           >
             <i className="pi pi-bell" />
             <span className="portal-header__dot" />
           </button>
 
-          <button className="portal-header__icon-btn" aria-label="Logout">
-            <i className="pi pi-power-off" />
+          <button className="portal-header__icon-btn" aria-label="Settings" title="Settings">
+            <i className="pi pi-cog" />
           </button>
+
+          <div className="portal-header__user-avatar" title="Sathish">
+            S
+          </div>
         </div>
       </header>
 
-      {/* Smart Reminders Notification Center Dialog */}
+      {/* Smart Reminders Dialog */}
       <Dialog
-        header="🔔 Smart Studio Reminders & Alerts"
+        header="Notifications & Reminders"
         visible={isRemindersOpen}
         style={{ width: '920px', maxWidth: '95vw' }}
         onHide={() => setIsRemindersOpen(false)}
         dismissableMask
       >
-        <div style={{ padding: '0.5rem 0' }}>
+        <div style={{ padding: '0.25rem 0' }}>
           <SmartReminders onShowToast={showToast} />
         </div>
       </Dialog>

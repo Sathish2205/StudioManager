@@ -133,15 +133,6 @@ export default function CrewManagement({ onShowToast }) {
             Track photographer availability, workload, skills, and crew conflict detection
           </p>
         </div>
-
-        <div className="crew-header__actions">
-          <Button
-            label="Assign Crew to Event"
-            icon="pi pi-user-plus"
-            className="p-button-primary"
-            onClick={() => setIsAssignOpen(true)}
-          />
-        </div>
       </div>
 
       {/* ── Dedicated Studio Tab Navigation Bar ── */}
@@ -182,6 +173,15 @@ export default function CrewManagement({ onShowToast }) {
                 placeholder="Filter Role"
                 showClear
                 className="events-filter__dropdown"
+              />
+            </div>
+
+            <div className="events-toolbar__right">
+              <Button
+                label="Assign Crew to Event"
+                icon="pi pi-user-plus"
+                className="p-button-primary"
+                onClick={() => setIsAssignOpen(true)}
               />
             </div>
           </div>

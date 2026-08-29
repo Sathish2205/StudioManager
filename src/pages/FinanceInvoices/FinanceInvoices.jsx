@@ -221,27 +221,6 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
             Manage client quotation proposals, tax invoices, payment receipts, and balance collections
           </p>
         </div>
-
-        <div className="finance-header__actions">
-          <Button
-            label="Create Quotation"
-            icon="pi pi-file-edit"
-            className="p-button-outlined p-button-primary"
-            onClick={() => onNavigateCreateQuotation && onNavigateCreateQuotation()}
-          />
-          <Button
-            label="Record Payment"
-            icon="pi pi-plus"
-            className="p-button-success"
-            onClick={() => {
-              setSelectedInvoiceForPay(null)
-              setPayClient('')
-              setPayEvent('')
-              setPayAmount(25000)
-              setIsPaymentModalOpen(true)
-            }}
-          />
-        </div>
       </div>
 
       {/* ── 6 EXECUTIVE FINANCE DASHBOARD CARDS ── */}
@@ -456,8 +435,24 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
       {/* ── TAB 3: INVOICES ── */}
       {activeTab === 'invoices' && (
         <div className="events-table-card">
-          <div className="flex justify-content-between align-items-center p-3 border-bottom-1 surface-border">
-            <span className="text-sm font-bold text-700">Tax Invoices ({invoices.length})</span>
+          <div className="events-toolbar">
+            <div className="events-toolbar__left">
+              <span className="text-sm font-bold text-700">Tax Invoices ({invoices.length})</span>
+            </div>
+            <div className="events-toolbar__right">
+              <Button
+                label="Record Payment"
+                icon="pi pi-plus"
+                className="p-button-success"
+                onClick={() => {
+                  setSelectedInvoiceForPay(null)
+                  setPayClient('')
+                  setPayEvent('')
+                  setPayAmount(25000)
+                  setIsPaymentModalOpen(true)
+                }}
+              />
+            </div>
           </div>
           {loading ? (
             <PageLoader />

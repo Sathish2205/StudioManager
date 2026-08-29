@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Card } from 'primereact/card'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 import { InputTextarea } from 'primereact/inputtextarea'
@@ -9,7 +8,6 @@ import { InputNumber } from 'primereact/inputnumber'
 import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { Button } from 'primereact/button'
-import { Divider } from 'primereact/divider'
 import { Toast } from 'primereact/toast'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { eventSchema } from '../../validation/eventSchema'
@@ -90,6 +88,30 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
     }
   })
 
+  // Watch Form Values for Live Booking Summary Panel
+  const watchClientName = watch('clientName') || 'Client'
+  const watchEventName = watch('eventName') || 'New Event'
+  const watchEventType = watch('eventType') || 'Shoot'
+  const watchEventDate = watch('eventDate')
+  const watchPackageId = watch('packageId')
+  const watchPackagePrice = watch('packagePrice')
+  const watchAdvancePaid = watch('advancePaid')
+  const watchPhotographerId = watch('photographerId')
+  const watchVideographerId = watch('videographerId')
+  const watchDroneRequired = watch('droneRequired')
+  const watchLiveStreaming = watch('liveStreaming')
+  const watchAlbumRequired = watch('albumRequired')
+  const watchCandidPhotography = watch('candidPhotography')
+  const watchTraditionalPhotography = watch('traditionalPhotography')
+  const watchTraditionalVideo = watch('traditionalVideo')
+
+  // Derived Safe Numeric Calculations (Prevents NaN crashes)
+  const safePkgPrice = typeof watchPackagePrice === 'number' ? watchPackagePrice : (parseFloat(watchPackagePrice) || 0)
+  const safeAdvPaid = typeof watchAdvancePaid === 'number' ? watchAdvancePaid : (parseFloat(watchAdvancePaid) || 0)
+  const balanceAmount = Math.max(0, safePkgPrice - safeAdvPaid)
+  const gstAmount = Math.round(safePkgPrice * 0.18)
+  const totalValueWithGst = safePkgPrice + gstAmount
+
   // Pre-fill form when eventToEdit is passed
   useEffect(() => {
     if (eventToEdit) {
@@ -148,13 +170,6 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
       }
     }
   }, [prefillDate, eventToEdit, setValue])
-
-  // Watch Package Price and Advance Paid for Balance Amount calculation
-  const watchPackagePrice = watch('packagePrice') || 0
-  const watchAdvancePaid = watch('advancePaid') || 0
-
-  // Derived Balance Amount calculation
-  const balanceAmount = Math.max(0, watchPackagePrice - watchAdvancePaid)
 
   // Load API Dropdown Options on Mount
   useEffect(() => {
@@ -240,19 +255,35 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
         }
       }
 
-      const selectedPkg = packages.find((p) => p.id === data.packageId)
+      const selectedPkg = packages.find((p) => (p.id === data.packageId || p._id === data.packageId))
       const backendPayload = {
         clientId: clientId || '6a773edbf7cc32adc5f12f7f',
+        clientName: data.clientName || 'Valued Client',
+        clientPhone: '+91 98765 43210',
+        clientEmail: 'client@example.com',
         eventName: data.eventName || `${data.clientName || 'Special'} Event`,
-        eventType: mapEventTypeForBackend(data.eventType),
+        eventType: data.eventType || 'Wedding',
         eventDate: data.eventDate ? new Date(data.eventDate).toISOString() : new Date().toISOString(),
         startTime: data.eventTime ? new Date(data.eventTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '09:00 AM',
         endTime: '10:00 PM',
         venue: data.venueName || 'Studio Ballroom',
-        package: selectedPkg ? selectedPkg.name : 'Custom Package',
-        packageAmount: Number(data.packagePrice || 150000),
+        venueAddress: data.venueAddress || '',
+        city: data.city || '',
+        state: data.state || '',
+        pincode: data.pincode || '',
+        package: selectedPkg ? selectedPkg.name : 'Custom Photography Package',
+        packageAmount: Number(data.packagePrice || 0),
         advanceAmount: Number(data.advancePaid || 0),
-        status: 'Confirmed',
+        balanceAmount: Math.max(0, Number(data.packagePrice || 0) - Number(data.advancePaid || 0)),
+        photographer: selectedPhotographerObj ? selectedPhotographerObj.name : 'Sathish Kumar & Lead Team',
+        videographer: selectedVideographerObj ? selectedVideographerObj.name : 'Lead Videographer',
+        droneRequired: !!data.droneRequired,
+        liveStreaming: !!data.liveStreaming,
+        albumRequired: !!data.albumRequired,
+        candidPhotography: !!data.candidPhotography,
+        traditionalPhotography: !!data.traditionalPhotography,
+        traditionalVideo: !!data.traditionalVideo,
+        status: data.eventStatus || 'Confirmed',
         notes: data.specialInstructions || ''
       }
 
@@ -264,7 +295,6 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
         res = await updateEvent(targetId, backendPayload)
       } else {
         res = await createEvent(backendPayload)
-        // Automatically create a new Kanban editing task in stage "New"
         try {
           await createTask({
             title: data.clientName || 'Client',
@@ -283,17 +313,24 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
       }
 
       const eventId = res?.data?._id || res?._id || res?.id || targetId || `EVT-${Date.now()}`
+      const fullEventData = {
+        _id: eventId,
+        id: eventId,
+        ...backendPayload,
+        ...(res?.data || {}),
+        ...(typeof res === 'object' ? res : {})
+      }
 
       toastRef.current?.show({
         severity: 'success',
-        summary: isEditing ? 'Event Updated' : 'Event Saved to Backend',
-        detail: isEditing ? `Event #${eventId} details updated successfully!` : `Event #${eventId} successfully posted to database!`,
+        summary: isEditing ? 'Event Booking Updated' : 'Event Booking Confirmed',
+        detail: isEditing ? `Booking #${eventId} details updated successfully!` : `Booking #${eventId} saved to studio database!`,
         life: 3000
       })
 
       reset()
       if (onSuccess) {
-        setTimeout(() => onSuccess(res || backendPayload), 1000)
+        setTimeout(() => onSuccess(fullEventData), 1000)
       }
     } catch (error) {
       console.error('Error submitting event to backend:', error)
@@ -312,8 +349,8 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
   const handleCancelClick = () => {
     if (isDirty) {
       confirmDialog({
-        message: 'You have unsaved changes. Are you sure you want to leave?',
-        header: 'Unsaved Changes Confirmation',
+        message: 'You have unsaved changes in this event booking. Are you sure you want to discard them?',
+        header: 'Discard Unsaved Booking',
         icon: 'pi pi-exclamation-triangle',
         acceptClassName: 'p-button-danger',
         accept: () => onCancel && onCancel()
@@ -323,541 +360,711 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
     }
   }
 
+  const selectedPackageObj = Array.isArray(packages) ? packages.find((p) => p && (p.id === watchPackageId || p._id === watchPackageId)) : null
+  const selectedPhotographerObj = staff?.photographers && Array.isArray(staff.photographers) ? staff.photographers.find((p) => p && (p.id === watchPhotographerId || p._id === watchPhotographerId)) : null
+  const selectedVideographerObj = staff?.videographers && Array.isArray(staff.videographers) ? staff.videographers.find((v) => v && (v.id === watchVideographerId || v._id === watchVideographerId)) : null
+
   return (
-    <Card className="event-form-card">
+    <div className="enterprise-event-wrapper">
       <Toast ref={toastRef} />
       <ConfirmDialog />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="event-form">
-        {/* ── 1. Event Information Section ── */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="pi pi-info-circle section-icon" /> Event Information
-          </h3>
+      <form onSubmit={handleSubmit(onSubmit)} className="enterprise-event-layout">
+        {/* ── LEFT COLUMN: MAIN FORM CARDS (8 Cols) ── */}
+        <div className="enterprise-form-main">
 
-          <div className="grid form-grid">
-            {/* Client Name (Searchable Dropdown) */}
-            {/* Client Name InputText */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">
-                Client Name <span className="req-star">*</span>
-              </label>
-              <Controller
-                name="clientName"
-                control={control}
-                render={({ field }) => (
-                  <InputText
-                    id={field.name}
-                    value={field.value || ''}
-                    onChange={(e) => field.onChange(e.target.value)}
-                    placeholder="Enter Client / Couple Name (e.g. Anand & Priya)"
-                    className={`w-full p-inputtext ${errors.clientName ? 'p-invalid' : ''}`}
-                    autoFocus
-                  />
-                )}
-              />
-              {errors.clientName && (
-                <small className="p-error">{errors.clientName.message}</small>
-              )}
-            </div>
-
-            {/* Event Name */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">
-                Event Name <span className="req-star">*</span>
-              </label>
-              <Controller
-                name="eventName"
-                control={control}
-                render={({ field }) => (
-                  <InputText
-                    {...field}
-                    placeholder='e.g. "Anand & Priya Wedding"'
-                    className={`w-full ${errors.eventName ? 'p-invalid' : ''}`}
-                  />
-                )}
-              />
-              {errors.eventName && (
-                <small className="p-error">{errors.eventName.message}</small>
-              )}
-            </div>
-
-            {/* Event Type */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">
-                Event Type <span className="req-star">*</span>
-              </label>
-              <Controller
-                name="eventType"
-                control={control}
-                render={({ field }) => (
-                  <Dropdown
-                    {...field}
-                    options={eventTypeOptions}
-                    placeholder="Select Event Type"
-                    showClear
-                    className={`w-full ${errors.eventType ? 'p-invalid' : ''}`}
-                  />
-                )}
-              />
-              {errors.eventType && (
-                <small className="p-error">{errors.eventType.message}</small>
-              )}
-            </div>
-
-            {/* Event Date */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">
-                Event Date <span className="req-star">*</span>
-              </label>
-              <Controller
-                name="eventDate"
-                control={control}
-                render={({ field }) => (
-                  <Calendar
-                    id={field.name}
-                    value={field.value}
-                    onChange={(e) => field.onChange(e.value)}
-                    dateFormat="dd/mm/yy"
-                    showIcon
-                    placeholder="Select Date"
-                    className={`w-full ${errors.eventDate ? 'p-invalid' : ''}`}
-                    inputClassName="p-inputtext w-full"
-                  />
-                )}
-              />
-              {errors.eventDate && (
-                <small className="p-error">{errors.eventDate.message}</small>
-              )}
-            </div>
-
-            {/* Event Time */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">Event Time</label>
-              <Controller
-                name="eventTime"
-                control={control}
-                render={({ field }) => (
-                  <Calendar
-                    id={field.name}
-                    value={field.value}
-                    onChange={(e) => field.onChange(e.value)}
-                    timeOnly
-                    hourFormat="12"
-                    showIcon
-                    placeholder="Select Time (e.g. 10:00 AM)"
-                    className="w-full"
-                    inputClassName="p-inputtext w-full"
-                  />
-                )}
-              />
-            </div>
-
-            {/* Venue Name */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">
-                Venue Name <span className="req-star">*</span>
-              </label>
-              <Controller
-                name="venueName"
-                control={control}
-                render={({ field }) => (
-                  <InputText
-                    {...field}
-                    placeholder="e.g. The Ritz Carlton Grand Ballroom"
-                    className={`p-inputtext w-full ${errors.venueName ? 'p-invalid' : ''}`}
-                  />
-                )}
-              />
-              {errors.venueName && (
-                <small className="p-error">{errors.venueName.message}</small>
-              )}
-            </div>
-
-            {/* Venue Address */}
-            <div className="col-12 field-col">
-              <label className="field-label">Venue Address</label>
-              <Controller
-                name="venueAddress"
-                control={control}
-                render={({ field }) => (
-                  <InputTextarea
-                    {...field}
-                    rows={2}
-                    placeholder="Street address or location details"
-                    className="p-inputtext w-full"
-                  />
-                )}
-              />
-            </div>
-
-            {/* City */}
-            <div className="col-12 md:col-4 field-col">
-              <label className="field-label">City</label>
-              <Controller
-                name="city"
-                control={control}
-                render={({ field }) => (
-                  <InputText {...field} placeholder="e.g. Chennai" className="p-inputtext w-full" />
-                )}
-              />
-            </div>
-
-            {/* State */}
-            <div className="col-12 md:col-4 field-col">
-              <label className="field-label">State</label>
-              <Controller
-                name="state"
-                control={control}
-                render={({ field }) => (
-                  <InputText {...field} placeholder="e.g. Tamil Nadu" className="p-inputtext w-full" />
-                )}
-              />
-            </div>
-
-            {/* Pincode */}
-            <div className="col-12 md:col-4 field-col">
-              <label className="field-label">Pincode</label>
-              <Controller
-                name="pincode"
-                control={control}
-                render={({ field }) => (
-                  <InputText {...field} placeholder="e.g. 600001" className="p-inputtext w-full" />
-                )}
-              />
-            </div>
-          </div>
-        </div>
-
-        <Divider />
-
-        {/* ── 2. Photography Details Section ── */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="pi pi-camera section-icon" /> Photography Details
-          </h3>
-
-          <div className="grid form-grid">
-            {/* Lead Photographer */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">Photographer</label>
-              <Controller
-                name="photographerId"
-                control={control}
-                render={({ field }) => (
-                  <Dropdown
-                    {...field}
-                    options={staff.photographers}
-                    optionLabel="name"
-                    optionValue="id"
-                    placeholder="Select Photographer"
-                    showClear
-                    className="w-full"
-                    disabled={loadingData}
-                  />
-                )}
-              />
-            </div>
-
-            {/* Lead Videographer */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">Videographer</label>
-              <Controller
-                name="videographerId"
-                control={control}
-                render={({ field }) => (
-                  <Dropdown
-                    {...field}
-                    options={staff.videographers}
-                    optionLabel="name"
-                    optionValue="id"
-                    placeholder="Select Videographer"
-                    showClear
-                    className="w-full"
-                    disabled={loadingData}
-                  />
-                )}
-              />
-            </div>
-
-            {/* Checkboxes Grid */}
-            <div className="col-12 checkbox-grid">
-              <div className="checkbox-item">
-                <Controller
-                  name="droneRequired"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      inputId="droneRequired"
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.checked)}
-                    />
-                  )}
-                />
-                <label htmlFor="droneRequired">Drone Required</label>
+          {/* CARD 1: CLIENT & EVENT BASIC INFORMATION */}
+          <div className="ent-card">
+            <div className="ent-card-header">
+              <div className="ent-card-header__left">
+                <div className="ent-card-icon ent-card-icon--blue">
+                  <i className="pi pi-user" />
+                </div>
+                <div>
+                  <h2 className="ent-card-title">Client & Event Information</h2>
+                  <p className="ent-card-sub">Primary contact details, event title, and date schedule</p>
+                </div>
               </div>
+              <span className="ent-card-badge ent-card-badge--blue">Step 1 of 4</span>
+            </div>
 
-              <div className="checkbox-item">
-                <Controller
-                  name="liveStreaming"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      inputId="liveStreaming"
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.checked)}
-                    />
+            <div className="ent-card-body">
+              <div className="form-grid">
+                {/* Client Name */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">
+                    Client / Couple Name <span className="req-star">*</span>
+                  </label>
+                  <Controller
+                    name="clientName"
+                    control={control}
+                    render={({ field }) => (
+                      <InputText
+                        id={field.name}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        placeholder="e.g. Anand & Priya"
+                        className={`w-full p-inputtext ${errors.clientName ? 'p-invalid' : ''}`}
+                        autoFocus
+                      />
+                    )}
+                  />
+                  {errors.clientName && (
+                    <small className="p-error">{errors.clientName.message}</small>
                   )}
-                />
-                <label htmlFor="liveStreaming">Live Streaming</label>
-              </div>
+                </div>
 
-              <div className="checkbox-item">
-                <Controller
-                  name="albumRequired"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      inputId="albumRequired"
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.checked)}
-                    />
+                {/* Event Name */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">
+                    Event Title / Heading <span className="req-star">*</span>
+                  </label>
+                  <Controller
+                    name="eventName"
+                    control={control}
+                    render={({ field }) => (
+                      <InputText
+                        {...field}
+                        placeholder='e.g. "Anand & Priya Grand Wedding"'
+                        className={`w-full ${errors.eventName ? 'p-invalid' : ''}`}
+                      />
+                    )}
+                  />
+                  {errors.eventName && (
+                    <small className="p-error">{errors.eventName.message}</small>
                   )}
-                />
-                <label htmlFor="albumRequired">Album Required</label>
-              </div>
+                </div>
 
-              <div className="checkbox-item">
-                <Controller
-                  name="candidPhotography"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      inputId="candidPhotography"
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.checked)}
-                    />
+                {/* Event Type */}
+                <div className="col-12 md:col-4 field-col">
+                  <label className="field-label">
+                    Event Category <span className="req-star">*</span>
+                  </label>
+                  <Controller
+                    name="eventType"
+                    control={control}
+                    render={({ field }) => (
+                      <Dropdown
+                        {...field}
+                        options={eventTypeOptions}
+                        placeholder="Select Category"
+                        showClear
+                        className={`w-full ${errors.eventType ? 'p-invalid' : ''}`}
+                      />
+                    )}
+                  />
+                  {errors.eventType && (
+                    <small className="p-error">{errors.eventType.message}</small>
                   )}
-                />
-                <label htmlFor="candidPhotography">Candid Photography</label>
-              </div>
+                </div>
 
-              <div className="checkbox-item">
-                <Controller
-                  name="traditionalPhotography"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      inputId="traditionalPhotography"
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.checked)}
-                    />
+                {/* Event Date */}
+                <div className="col-12 md:col-4 field-col">
+                  <label className="field-label">
+                    Shoot Date <span className="req-star">*</span>
+                  </label>
+                  <Controller
+                    name="eventDate"
+                    control={control}
+                    render={({ field }) => (
+                      <Calendar
+                        id={field.name}
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.value)}
+                        dateFormat="dd/mm/yy"
+                        showIcon
+                        placeholder="Select Date"
+                        className={`w-full ${errors.eventDate ? 'p-invalid' : ''}`}
+                        inputClassName="p-inputtext w-full"
+                      />
+                    )}
+                  />
+                  {errors.eventDate && (
+                    <small className="p-error">{errors.eventDate.message}</small>
                   )}
-                />
-                <label htmlFor="traditionalPhotography">Traditional Photography</label>
-              </div>
+                </div>
 
-              <div className="checkbox-item">
-                <Controller
-                  name="traditionalVideo"
-                  control={control}
-                  render={({ field }) => (
-                    <Checkbox
-                      inputId="traditionalVideo"
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.checked)}
-                    />
-                  )}
-                />
-                <label htmlFor="traditionalVideo">Traditional Video</label>
+                {/* Event Time */}
+                <div className="col-12 md:col-4 field-col">
+                  <label className="field-label">Reporting Time</label>
+                  <Controller
+                    name="eventTime"
+                    control={control}
+                    render={({ field }) => (
+                      <Calendar
+                        id={field.name}
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.value)}
+                        timeOnly
+                        hourFormat="12"
+                        showIcon
+                        placeholder="e.g. 10:00 AM"
+                        className="w-full"
+                        inputClassName="p-inputtext w-full"
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <Divider />
-
-        {/* ── 3. Package Details Section ── */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="pi pi-wallet section-icon" /> Package Details
-          </h3>
-
-          <div className="grid form-grid">
-            {/* Package Dropdown */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">
-                Package <span className="req-star">*</span>
-              </label>
-              <Controller
-                name="packageId"
-                control={control}
-                render={({ field }) => (
-                  <Dropdown
-                    value={field.value}
-                    options={packages}
-                    optionLabel="name"
-                    optionValue="id"
-                    onChange={(e) => handlePackageChange(e.value, field.onChange)}
-                    placeholder={loadingData ? 'Loading Packages...' : 'Select Package'}
-                    showClear
-                    className={`w-full ${errors.packageId ? 'p-invalid' : ''}`}
-                    disabled={loadingData}
-                  />
-                )}
-              />
-              {errors.packageId && (
-                <small className="p-error">{errors.packageId.message}</small>
-              )}
+          {/* CARD 2: VENUE & LOCATION DETAILS */}
+          <div className="ent-card">
+            <div className="ent-card-header">
+              <div className="ent-card-header__left">
+                <div className="ent-card-icon ent-card-icon--amber">
+                  <i className="pi pi-map-marker" />
+                </div>
+                <div>
+                  <h2 className="ent-card-title">Venue & Location Specifications</h2>
+                  <p className="ent-card-sub">Hall name, street address, city, and pincode location</p>
+                </div>
+              </div>
+              <span className="ent-card-badge ent-card-badge--amber">Step 2 of 4</span>
             </div>
 
-            {/* Package Price */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">
-                Package Price (₹) <span className="req-star">*</span>
-              </label>
-              <Controller
-                name="packagePrice"
-                control={control}
-                render={({ field }) => (
+            <div className="ent-card-body">
+              <div className="form-grid">
+                {/* Venue Name */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">
+                    Venue / Hall Name <span className="req-star">*</span>
+                  </label>
+                  <Controller
+                    name="venueName"
+                    control={control}
+                    render={({ field }) => (
+                      <InputText
+                        {...field}
+                        placeholder="e.g. The Ritz Carlton Grand Ballroom"
+                        className={`p-inputtext w-full ${errors.venueName ? 'p-invalid' : ''}`}
+                      />
+                    )}
+                  />
+                  {errors.venueName && (
+                    <small className="p-error">{errors.venueName.message}</small>
+                  )}
+                </div>
+
+                {/* City */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">City</label>
+                  <Controller
+                    name="city"
+                    control={control}
+                    render={({ field }) => (
+                      <InputText {...field} placeholder="e.g. Chennai / Bengaluru" className="p-inputtext w-full" />
+                    )}
+                  />
+                </div>
+
+                {/* Venue Address */}
+                <div className="col-12 field-col">
+                  <label className="field-label">Street Address & Landmark</label>
+                  <Controller
+                    name="venueAddress"
+                    control={control}
+                    render={({ field }) => (
+                      <InputTextarea
+                        {...field}
+                        rows={2}
+                        placeholder="Enter full venue address or driving directions for camera crew..."
+                        className="p-inputtext w-full"
+                      />
+                    )}
+                  />
+                </div>
+
+                {/* State */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">State</label>
+                  <Controller
+                    name="state"
+                    control={control}
+                    render={({ field }) => (
+                      <InputText {...field} placeholder="e.g. Tamil Nadu" className="p-inputtext w-full" />
+                    )}
+                  />
+                </div>
+
+                {/* Pincode */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">Pincode</label>
+                  <Controller
+                    name="pincode"
+                    control={control}
+                    render={({ field }) => (
+                      <InputText {...field} placeholder="e.g. 600001" className="p-inputtext w-full" />
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CARD 3: CREW ASSIGNMENTS & PHOTOGRAPHY COVERAGE */}
+          <div className="ent-card">
+            <div className="ent-card-header">
+              <div className="ent-card-header__left">
+                <div className="ent-card-icon ent-card-icon--purple">
+                  <i className="pi pi-camera" />
+                </div>
+                <div>
+                  <h2 className="ent-card-title">Crew Assignment & Deliverable Options</h2>
+                  <p className="ent-card-sub">Assigned lead staff and coverage add-ons</p>
+                </div>
+              </div>
+              <span className="ent-card-badge ent-card-badge--purple">Step 3 of 4</span>
+            </div>
+
+            <div className="ent-card-body">
+              <div className="form-grid">
+                {/* Lead Photographer */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">Lead Photographer</label>
+                  <Controller
+                    name="photographerId"
+                    control={control}
+                    render={({ field }) => (
+                      <Dropdown
+                        {...field}
+                        options={staff.photographers}
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Select Lead Photographer"
+                        showClear
+                        className="w-full"
+                        disabled={loadingData}
+                      />
+                    )}
+                  />
+                </div>
+
+                {/* Lead Videographer */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">Lead Videographer</label>
+                  <Controller
+                    name="videographerId"
+                    control={control}
+                    render={({ field }) => (
+                      <Dropdown
+                        {...field}
+                        options={staff.videographers}
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Select Lead Videographer"
+                        showClear
+                        className="w-full"
+                        disabled={loadingData}
+                      />
+                    )}
+                  />
+                </div>
+
+                {/* Checkbox Coverage Grid */}
+                <div className="col-12">
+                  <label className="field-label mb-2 display-block">Coverage Add-ons & Deliverable Requirements</label>
+                  <div className="ent-coverage-grid">
+
+                    <div className={`ent-coverage-card ${watchDroneRequired ? 'is-selected' : ''}`}>
+                      <Controller
+                        name="droneRequired"
+                        control={control}
+                        render={({ field }) => (
+                          <Checkbox
+                            inputId="droneRequired"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.checked)}
+                          />
+                        )}
+                      />
+                      <label htmlFor="droneRequired" className="ent-coverage-label">
+                        <i className="pi pi-send text-primary" />
+                        <div>
+                          <strong>Drone Aerial Shoot</strong>
+                          <span>4K aerial video & photos</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div className={`ent-coverage-card ${watchLiveStreaming ? 'is-selected' : ''}`}>
+                      <Controller
+                        name="liveStreaming"
+                        control={control}
+                        render={({ field }) => (
+                          <Checkbox
+                            inputId="liveStreaming"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.checked)}
+                          />
+                        )}
+                      />
+                      <label htmlFor="liveStreaming" className="ent-coverage-label">
+                        <i className="pi pi-video text-purple-600" />
+                        <div>
+                          <strong>Live Youtube Stream</strong>
+                          <span>Multi-cam webcast</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div className={`ent-coverage-card ${watchAlbumRequired ? 'is-selected' : ''}`}>
+                      <Controller
+                        name="albumRequired"
+                        control={control}
+                        render={({ field }) => (
+                          <Checkbox
+                            inputId="albumRequired"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.checked)}
+                          />
+                        )}
+                      />
+                      <label htmlFor="albumRequired" className="ent-coverage-label">
+                        <i className="pi pi-book text-amber-600" />
+                        <div>
+                          <strong>Printed Canvera Album</strong>
+                          <span>HD synthetic photobook</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div className={`ent-coverage-card ${watchCandidPhotography ? 'is-selected' : ''}`}>
+                      <Controller
+                        name="candidPhotography"
+                        control={control}
+                        render={({ field }) => (
+                          <Checkbox
+                            inputId="candidPhotography"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.checked)}
+                          />
+                        )}
+                      />
+                      <label htmlFor="candidPhotography" className="ent-coverage-label">
+                        <i className="pi pi-camera text-pink-600" />
+                        <div>
+                          <strong>Candid Photography</strong>
+                          <span>Cinematic portrait shots</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div className={`ent-coverage-card ${watchTraditionalPhotography ? 'is-selected' : ''}`}>
+                      <Controller
+                        name="traditionalPhotography"
+                        control={control}
+                        render={({ field }) => (
+                          <Checkbox
+                            inputId="traditionalPhotography"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.checked)}
+                          />
+                        )}
+                      />
+                      <label htmlFor="traditionalPhotography" className="ent-coverage-label">
+                        <i className="pi pi-image text-green-600" />
+                        <div>
+                          <strong>Traditional Photo</strong>
+                          <span>Stage & family coverage</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div className={`ent-coverage-card ${watchTraditionalVideo ? 'is-selected' : ''}`}>
+                      <Controller
+                        name="traditionalVideo"
+                        control={control}
+                        render={({ field }) => (
+                          <Checkbox
+                            inputId="traditionalVideo"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.checked)}
+                          />
+                        )}
+                      />
+                      <label htmlFor="traditionalVideo" className="ent-coverage-label">
+                        <i className="pi pi-film text-blue-600" />
+                        <div>
+                          <strong>Traditional Video</strong>
+                          <span>Full event documentary</span>
+                        </div>
+                      </label>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CARD 4: PACKAGE PRICING & COMMERCIAL TERMS */}
+          <div className="ent-card">
+            <div className="ent-card-header">
+              <div className="ent-card-header__left">
+                <div className="ent-card-icon ent-card-icon--green">
+                  <i className="pi pi-wallet" />
+                </div>
+                <div>
+                  <h2 className="ent-card-title">Package Pricing & Advance Financial Terms</h2>
+                  <p className="ent-card-sub">Selected package, advance collection, and balance calculation</p>
+                </div>
+              </div>
+              <span className="ent-card-badge ent-card-badge--green">Step 4 of 4</span>
+            </div>
+
+            <div className="ent-card-body">
+              <div className="form-grid">
+                {/* Package Dropdown */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">
+                    Photography Package <span className="req-star">*</span>
+                  </label>
+                  <Controller
+                    name="packageId"
+                    control={control}
+                    render={({ field }) => (
+                      <Dropdown
+                        value={field.value}
+                        options={packages}
+                        optionLabel="name"
+                        optionValue="id"
+                        onChange={(e) => handlePackageChange(e.value, field.onChange)}
+                        placeholder={loadingData ? 'Loading Packages...' : 'Select Package'}
+                        showClear
+                        className={`w-full ${errors.packageId ? 'p-invalid' : ''}`}
+                        disabled={loadingData}
+                      />
+                    )}
+                  />
+                  {errors.packageId && (
+                    <small className="p-error">{errors.packageId.message}</small>
+                  )}
+                </div>
+
+                {/* Package Price */}
+                <div className="col-12 md:col-6 field-col">
+                  <label className="field-label">
+                    Package Base Price (₹) <span className="req-star">*</span>
+                  </label>
+                  <Controller
+                    name="packagePrice"
+                    control={control}
+                    render={({ field }) => (
+                      <InputNumber
+                        id={field.name}
+                        value={field.value}
+                        onValueChange={(e) => field.onChange(e.value)}
+                        mode="currency"
+                        currency="INR"
+                        locale="en-IN"
+                        placeholder="e.g. ₹8,50,000"
+                        className={`w-full ${errors.packagePrice ? 'p-invalid' : ''}`}
+                        inputClassName="p-inputtext w-full"
+                      />
+                    )}
+                  />
+                  {errors.packagePrice && (
+                    <small className="p-error">{errors.packagePrice.message}</small>
+                  )}
+                </div>
+
+                {/* Advance Paid */}
+                <div className="col-12 md:col-4 field-col">
+                  <label className="field-label">
+                    Advance Amount Paid (₹) <span className="req-star">*</span>
+                  </label>
+                  <Controller
+                    name="advancePaid"
+                    control={control}
+                    render={({ field }) => (
+                      <InputNumber
+                        id={field.name}
+                        value={field.value}
+                        onValueChange={(e) => field.onChange(e.value)}
+                        mode="currency"
+                        currency="INR"
+                        locale="en-IN"
+                        placeholder="e.g. ₹2,50,000"
+                        className={`w-full ${errors.advancePaid ? 'p-invalid' : ''}`}
+                        inputClassName="p-inputtext w-full"
+                      />
+                    )}
+                  />
+                  {errors.advancePaid && (
+                    <small className="p-error">{errors.advancePaid.message}</small>
+                  )}
+                </div>
+
+                {/* Balance Amount (Auto Calculate) */}
+                <div className="col-12 md:col-4 field-col">
+                  <label className="field-label">Balance Due (₹) (Read Only)</label>
                   <InputNumber
-                    id={field.name}
-                    value={field.value}
-                    onValueChange={(e) => field.onChange(e.value)}
+                    value={balanceAmount}
                     mode="currency"
                     currency="INR"
                     locale="en-IN"
-                    placeholder="e.g. ₹8,50,000"
-                    className={`w-full ${errors.packagePrice ? 'p-invalid' : ''}`}
+                    disabled
+                    className="w-full balance-input-readonly"
                     inputClassName="p-inputtext w-full"
                   />
-                )}
-              />
-              {errors.packagePrice && (
-                <small className="p-error">{errors.packagePrice.message}</small>
-              )}
-            </div>
+                  <small className="field-hint">Auto Calculated (Price - Advance)</small>
+                </div>
 
-            {/* Advance Paid */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">
-                Advance Paid (₹) <span className="req-star">*</span>
-              </label>
-              <Controller
-                name="advancePaid"
-                control={control}
-                render={({ field }) => (
-                  <InputNumber
-                    id={field.name}
-                    value={field.value}
-                    onValueChange={(e) => field.onChange(e.value)}
-                    mode="currency"
-                    currency="INR"
-                    locale="en-IN"
-                    placeholder="e.g. ₹2,00,000"
-                    className={`w-full ${errors.advancePaid ? 'p-invalid' : ''}`}
-                    inputClassName="p-inputtext w-full"
+                {/* Event Booking Status */}
+                <div className="col-12 md:col-4 field-col">
+                  <label className="field-label">Booking Status</label>
+                  <Controller
+                    name="eventStatus"
+                    control={control}
+                    render={({ field }) => (
+                      <Dropdown
+                        {...field}
+                        options={statusOptions}
+                        placeholder="Select Status"
+                        showClear
+                        className="w-full"
+                      />
+                    )}
                   />
-                )}
-              />
-              {errors.advancePaid && (
-                <small className="p-error">{errors.advancePaid.message}</small>
-              )}
+                </div>
+
+                {/* Special Instructions & Notes */}
+                <div className="col-12 field-col">
+                  <label className="field-label">Special Instructions & Client Preferences</label>
+                  <Controller
+                    name="specialInstructions"
+                    control={control}
+                    render={({ field }) => (
+                      <InputTextarea
+                        {...field}
+                        rows={3}
+                        placeholder="Enter custom song selections, camera gear preferences, client requests, or family photo lists..."
+                        className="w-full"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* ── RIGHT COLUMN: LIVE BOOKING SUMMARY CARD (4 Cols - Sticky) ── */}
+        <div className="enterprise-form-sidebar">
+          <div className="ent-summary-card">
+            <div className="ent-summary-header">
+              <div>
+                <span className="ent-summary-tag">
+                  <i className="pi pi-circle-fill text-green-500" /> LIVE TERMINAL
+                </span>
+                <h3 className="ent-summary-title">Booking Summary</h3>
+              </div>
+              <i className="pi pi-file-edit text-primary text-xl" />
             </div>
 
-            {/* Balance Amount (Auto Calculate & Read-Only) */}
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">Balance Amount (₹) (Read Only)</label>
-              <InputNumber
-                value={balanceAmount}
-                mode="currency"
-                currency="INR"
-                locale="en-IN"
-                disabled
-                className="w-full balance-input-readonly"
-                inputClassName="p-inputtext w-full"
+            <div className="ent-summary-body">
+              {/* Client & Event Info */}
+              <div className="ent-summary-item">
+                <span className="ent-summary-lbl">Client Name</span>
+                <strong className="ent-summary-val">{watchClientName || 'Not Specified'}</strong>
+              </div>
+
+              <div className="ent-summary-item">
+                <span className="ent-summary-lbl">Event Title</span>
+                <span className="ent-summary-val text-sm">{watchEventName || 'New Event'}</span>
+              </div>
+
+              <div className="ent-summary-item">
+                <span className="ent-summary-lbl">Category & Date</span>
+                <span className="ent-summary-val text-sm">
+                  {watchEventType} {watchEventDate ? `• ${new Date(watchEventDate).toLocaleDateString()}` : ''}
+                </span>
+              </div>
+
+              <div className="ent-summary-divider" />
+
+              {/* Package & Financial Breakdown */}
+              <div className="ent-summary-item">
+                <span className="ent-summary-lbl">Selected Package</span>
+                <strong className="ent-summary-val text-primary">{selectedPackageObj?.name || 'Custom Booking'}</strong>
+              </div>
+
+              <div className="ent-summary-item">
+                <span className="ent-summary-lbl">Package Base Price</span>
+                <span className="ent-summary-val">₹{safePkgPrice.toLocaleString()}</span>
+              </div>
+
+              <div className="ent-summary-item text-xs text-muted">
+                <span className="ent-summary-lbl">Est. GST (18%)</span>
+                <span>₹{gstAmount.toLocaleString()}</span>
+              </div>
+
+              <div className="ent-summary-item">
+                <span className="ent-summary-lbl font-semibold">Advance Amount Paid</span>
+                <span className="ent-summary-val text-green-600 font-bold">₹{safeAdvPaid.toLocaleString()}</span>
+              </div>
+
+              {/* Highlighted Balance Box */}
+              <div className="ent-summary-balance-box">
+                <div className="text-xs font-bold uppercase text-600">Remaining Balance Due</div>
+                <div className="text-2xl font-extrabold text-red-600">₹{balanceAmount.toLocaleString()}</div>
+                <div className="text-xs text-500">Collect prior to final album/video delivery</div>
+              </div>
+
+              <div className="ent-summary-divider" />
+
+              {/* Assigned Staff Summary */}
+              <div className="ent-summary-item">
+                <span className="ent-summary-lbl">Photographer</span>
+                <span className="ent-summary-val text-sm">{selectedPhotographerObj?.name || 'Unassigned'}</span>
+              </div>
+
+              <div className="ent-summary-item">
+                <span className="ent-summary-lbl">Videographer</span>
+                <span className="ent-summary-val text-sm">{selectedVideographerObj?.name || 'Unassigned'}</span>
+              </div>
+
+              {/* Coverage Badges */}
+              <div className="mt-3">
+                <span className="ent-summary-lbl display-block mb-1">Included Services</span>
+                <div className="flex flex-wrap gap-1">
+                  {watchDroneRequired && <span className="ent-pill ent-pill--blue">Drone</span>}
+                  {watchLiveStreaming && <span className="ent-pill ent-pill--purple">Live Stream</span>}
+                  {watchAlbumRequired && <span className="ent-pill ent-pill--amber">Album</span>}
+                  {watchCandidPhotography && <span className="ent-pill ent-pill--pink">Candid</span>}
+                  {watchTraditionalPhotography && <span className="ent-pill ent-pill--green">Trad Photo</span>}
+                  {watchTraditionalVideo && <span className="ent-pill ent-pill--teal">Trad Video</span>}
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar Sticky Actions */}
+            <div className="ent-summary-footer">
+              <Button
+                type="submit"
+                label={eventToEdit ? 'Update Booking' : 'Confirm & Save Event'}
+                icon="pi pi-check"
+                className="p-button-primary w-full p-button-lg"
+                loading={isSubmitting}
+                disabled={!isValid || isSubmitting}
               />
-              <small className="field-hint">Auto Calculated (Package Price - Advance Paid)</small>
+
+              <Button
+                type="button"
+                label="Cancel"
+                icon="pi pi-times"
+                className="p-button-outlined p-button-secondary w-full p-button-sm mt-2"
+                onClick={handleCancelClick}
+                disabled={isSubmitting}
+              />
             </div>
           </div>
         </div>
 
-        <Divider />
-
-        {/* ── 4. Event Status Section ── */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="pi pi-check-circle section-icon" /> Event Status
-          </h3>
-
-          <div className="grid form-grid">
-            <div className="col-12 md:col-6 field-col">
-              <label className="field-label">Event Status</label>
-              <Controller
-                name="eventStatus"
-                control={control}
-                render={({ field }) => (
-                  <Dropdown
-                    {...field}
-                    options={statusOptions}
-                    placeholder="Select Status"
-                    showClear
-                    className="w-full"
-                  />
-                )}
-              />
-            </div>
-          </div>
-        </div>
-
-        <Divider />
-
-        {/* ── 5. Special Instructions & Notes ── */}
-        <div className="form-section">
-          <h3 className="section-title">
-            <i className="pi pi-file-edit section-icon" /> Special Instructions & Notes
-          </h3>
-
-          <div className="grid form-grid">
-            <div className="col-12 field-col">
-              <label className="field-label">Special Instructions</label>
-              <Controller
-                name="specialInstructions"
-                control={control}
-                render={({ field }) => (
-                  <InputTextarea
-                    {...field}
-                    rows={5}
-                    placeholder="Add special client requests, camera equipment preferences, or timing details..."
-                    className="w-full"
-                  />
-                )}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ── Bottom Right Action Buttons ── */}
-        <div className="form-actions">
-          <Button
-            type="button"
-            label="Cancel"
-            icon="pi pi-times"
-            className="p-button-secondary p-button-outlined"
-            onClick={handleCancelClick}
-            disabled={isSubmitting}
-          />
-
-          <Button
-            type="submit"
-            label={eventToEdit ? 'Update Event' : 'Save Event'}
-            icon="pi pi-check"
-            className="p-button-primary"
-            loading={isSubmitting}
-            disabled={!isValid || isSubmitting}
-          />
-        </div>
       </form>
-    </Card>
+    </div>
   )
 }

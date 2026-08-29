@@ -6,6 +6,7 @@ import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
 import 'primeflex/primeflex.css'
 import './index.css'
+import './components/enterprise/enterprise.css'
 import App from './App.jsx'
 import { startHealthCheck } from './services/healthCheckService'
 

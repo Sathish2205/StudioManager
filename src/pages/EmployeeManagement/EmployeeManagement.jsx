@@ -399,47 +399,6 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             Manage staff profiles, shifts, daily check-ins, working hours, leave applications, and payroll.
           </p>
         </div>
-
-        <div className="flex gap-2">
-          {currentSubTab === 'employees' && (
-            <Button
-              label="Add New Employee"
-              icon="pi pi-user-plus"
-              severity="primary"
-              onClick={handleOpenAddEmp}
-            />
-          )}
-          {currentSubTab === 'leave' && (
-            <Button
-              label="Apply Leave"
-              icon="pi pi-calendar-plus"
-              severity="primary"
-              onClick={() => {
-                if (employees.length > 0) setLeaveForm(prev => ({ ...prev, employeeId: employees[0]._id }))
-                setLeaveDialogVisible(true)
-              }}
-            />
-          )}
-          {currentSubTab === 'payroll' && (
-            <Button
-              label="Calculate Payroll"
-              icon="pi pi-calculator"
-              severity="success"
-              onClick={() => {
-                if (employees.length > 0) setPayrollForm(prev => ({ ...prev, employeeId: employees[0]._id }))
-                setPayrollDialogVisible(true)
-              }}
-            />
-          )}
-          {currentSubTab === 'shifts' && (
-            <Button
-              label="Create Shift"
-              icon="pi pi-plus"
-              severity="primary"
-              onClick={() => setShiftDialogVisible(true)}
-            />
-          )}
-        </div>
       </div>
 
       {/* Dashboard Top Metric Cards */}
@@ -521,25 +480,25 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
       {currentSubTab === 'employees' && (
         <div className="emp-table-card">
           {/* Filters Bar */}
-          <div className="p-3 surface-100 border-bottom-1 surface-border flex flex-wrap gap-3 align-items-center justify-content-between">
-            <span className="p-input-icon-left w-full sm:w-20rem">
-              <i className="pi pi-search" />
-              <InputText
-                value={empSearch}
-                onChange={(e) => setEmpSearch(e.target.value)}
-                placeholder="Search employee name, ID, phone..."
-                className="w-full p-inputtext-sm"
-              />
-            </span>
+          <div className="events-toolbar">
+            <div className="events-toolbar__left">
+              <div className="events-search">
+                <i className="pi pi-search events-search__icon" />
+                <InputText
+                  value={empSearch}
+                  onChange={(e) => setEmpSearch(e.target.value)}
+                  placeholder="Search employee name, ID, phone..."
+                  className="events-search__input"
+                />
+              </div>
 
-            <div className="flex flex-wrap gap-2">
               <Dropdown
                 value={selectedRole}
                 options={roleOptions.map(r => ({ label: r, value: r }))}
                 onChange={(e) => setSelectedRole(e.value)}
                 placeholder="All Roles"
                 showClear
-                className="p-inputtext-sm w-11rem"
+                className="events-filter__dropdown"
               />
               <Dropdown
                 value={selectedType}
@@ -547,7 +506,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                 onChange={(e) => setSelectedType(e.value)}
                 placeholder="All Employment Types"
                 showClear
-                className="p-inputtext-sm w-12rem"
+                className="events-filter__dropdown"
               />
               <Dropdown
                 value={selectedStatus}
@@ -555,14 +514,16 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                 onChange={(e) => setSelectedStatus(e.value)}
                 placeholder="All Statuses"
                 showClear
-                className="p-inputtext-sm w-10rem"
+                className="events-filter__dropdown"
               />
+            </div>
+
+            <div className="events-toolbar__right">
               <Button
-                icon="pi pi-refresh"
-                outlined
-                size="small"
-                onClick={loadEmployeesData}
-                tooltip="Refresh"
+                label="Add New Employee"
+                icon="pi pi-user-plus"
+                className="p-button-primary"
+                onClick={handleOpenAddEmp}
               />
             </div>
           </div>
@@ -573,6 +534,12 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             paginator
             rows={10}
             rowsPerPageOptions={[10, 20, 50]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+            paginatorLeft={
+              <div className="events-paginator__count">
+                Total: <strong>{employees.length} Staff Members</strong>
+              </div>
+            }
             className="events-datatable p-datatable-sm"
             emptyMessage="No employees found."
           >
@@ -580,7 +547,11 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
               field="employeeId"
               header="Employee ID"
               sortable
-              body={(rd) => <strong className="text-primary">{rd.employeeId || 'EMP-0000'}</strong>}
+              body={(rd, idx) => (
+                <strong className="text-primary font-mono text-xs">
+                  {rd.employeeId || rd.empId || (rd._id ? `EMP-${String(rd._id).slice(-4).toUpperCase()}` : `EMP-${String((idx?.rowIndex || 0) + 1).padStart(4, '0')}`)}
+                </strong>
+              )}
             />
             <Column
               field="name"
@@ -676,6 +647,13 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             loading={loadingAtt}
             paginator
             rows={10}
+            rowsPerPageOptions={[10, 20, 50]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+            paginatorLeft={
+              <div className="events-paginator__count">
+                Total: <strong>{(todayAttData.attendances || []).length} Attendance Logs</strong>
+              </div>
+            }
             className="events-datatable p-datatable-sm"
             emptyMessage="No attendance records logged for today."
           >
@@ -752,11 +730,35 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
       {/* ──────────────── TAB 4: LEAVE MANAGEMENT ──────────────── */}
       {currentSubTab === 'leave' && (
         <div className="emp-table-card">
+          <div className="events-toolbar">
+            <div className="events-toolbar__left">
+              <span className="font-bold text-sm text-700">Leave Applications & Approvals</span>
+            </div>
+            <div className="events-toolbar__right">
+              <Button
+                label="Apply Leave"
+                icon="pi pi-calendar-plus"
+                className="p-button-primary"
+                onClick={() => {
+                  if (employees.length > 0) setLeaveForm(prev => ({ ...prev, employeeId: employees[0]._id }))
+                  setLeaveDialogVisible(true)
+                }}
+              />
+            </div>
+          </div>
+
           <DataTable
             value={leaves}
             loading={loadingLeaves}
             paginator
             rows={10}
+            rowsPerPageOptions={[10, 20, 50]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+            paginatorLeft={
+              <div className="events-paginator__count">
+                Total: <strong>{(leaves || []).length} Leave Requests</strong>
+              </div>
+            }
             className="events-datatable p-datatable-sm"
             emptyMessage="No leave requests."
           >
@@ -822,11 +824,35 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
       {/* ──────────────── TAB 5: PAYROLL ──────────────── */}
       {currentSubTab === 'payroll' && (
         <div className="emp-table-card">
+          <div className="events-toolbar">
+            <div className="events-toolbar__left">
+              <span className="font-bold text-sm text-700">Monthly Payroll & Salary Slips</span>
+            </div>
+            <div className="events-toolbar__right">
+              <Button
+                label="Calculate Payroll"
+                icon="pi pi-calculator"
+                className="p-button-success"
+                onClick={() => {
+                  if (employees.length > 0) setPayrollForm(prev => ({ ...prev, employeeId: employees[0]._id }))
+                  setPayrollDialogVisible(true)
+                }}
+              />
+            </div>
+          </div>
+
           <DataTable
             value={payrolls}
             loading={loadingPayroll}
             paginator
             rows={10}
+            rowsPerPageOptions={[10, 20, 50]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+            paginatorLeft={
+              <div className="events-paginator__count">
+                Total: <strong>{(payrolls || []).length} Payroll Records</strong>
+              </div>
+            }
             className="events-datatable p-datatable-sm"
             emptyMessage="No payroll records generated yet."
           >
@@ -855,11 +881,32 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
       {/* ──────────────── TAB 6: SHIFTS ──────────────── */}
       {currentSubTab === 'shifts' && (
         <div className="emp-table-card">
+          <div className="events-toolbar">
+            <div className="events-toolbar__left">
+              <span className="font-bold text-sm text-700">Studio Shift Configurations</span>
+            </div>
+            <div className="events-toolbar__right">
+              <Button
+                label="Create Shift"
+                icon="pi pi-plus"
+                className="p-button-primary"
+                onClick={() => setShiftDialogVisible(true)}
+              />
+            </div>
+          </div>
+
           <DataTable
             value={shifts}
             loading={loadingShifts}
             paginator
             rows={10}
+            rowsPerPageOptions={[10, 20, 50]}
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+            paginatorLeft={
+              <div className="events-paginator__count">
+                Total: <strong>{(shifts || []).length} Shift Templates</strong>
+              </div>
+            }
             className="events-datatable p-datatable-sm"
             emptyMessage="No shift configurations."
           >

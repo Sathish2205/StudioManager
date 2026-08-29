@@ -112,21 +112,6 @@ export default function ContractsDocs({ onShowToast }) {
             Manage legal photography contracts, digital e-signatures, ID proofs, and event agreements
           </p>
         </div>
-
-        <div className="contracts-header__actions">
-          <Button
-            label="New Contract"
-            icon="pi pi-file-edit"
-            className="p-button-primary"
-            onClick={() => setIsContractOpen(true)}
-          />
-          <Button
-            label="Upload Document"
-            icon="pi pi-upload"
-            className="p-button-secondary"
-            onClick={() => setIsDocOpen(true)}
-          />
-        </div>
       </div>
 
       {/* ── Dedicated Studio Tab Navigation Bar ── */}
@@ -148,6 +133,19 @@ export default function ContractsDocs({ onShowToast }) {
       {/* ── TAB 1: CONTRACTS ── */}
       {activeTab === 'contracts' && (
         <div className="events-table-card">
+          <div className="events-toolbar">
+            <div className="events-toolbar__left">
+              <span className="font-bold text-sm text-700">Legal Contracts & Agreements</span>
+            </div>
+            <div className="events-toolbar__right">
+              <Button
+                label="New Contract"
+                icon="pi pi-file-edit"
+                className="p-button-primary"
+                onClick={() => setIsContractOpen(true)}
+              />
+            </div>
+          </div>
           <DataTable
             value={contracts}
             paginator
@@ -205,6 +203,15 @@ export default function ContractsDocs({ onShowToast }) {
                 placeholder="Filter Type"
                 showClear
                 className="events-filter__dropdown"
+              />
+            </div>
+
+            <div className="events-toolbar__right">
+              <Button
+                label="Upload Document"
+                icon="pi pi-upload"
+                className="p-button-secondary"
+                onClick={() => setIsDocOpen(true)}
               />
             </div>
           </div>

@@ -318,7 +318,7 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
       {/* ── TOOLTIP FOR EVENT HOVER ── */}
       <Tooltip target=".cal-event-chip" position="top" />
 
-      {/* ── TOP HEADER ROW: TITLE & + NEW EVENT BUTTON ── */}
+      {/* ── TOP HEADER ROW: TITLE ── */}
       <div className="calendar-top-bar">
         <div>
           <h1 className="calendar-portal-title">Shoot Calendar</h1>
@@ -349,13 +349,6 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
               Day
             </button>
           </div>
-
-          <Button
-            label="Book New Event"
-            icon="pi pi-calendar-plus"
-            className="p-button-primary"
-            onClick={() => onNavigateAddEvent && onNavigateAddEvent()}
-          />
         </div>
       </div>
 

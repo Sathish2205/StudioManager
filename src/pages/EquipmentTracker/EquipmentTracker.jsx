@@ -192,21 +192,6 @@ export default function EquipmentTracker({ onShowToast }) {
             Track gear inventory, camera/lens serials, event kit assignments, and maintenance schedules
           </p>
         </div>
-
-        <div className="equipment-header__actions">
-          <Button
-            label="Assign Gear to Event"
-            icon="pi pi-box"
-            className="p-button-secondary"
-            onClick={() => setIsAssignOpen(true)}
-          />
-          <Button
-            label="Add Equipment"
-            icon="pi pi-plus"
-            className="p-button-primary"
-            onClick={() => setIsAddOpen(true)}
-          />
-        </div>
       </div>
 
       {/* ── Dedicated Studio Tab Navigation Bar ── */}
@@ -271,6 +256,21 @@ export default function EquipmentTracker({ onShowToast }) {
                 placeholder="Status"
                 showClear
                 className="events-filter__dropdown"
+              />
+            </div>
+
+            <div className="events-toolbar__right">
+              <Button
+                label="Assign Gear"
+                icon="pi pi-box"
+                className="p-button-secondary"
+                onClick={() => setIsAssignOpen(true)}
+              />
+              <Button
+                label="Add Equipment"
+                icon="pi pi-plus"
+                className="p-button-primary"
+                onClick={() => setIsAddOpen(true)}
               />
             </div>
           </div>

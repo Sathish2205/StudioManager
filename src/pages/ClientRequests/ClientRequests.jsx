@@ -118,15 +118,6 @@ export default function ClientRequests({ onShowToast }) {
             Track client photo swaps, album revisions, video audio changes, and delivery requests
           </p>
         </div>
-
-        <div className="requests-header__actions">
-          <Button
-            label="Register Client Request"
-            icon="pi pi-plus"
-            className="p-button-primary"
-            onClick={() => setIsCreateOpen(true)}
-          />
-        </div>
       </div>
 
       {/* ── TOOLBAR ── */}
@@ -159,9 +150,18 @@ export default function ClientRequests({ onShowToast }) {
               ...requestStages.map((s) => ({ label: s, value: s }))
             ]}
             onChange={(e) => setFilterStatus(e.value)}
-            placeholder="Workflow Stage"
+            placeholder="Status"
             showClear
             className="events-filter__dropdown"
+          />
+        </div>
+
+        <div className="events-toolbar__right">
+          <Button
+            label="Register Client Request"
+            icon="pi pi-plus"
+            className="p-button-primary"
+            onClick={() => setIsCreateOpen(true)}
           />
         </div>
       </div>

@@ -22,8 +22,7 @@ import QuotationDetail from './pages/QuotationDetail/QuotationDetail'
 import InvoiceDetail from './pages/InvoiceDetail/InvoiceDetail'
 import EmployeeManagement from './pages/EmployeeManagement/EmployeeManagement'
 
-import Sidebar from './components/Sidebar'
-import DashboardHeader from './components/DashboardHeader'
+import AppLayout from './components/AppLayout'
 import './App.css'
 
 const ROUTE_MAP = {
@@ -88,12 +87,10 @@ function App() {
   const [selectedInvoice, setSelectedInvoice] = useState(null)
   const [selectedPackageForQuote, setSelectedPackageForQuote] = useState(null)
   const [globalToastMsg, setGlobalToastMsg] = useState(null)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [prefillEventDate, setPrefillEventDate] = useState(null)
 
   const setActiveTab = (tabKey) => {
     setActiveTabState(tabKey)
-    setSidebarOpen(false) // auto-close sidebar on mobile
     const targetPath = TAB_TO_PATH[tabKey] || '/'
     if (window.location.pathname !== targetPath) {
       window.history.pushState({}, '', targetPath)
@@ -136,24 +133,7 @@ function App() {
     <>
       {/* Global Toast Banner */}
       {globalToastMsg && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '24px',
-            zIndex: 99999,
-            background: '#2563eb',
-            color: '#ffffff',
-            padding: '12px 20px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            fontWeight: 600,
-            fontSize: '0.875rem'
-          }}
-        >
+        <div className="enterprise-toast">
           <i className="pi pi-check-circle" />
           <span>{globalToastMsg}</span>
         </div>
@@ -176,303 +156,201 @@ function App() {
 
       {/* ── WORKFLOW MANAGEMENT ── */}
       {activeTab === 'workflow' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <WorkflowManagement />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <WorkflowManagement />
+        </AppLayout>
       )}
 
       {/* ── CUSTOMER CRM ── */}
       {activeTab === 'crm' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <CustomerCRM onNavigateAddEvent={() => handleNavigateEditEvent(null)} />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <CustomerCRM onNavigateAddEvent={() => handleNavigateEditEvent(null)} />
+        </AppLayout>
       )}
 
       {/* ── ADD / EDIT EVENT PAGE ── */}
       {activeTab === 'add-event' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <AddEventPage
-                eventToEdit={selectedEditEvent}
-                prefillDate={prefillEventDate}
-                onNavigateEvents={() => {
-                  setSelectedEditEvent(null)
-                  setPrefillEventDate(null)
-                  setActiveTab('events')
-                }}
-                onNavigateDashboard={() => {
-                  setSelectedEditEvent(null)
-                  setPrefillEventDate(null)
-                  setActiveTab('home')
-                }}
-                onNavigateInvoice={(createdEvent) => {
-                  setSelectedEditEvent(null)
-                  setPrefillEventDate(null)
-                  handleNavigateInvoice(createdEvent)
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <AddEventPage
+            eventToEdit={selectedEditEvent}
+            prefillDate={prefillEventDate}
+            onNavigateEvents={() => {
+              setSelectedEditEvent(null)
+              setPrefillEventDate(null)
+              setActiveTab('events')
+            }}
+            onNavigateDashboard={() => {
+              setSelectedEditEvent(null)
+              setPrefillEventDate(null)
+              setActiveTab('home')
+            }}
+            onNavigateInvoice={(createdEvent) => {
+              setSelectedEditEvent(null)
+              setPrefillEventDate(null)
+              handleNavigateInvoice(createdEvent)
+            }}
+          />
+        </AppLayout>
       )}
 
       {/* ── INVOICE PAGE ── */}
       {activeTab === 'invoice' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <InvoicePage
-                event={selectedInvoiceEvent}
-                onNavigateEvents={() => setActiveTab('events')}
-                onNavigateWorkflow={() => setActiveTab('workflow')}
-              />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <InvoicePage
+            event={selectedInvoiceEvent}
+            onNavigateEvents={() => setActiveTab('events')}
+            onNavigateWorkflow={() => setActiveTab('workflow')}
+          />
+        </AppLayout>
       )}
 
       {/* ── MODULE 1: SHOOT CALENDAR ── */}
       {activeTab === 'calendar' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <ShootCalendar
-                onShowToast={showGlobalToast}
-                onNavigateAddEvent={(dateStr) => {
-                  setPrefillEventDate(dateStr || null)
-                  setActiveTab('add-event')
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <ShootCalendar
+            onShowToast={showGlobalToast}
+            onNavigateAddEvent={(dateStr) => {
+              setPrefillEventDate(dateStr || null)
+              setActiveTab('add-event')
+            }}
+          />
+        </AppLayout>
       )}
 
       {/* ── MODULE 2: EDITING & DELIVERABLES ── */}
       {activeTab === 'tasks' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <EditingDeliverables onShowToast={showGlobalToast} />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <EditingDeliverables onShowToast={showGlobalToast} />
+        </AppLayout>
       )}
 
       {/* ── MODULE 3: FINANCE & INVOICES ── */}
       {activeTab === 'finance' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <FinanceInvoices
-                onShowToast={showGlobalToast}
-                onNavigateCreateQuotation={(pkg) => {
-                  setSelectedQuotation(null)
-                  setSelectedPackageForQuote(pkg || null)
-                  setActiveTab('create-quotation')
-                }}
-                onNavigateEditQuotation={(quote) => {
-                  setSelectedQuotation(quote)
-                  setSelectedPackageForQuote(null)
-                  setActiveTab('create-quotation')
-                }}
-                onNavigateQuotationDetail={(quote) => {
-                  setSelectedQuotation(quote)
-                  setActiveTab('quotation-detail')
-                }}
-                onNavigateInvoiceDetail={(inv) => {
-                  setSelectedInvoice(inv)
-                  setActiveTab('invoice-detail')
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <FinanceInvoices
+            onShowToast={showGlobalToast}
+            onNavigateCreateQuotation={(pkg) => {
+              setSelectedQuotation(null)
+              setSelectedPackageForQuote(pkg || null)
+              setActiveTab('create-quotation')
+            }}
+            onNavigateEditQuotation={(quote) => {
+              setSelectedQuotation(quote)
+              setSelectedPackageForQuote(null)
+              setActiveTab('create-quotation')
+            }}
+            onNavigateQuotationDetail={(quote) => {
+              setSelectedQuotation(quote)
+              setActiveTab('quotation-detail')
+            }}
+            onNavigateInvoiceDetail={(inv) => {
+              setSelectedInvoice(inv)
+              setActiveTab('invoice-detail')
+            }}
+          />
+        </AppLayout>
       )}
 
       {/* ── MODULE 4: PACKAGES & QUOTES ── */}
       {activeTab === 'packages' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <PackagesQuotes
-                onShowToast={showGlobalToast}
-                onNavigateAddEvent={() => setActiveTab('add-event')}
-                onNavigateCreateQuotation={(pkg) => {
-                  setSelectedPackageForQuote(pkg || null)
-                  setActiveTab('create-quotation')
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <PackagesQuotes
+            onShowToast={showGlobalToast}
+            onNavigateAddEvent={() => setActiveTab('add-event')}
+            onNavigateCreateQuotation={(pkg) => {
+              setSelectedPackageForQuote(pkg || null)
+              setActiveTab('create-quotation')
+            }}
+          />
+        </AppLayout>
       )}
 
       {/* ── CREATE QUOTATION ── */}
       {activeTab === 'create-quotation' && (
-        <div className="portal-layout">
-          <Sidebar activeTab="finance" setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab="finance" setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <CreateQuotation
-                initialPackage={selectedPackageForQuote}
-                quotationToEdit={selectedQuotation}
-                onShowToast={showGlobalToast}
-                onNavigateBack={() => setActiveTab('finance')}
-                onNavigateDetail={(createdQuote) => {
-                  setSelectedQuotation(createdQuote)
-                  setActiveTab('quotation-detail')
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab="finance" setActiveTab={setActiveTab}>
+          <CreateQuotation
+            initialPackage={selectedPackageForQuote}
+            quotationToEdit={selectedQuotation}
+            onShowToast={showGlobalToast}
+            onNavigateBack={() => setActiveTab('finance')}
+            onNavigateDetail={(createdQuote) => {
+              setSelectedQuotation(createdQuote)
+              setActiveTab('quotation-detail')
+            }}
+          />
+        </AppLayout>
       )}
 
       {/* ── QUOTATION DETAIL ── */}
       {activeTab === 'quotation-detail' && (
-        <div className="portal-layout">
-          <Sidebar activeTab="finance" setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab="finance" setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <QuotationDetail
-                quotation={selectedQuotation}
-                onShowToast={showGlobalToast}
-                onNavigateBack={() => setActiveTab('finance')}
-                onNavigateEdit={(quote) => {
-                  setSelectedQuotation(quote)
-                  setActiveTab('create-quotation')
-                }}
-                onNavigateInvoiceDetail={(createdInv) => {
-                  setSelectedInvoice(createdInv)
-                  setActiveTab('invoice-detail')
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab="finance" setActiveTab={setActiveTab}>
+          <QuotationDetail
+            quotation={selectedQuotation}
+            onShowToast={showGlobalToast}
+            onNavigateBack={() => setActiveTab('finance')}
+            onNavigateEdit={(quote) => {
+              setSelectedQuotation(quote)
+              setActiveTab('create-quotation')
+            }}
+            onNavigateInvoiceDetail={(createdInv) => {
+              setSelectedInvoice(createdInv)
+              setActiveTab('invoice-detail')
+            }}
+          />
+        </AppLayout>
       )}
 
       {/* ── INVOICE DETAIL ── */}
       {activeTab === 'invoice-detail' && (
-        <div className="portal-layout">
-          <Sidebar activeTab="finance" setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab="finance" setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <InvoiceDetail
-                invoice={selectedInvoice}
-                onShowToast={showGlobalToast}
-                onNavigateBack={() => setActiveTab('finance')}
-              />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab="finance" setActiveTab={setActiveTab}>
+          <InvoiceDetail
+            invoice={selectedInvoice}
+            onShowToast={showGlobalToast}
+            onNavigateBack={() => setActiveTab('finance')}
+          />
+        </AppLayout>
       )}
 
       {/* ── MODULE 5: CONTRACTS & DOCS ── */}
       {activeTab === 'contracts' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <ContractsDocs onShowToast={showGlobalToast} />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <ContractsDocs onShowToast={showGlobalToast} />
+        </AppLayout>
       )}
 
       {/* ── MODULE 6: CREW & PHOTOGRAPHERS ── */}
       {activeTab === 'crew' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <CrewManagement onShowToast={showGlobalToast} />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <CrewManagement onShowToast={showGlobalToast} />
+        </AppLayout>
       )}
 
       {/* ── EMPLOYEE MANAGEMENT & ATTENDANCE MODULE ── */}
       {activeTab === 'employees' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <EmployeeManagement activeTab={activeTab} setActiveTab={setActiveTab} />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <EmployeeManagement activeTab={activeTab} setActiveTab={setActiveTab} />
+        </AppLayout>
       )}
 
       {/* ── MODULE 7: EQUIPMENT TRACKER ── */}
       {activeTab === 'equipment' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <EquipmentTracker onShowToast={showGlobalToast} />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <EquipmentTracker onShowToast={showGlobalToast} />
+        </AppLayout>
       )}
 
       {/* ── MODULE 8: STUDIO HELPDESK ── */}
       {activeTab === 'helpdesk' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <StudioHelpdesk onShowToast={showGlobalToast} />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <StudioHelpdesk onShowToast={showGlobalToast} />
+        </AppLayout>
       )}
 
       {/* ── MODULE 9: CLIENT REQUESTS ── */}
       {activeTab === 'requests' && (
-        <div className="portal-layout">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
-          <div className="portal-main">
-            <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="portal-body">
-              <ClientRequests onShowToast={showGlobalToast} />
-            </div>
-          </div>
-        </div>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          <ClientRequests onShowToast={showGlobalToast} />
+        </AppLayout>
       )}
     </>
   )

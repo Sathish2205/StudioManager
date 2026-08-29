@@ -275,17 +275,6 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
                 Manage upcoming wedding shoots, assigned camera crew, and financial status
               </p>
             </div>
-
-            <Button
-              label="Book New Shoot"
-              icon="pi pi-plus"
-              className="events-header__btn-add"
-              rounded
-              onClick={() => {
-                if (onNavigateEditEvent) onNavigateEditEvent(null)
-                setActiveTab('add-event')
-              }}
-            />
           </div>
 
           {/* ─── Desktop Search & Filter Toolbar ─── */}
@@ -326,6 +315,18 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
                 placeholder="Filter by Event Type"
                 showClear
                 className="events-filter__dropdown"
+              />
+            </div>
+
+            <div className="events-toolbar__right">
+              <Button
+                label="Book New Shoot"
+                icon="pi pi-plus"
+                className="p-button-primary"
+                onClick={() => {
+                  if (onNavigateEditEvent) onNavigateEditEvent(null)
+                  setActiveTab('add-event')
+                }}
               />
             </div>
           </div>

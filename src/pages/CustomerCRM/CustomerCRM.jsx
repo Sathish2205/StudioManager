@@ -368,21 +368,6 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
             Track client profiles, lifetime bookings, birthdays, loyalty reward points, and automated reminders
           </p>
         </div>
-
-        <div className="crm-header__actions">
-          <Button
-            label={viewMode === 'list' ? 'CRM Analytics' : 'Customer List'}
-            icon={viewMode === 'list' ? 'pi pi-chart-bar' : 'pi pi-list'}
-            className="p-button-outlined p-button-secondary"
-            onClick={() => setViewMode(viewMode === 'list' ? 'analytics' : 'list')}
-          />
-          <Button
-            label="Add Customer"
-            icon="pi pi-user-plus"
-            className="p-button-primary"
-            onClick={() => setIsAddCustomerOpen(true)}
-          />
-        </div>
       </div>
 
       {/* ── Notifications & Birthday Alert Bar ── */}
@@ -396,7 +381,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
         ))}
       </div>
 
-      {/* ── Executive Dashboard Summary Cards (8 Key Metrics) ── */}
+      {/* ── Executive Dashboard Summary Cards (7 Key Metrics) ── */}
       <div className="crm-metrics-grid">
         <div className="crm-metric-card">
           <div>
@@ -467,16 +452,6 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
             <i className="pi pi-share-alt" />
           </div>
         </div>
-
-        <div className="crm-metric-card">
-          <div>
-            <div className="crm-metric__label">Lifetime Revenue</div>
-            <div className="crm-metric__val">₹{(customers.reduce((s, c) => s + (c.totalSpent || 0), 0) / 100000).toFixed(1)}L</div>
-          </div>
-          <div className="crm-metric__icon crm-metric__icon--amber">
-            <i className="pi pi-wallet" />
-          </div>
-        </div>
       </div>
 
       {/* ── VIEW MODE 1: CUSTOMER LIST TABLE ── */}
@@ -538,6 +513,21 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
                   }}
                 />
               )}
+            </div>
+
+            <div className="events-toolbar__right" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Button
+                label={viewMode === 'list' ? 'CRM Analytics' : 'Customer List'}
+                icon={viewMode === 'list' ? 'pi pi-chart-bar' : 'pi pi-list'}
+                className="p-button-outlined p-button-secondary"
+                onClick={() => setViewMode(viewMode === 'list' ? 'analytics' : 'list')}
+              />
+              <Button
+                label="Add Customer"
+                icon="pi pi-user-plus"
+                className="p-button-primary"
+                onClick={() => setIsAddCustomerOpen(true)}
+              />
             </div>
           </div>
 

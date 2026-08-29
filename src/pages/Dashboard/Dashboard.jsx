@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Sidebar from '../../components/Sidebar'
 import DashboardHeader from '../../components/DashboardHeader'
 import SmartReminders from '../../components/SmartReminders/SmartReminders'
+import KpiCard from '../../components/enterprise/KpiCard'
 import { getDashboardData } from '../../services/dashboardService'
 import './Dashboard.css'
 
@@ -68,268 +69,199 @@ export default function Dashboard({ activeTab = 'home', setActiveTab }) {
 
   return (
     <div className="portal-layout">
-      {/* Left Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} isMobileOpen={sidebarOpen} onCloseMobile={() => setSidebarOpen(false)} />
 
-      {/* Main Container */}
       <div className="portal-main">
         <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         <div className="portal-body">
-          {/* Toast Notification Banner */}
+          {/* Toast */}
           {toastMsg && (
-            <div
-              style={{
-                position: 'fixed',
-                bottom: '24px',
-                right: '24px',
-                zIndex: 99999,
-                background: '#2563eb',
-                color: '#ffffff',
-                padding: '12px 20px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                fontWeight: 600,
-                fontSize: '0.875rem'
-              }}
-            >
+            <div className="enterprise-toast">
               <i className="pi pi-check-circle" />
               <span>{toastMsg}</span>
             </div>
           )}
 
-          {/* Greeting Hero Section */}
-          <div className="portal-hero">
-            <div className="portal-hero__text">
-              <div className="portal-hero__date-badge">
-                <i className="pi pi-calendar" /> Saturday, 08 Aug 2026 | Peak Wedding Season
-              </div>
-              <h1 className="portal-hero__greeting">Good Evening, Sathish</h1>
-              <p className="portal-hero__quote">
-                Capturing timeless memories, tracking editing workflows & accelerating studio revenue.
-              </p>
-              <div className="portal-hero__actions">
-                <button
-                  className="portal-hero__btn portal-hero__btn--primary"
-                  onClick={() => setActiveTab('add-event')}
-                >
-                  <i className="pi pi-plus" /> Book New Event
-                </button>
-                <button
-                  className="portal-hero__btn portal-hero__btn--outline"
-                  onClick={() => setActiveTab('workflow')}
-                >
-                  <i className="pi pi-sitemap" /> Workflow List
-                </button>
-              </div>
+          {/* Greeting Line */}
+          <div className="dash-greeting">
+            <div>
+              <h1 className="dash-greeting__title">Good Evening, Sathish</h1>
+              <p className="dash-greeting__sub">Here's your studio overview for today</p>
             </div>
-
-            {/* Photography & Event Vector Graphic */}
-            <div className="portal-hero__graphic">
-              <svg viewBox="0 0 450 140" fill="none" xmlns="http://www.w3.org/2000/svg" className="portal-hero__svg">
-                <circle cx="390" cy="45" r="28" fill="#38bdf8" opacity="0.8" />
-                <circle cx="390" cy="45" r="18" fill="#0284c7" />
-                <circle cx="390" cy="45" r="8" fill="#ffffff" />
-                <path d="M0 115 C 150 115, 250 75, 450 35" stroke="#38bdf8" strokeWidth="6" strokeDasharray="8 4" fill="none" />
-                <path d="M0 130 C 150 130, 260 90, 450 50" stroke="#ffffff" strokeWidth="10" opacity="0.2" fill="none" />
-                <rect x="330" y="60" width="55" height="32" rx="6" fill="#ffffff" opacity="0.9" transform="rotate(-6 330 60)" />
-                <circle cx="355" cy="74" r="10" fill="#0284c7" />
-                <rect x="345" y="54" width="16" height="8" rx="2" fill="#64748b" transform="rotate(-6 345 54)" />
-              </svg>
+            <div className="dash-greeting__actions">
+              <button
+                className="dash-greeting__btn dash-greeting__btn--primary"
+                onClick={() => setActiveTab('add-event')}
+              >
+                <i className="pi pi-plus" /> New Event
+              </button>
+              <button
+                className="dash-greeting__btn dash-greeting__btn--secondary"
+                onClick={() => setActiveTab('workflow')}
+              >
+                <i className="pi pi-sitemap" /> Workflow
+              </button>
             </div>
           </div>
 
-          {/* ── Executive Studio Metrics Grid ── */}
-          <div className="home-metrics-grid">
-            <div className="home-metric-card">
-              <div>
-                <div className="home-metric__title">Total Shoots Booked</div>
-                <div className="home-metric__val">38</div>
-                <div className="home-metric__sub">
-                  <span className="home-metric-tag home-metric-tag--green">
-                    <i className="pi pi-arrow-up-right" /> +12% this month
-                  </span>
-                </div>
-              </div>
-              <div className="home-metric__icon-wrap home-metric__icon-wrap--blue">
-                <i className="pi pi-calendar-plus" />
-              </div>
-            </div>
-
-            <div className="home-metric-card">
-              <div>
-                <div className="home-metric__title">Gross Revenue</div>
-                <div className="home-metric__val">₹24.5L</div>
-                <div className="home-metric__sub">
-                  <span className="home-metric-tag home-metric-tag--green">
-                    <i className="pi pi-check-circle" /> ₹14.2L Collected
-                  </span>
-                </div>
-              </div>
-              <div className="home-metric__icon-wrap home-metric__icon-wrap--green">
-                <i className="pi pi-wallet" />
-              </div>
-            </div>
-
-            <div className="home-metric-card">
-              <div>
-                <div className="home-metric__title">Edits In Progress</div>
-                <div className="home-metric__val">14</div>
-                <div className="home-metric__sub">
-                  <span className="home-metric-tag home-metric-tag--amber">
-                    <i className="pi pi-spinner" /> 4 Pending Review
-                  </span>
-                </div>
-              </div>
-              <div className="home-metric__icon-wrap home-metric__icon-wrap--amber">
-                <i className="pi pi-images" />
-              </div>
-            </div>
-
-            <div className="home-metric-card">
-              <div>
-                <div className="home-metric__title">Albums Delivered</div>
-                <div className="home-metric__val">22</div>
-                <div className="home-metric__sub">
-                  <span className="home-metric-tag home-metric-tag--purple">
-                    <i className="pi pi-box" /> 6 Ready Today
-                  </span>
-                </div>
-              </div>
-              <div className="home-metric__icon-wrap home-metric__icon-wrap--purple">
-                <i className="pi pi-check-circle" />
-              </div>
-            </div>
+          {/* KPI Metrics Row */}
+          <div className="ent-kpi-grid">
+            <KpiCard
+              title="Total Shoots Booked"
+              value="38"
+              trend="+12%"
+              trendDirection="up"
+              icon="pi pi-calendar-plus"
+            />
+            <KpiCard
+              title="Gross Revenue"
+              value="₹24.5L"
+              subtitle="₹14.2L Collected"
+              icon="pi pi-wallet"
+            />
+            <KpiCard
+              title="Edits In Progress"
+              value="14"
+              subtitle="4 Pending Review"
+              icon="pi pi-images"
+            />
+            <KpiCard
+              title="Albums Delivered"
+              value="22"
+              subtitle="6 Ready Today"
+              icon="pi pi-check-circle"
+            />
           </div>
 
-          {/* ── Smart Reminders & Studio Alerts Widget ── */}
+          {/* Smart Reminders */}
           <SmartReminders onShowToast={showToast} />
 
-          {/* ── Main Dashboard Layout Columns ── */}
-          <div className="home-main-grid">
-            {/* Left Column: Upcoming Shoots & Events Directory */}
-            <div className="home-card">
-              <div className="home-card__header">
-                <h3 className="home-card__title">
-                  <i className="pi pi-camera" /> Upcoming Confirmed Shoots
+          {/* Main Dashboard Grid */}
+          <div className="dash-main-grid">
+            {/* Upcoming Shoots */}
+            <div className="ent-card">
+              <div className="ent-card__header">
+                <h3 className="ent-card__title">
+                  <i className="pi pi-calendar" /> Upcoming Shoots
                 </h3>
-                <span className="home-card__link" onClick={() => setActiveTab('events')}>
-                  View All Events ({upcomingShoots.length}) &rarr;
+                <span className="ent-card__link" onClick={() => setActiveTab('events')}>
+                  View All →
                 </span>
               </div>
-
-              <div className="home-shoots-list">
-                {upcomingShoots.map((shoot) => (
-                  <div key={shoot.id} className="home-shoot-item">
-                    <div className="home-shoot__info">
-                      <span className="home-shoot__couple">{shoot.couple}</span>
-                      <div className="home-shoot__meta">
-                        <span><i className="pi pi-tag" /> {shoot.eventType}</span>
-                        <span><i className="pi pi-calendar" /> {shoot.date}</span>
-                        <span><i className="pi pi-map-marker" /> {shoot.venue}</span>
-                      </div>
-                    </div>
-                    <span
-                      style={{
-                        fontSize: '0.725rem',
-                        fontWeight: 700,
-                        color: shoot.statusColor,
-                        background: '#f1f5f9',
-                        padding: '0.35rem 0.75rem',
-                        borderRadius: '50px',
-                        border: '1px solid #e2e8f0'
-                      }}
-                    >
-                      {shoot.status}
-                    </span>
-                  </div>
-                ))}
+              <div className="ent-card__body" style={{ padding: 0 }}>
+                <table className="dash-shoots-table">
+                  <thead>
+                    <tr>
+                      <th>Event</th>
+                      <th>Type</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {upcomingShoots.map((shoot) => (
+                      <tr key={shoot.id} onClick={() => setActiveTab('events')} className="dash-shoots-table__row">
+                        <td>
+                          <span className="dash-shoots-table__name">{shoot.couple}</span>
+                          <span className="dash-shoots-table__venue">{shoot.venue}</span>
+                        </td>
+                        <td className="dash-shoots-table__type">{shoot.eventType}</td>
+                        <td className="dash-shoots-table__date">{shoot.date}</td>
+                        <td>
+                          <span
+                            className="ent-status-badge"
+                            style={{
+                              color: shoot.statusColor,
+                              backgroundColor: shoot.statusColor + '12',
+                              borderColor: shoot.statusColor + '30',
+                            }}
+                          >
+                            {shoot.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            {/* Right Column: Financial Summary & Quick Access */}
-            <div className="flex flex-column gap-3">
-              {/* Event Financials Card */}
-              <div className="home-card">
-                <div className="home-card__header">
-                  <h3 className="home-card__title">
+            {/* Right Column */}
+            <div className="dash-right-column">
+              {/* Financial Overview */}
+              <div className="ent-card">
+                <div className="ent-card__header">
+                  <h3 className="ent-card__title">
                     <i className="pi pi-chart-line" /> Financial Overview
                   </h3>
                 </div>
-
-                <div className="payslip-body">
-                  <div className="payslip-chart-row">
-                    <div className="payslip-days">
-                      <span className="payslip-month">Aug 2026</span>
-                      <span className="payslip-count">38</span>
-                      <span className="payslip-label">Active Event Bookings</span>
-                    </div>
+                <div className="ent-card__body">
+                  <div className="dash-fin-summary">
+                    <span className="dash-fin-summary__label">Aug 2026</span>
+                    <span className="dash-fin-summary__count">38</span>
+                    <span className="dash-fin-summary__sub">Active Bookings</span>
                   </div>
 
-                  <div className="payslip-details">
-                    <div className="payslip-item">
-                      <span className="payslip-item__bar payslip-item__bar--black" />
-                      <span className="payslip-item__name">Gross Contract Value</span>
-                      <span className="payslip-item__value">
-                        {showFinancials ? '₹24,50,000' : '*****'}
+                  <div className="dash-fin-items">
+                    <div className="dash-fin-item">
+                      <span className="dash-fin-item__dot dash-fin-item__dot--dark" />
+                      <span className="dash-fin-item__name">Gross Contract Value</span>
+                      <span className="dash-fin-item__value">
+                        {showFinancials ? '₹24,50,000' : '•••••'}
                       </span>
                     </div>
-
-                    <div className="payslip-item">
-                      <span className="payslip-item__bar payslip-item__bar--green" />
-                      <span className="payslip-item__name">Advances Received</span>
-                      <span className="payslip-item__value">
-                        {showFinancials ? '₹14,20,000' : '*****'}
+                    <div className="dash-fin-item">
+                      <span className="dash-fin-item__dot dash-fin-item__dot--green" />
+                      <span className="dash-fin-item__name">Advances Received</span>
+                      <span className="dash-fin-item__value">
+                        {showFinancials ? '₹14,20,000' : '•••••'}
                       </span>
                     </div>
-
-                    <div className="payslip-item">
-                      <span className="payslip-item__bar payslip-item__bar--blue" />
-                      <span className="payslip-item__name">Net Pending Balance</span>
-                      <span className="payslip-item__value">
-                        {showFinancials ? '₹10,30,000' : '*****'}
+                    <div className="dash-fin-item">
+                      <span className="dash-fin-item__dot dash-fin-item__dot--blue" />
+                      <span className="dash-fin-item__name">Net Pending Balance</span>
+                      <span className="dash-fin-item__value">
+                        {showFinancials ? '₹10,30,000' : '•••••'}
                       </span>
                     </div>
                   </div>
 
-                  <div className="payslip-footer">
-                    <button
-                      className="payslip-btn-show"
-                      onClick={() => setShowFinancials(!showFinancials)}
-                    >
-                      {showFinancials ? 'Hide Figures' : 'Show Figures'}
-                    </button>
-                  </div>
+                  <button
+                    className="dash-fin-toggle"
+                    onClick={() => setShowFinancials(!showFinancials)}
+                  >
+                    <i className={`pi pi-eye${showFinancials ? '-slash' : ''}`} />
+                    {showFinancials ? 'Hide Figures' : 'Show Figures'}
+                  </button>
                 </div>
               </div>
 
-              {/* Quick Actions Card */}
-              <div className="home-card">
-                <div className="home-card__header">
-                  <h3 className="home-card__title">
-                    <i className="pi pi-bolt" /> Studio Quick Tools
+              {/* Quick Actions */}
+              <div className="ent-card">
+                <div className="ent-card__header">
+                  <h3 className="ent-card__title">
+                    <i className="pi pi-bolt" /> Quick Actions
                   </h3>
                 </div>
-
-                <div className="home-quick-grid">
-                  <div className="home-quick-btn" onClick={() => setActiveTab('add-event')}>
-                    <i className="pi pi-plus-circle" />
-                    <span>Book New Shoot</span>
-                  </div>
-                  <div className="home-quick-btn" onClick={() => setActiveTab('workflow')}>
-                    <i className="pi pi-sitemap" />
-                    <span>Workflow Stages</span>
-                  </div>
-                  <div className="home-quick-btn" onClick={() => setActiveTab('events')}>
-                    <i className="pi pi-calendar" />
-                    <span>Events Directory</span>
-                  </div>
-                  <div className="home-quick-btn" onClick={() => setActiveTab('invoice')}>
-                    <i className="pi pi-print" />
-                    <span>Tax Invoice</span>
+                <div className="ent-card__body">
+                  <div className="dash-quick-grid">
+                    <div className="dash-quick-btn" onClick={() => setActiveTab('add-event')}>
+                      <i className="pi pi-plus-circle" />
+                      <span>Book Event</span>
+                    </div>
+                    <div className="dash-quick-btn" onClick={() => setActiveTab('workflow')}>
+                      <i className="pi pi-sitemap" />
+                      <span>Workflow</span>
+                    </div>
+                    <div className="dash-quick-btn" onClick={() => setActiveTab('events')}>
+                      <i className="pi pi-calendar" />
+                      <span>Events</span>
+                    </div>
+                    <div className="dash-quick-btn" onClick={() => setActiveTab('finance')}>
+                      <i className="pi pi-wallet" />
+                      <span>Finance</span>
+                    </div>
                   </div>
                 </div>
               </div>

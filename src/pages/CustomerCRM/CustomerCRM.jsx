@@ -628,11 +628,9 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
 
           {/* PrimeReact DataTable with Sticky Bottom Paginator */}
           <div className="crm-table-card">
-            {loading ? (
-              <PageLoader />
-            ) : (
             <DataTable
               value={filteredCustomers}
+              loading={loading}
               sortField="id"
               sortOrder={-1}
               paginator
@@ -655,7 +653,6 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
               <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ minWidth: '110px' }} />
               <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '110px', textAlign: 'center' }} />
             </DataTable>
-            )}
           </div>
         </>
       )}

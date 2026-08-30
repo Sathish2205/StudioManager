@@ -11,10 +11,8 @@
 
 /* 2-Column Responsive Layout System */
 .enterprise-event-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: var(--space-5);
-  align-items: start;
+  display: block;
+  padding-right: 380px;
 }
 
 /* ── Main Form Column (Left 8 Cols) ── */
@@ -217,8 +215,20 @@
 
 /* ── RIGHT COLUMN: LIVE BOOKING SUMMARY SIDEBAR ── */
 .enterprise-form-sidebar {
-  position: sticky;
-  top: 64px;
+  position: fixed;
+  top: calc(var(--header-height) + 10px);
+  right: 16px;
+  width: 360px;
+  max-height: calc(100vh - var(--header-height) - 20px);
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0;
+  z-index: 50;
+}
+
+.enterprise-form-sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .ent-summary-card {
@@ -233,7 +243,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-4) var(--space-4);
+  padding: 10px 14px;
   background: #0f172a;
   color: #f8fafc;
 }
@@ -257,10 +267,10 @@
 }
 
 .ent-summary-body {
-  padding: var(--space-4);
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 4px;
 }
 
 .ent-summary-item {
@@ -268,7 +278,7 @@
   align-items: center;
   justify-content: space-between;
   font-size: var(--font-size-xs);
-  padding: 3px 0;
+  padding: 1px 0;
 }
 
 .ent-summary-lbl {
@@ -284,16 +294,16 @@
 .ent-summary-divider {
   height: 1px;
   background: var(--color-border);
-  margin: var(--space-2) 0;
+  margin: 3px 0;
 }
 
 .ent-summary-balance-box {
   background: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: var(--radius-md);
-  padding: var(--space-3);
+  padding: 6px 10px;
   text-align: center;
-  margin: var(--space-2) 0;
+  margin: 3px 0;
 }
 
 .ent-pill {
@@ -312,7 +322,7 @@
 .ent-pill--teal { background: #ccfbf1; color: #0f766e; }
 
 .ent-summary-footer {
-  padding: var(--space-4);
+  padding: 10px 14px;
   background: var(--color-surface-alt);
   border-top: 1px solid var(--color-border);
 }
@@ -322,11 +332,15 @@
    ══════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
   .enterprise-event-layout {
-    grid-template-columns: 1fr;
+    padding-right: 0;
   }
 
   .enterprise-form-sidebar {
     position: static;
+    width: 100%;
+    height: auto;
+    overflow-y: visible;
+    padding: 0;
   }
 }
 

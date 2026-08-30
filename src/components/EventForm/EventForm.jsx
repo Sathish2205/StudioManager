@@ -1028,7 +1028,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
               </div>
 
               {/* Coverage Badges */}
-              <div className="mt-3">
+              <div className="mt-1">
                 <span className="ent-summary-lbl display-block mb-1">Included Services</span>
                 <div className="flex flex-wrap gap-1">
                   {watchDroneRequired && <span className="ent-pill ent-pill--blue">Drone</span>}
@@ -1047,7 +1047,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                 type="submit"
                 label={eventToEdit ? 'Update Booking' : 'Confirm & Save Event'}
                 icon="pi pi-check"
-                className="p-button-primary w-full p-button-lg"
+                className="p-button-primary w-full"
                 loading={isSubmitting}
                 disabled={!isValid || isSubmitting}
               />
@@ -1056,7 +1056,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                 type="button"
                 label="Cancel"
                 icon="pi pi-times"
-                className="p-button-outlined p-button-secondary w-full p-button-sm mt-2"
+                className="p-button-outlined p-button-secondary w-full p-button-sm mt-1"
                 onClick={handleCancelClick}
                 disabled={isSubmitting}
               />

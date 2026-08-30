@@ -138,7 +138,7 @@ export default function ContractsDocs({ onShowToast }) {
 
       {/* ── TAB 1: CONTRACTS ── */}
       {activeTab === 'contracts' && (
-        <div className="events-table-card">
+        <>
           <div className="events-toolbar">
             <div className="events-toolbar__left">
               <span className="font-bold text-sm text-700">Legal Contracts & Agreements</span>
@@ -152,40 +152,43 @@ export default function ContractsDocs({ onShowToast }) {
               />
             </div>
           </div>
-          <DataTable
-            value={contracts}
-            sortField="contractNo"
-            sortOrder={-1}
-            paginator
-            paginatorLeft={
-              <span className="events-paginator__count">
-                Showing <strong>{contracts.length}</strong> Contracts
-              </span>
-            }
-            rows={5}
-            rowsPerPageOptions={[5, 10, 20]}
-            responsiveLayout="scroll"
-            stripedRows
-            className="events-datatable"
-          >
-            <Column field="contractNo" header="Contract #" sortable style={{ minWidth: '130px' }} />
-            <Column field="clientName" header="Client" sortable style={{ minWidth: '180px' }} />
-            <Column field="eventName" header="Event" style={{ minWidth: '200px' }} />
-            <Column field="contractType" header="Type" style={{ minWidth: '180px' }} />
-            <Column field="amount" header="Amount (₹)" body={(r) => `₹${r.amount.toLocaleString()}`} sortable style={{ minWidth: '130px' }} />
-            <Column field="status" header="Signature Status" body={(r) => <Tag value={r.status} severity={contractStatusSeverity(r.status)} />} style={{ minWidth: '150px' }} />
-            <Column
-              header="Actions"
-              body={(r) => (
-                <div className="flex gap-1">
-                  <Button icon="pi pi-download" rounded text tooltip="Download PDF" onClick={() => triggerToast(`Downloading ${r.contractNo}...`)} />
-                  <Button icon="pi pi-print" rounded text tooltip="Print Contract" onClick={() => window.print()} />
-                </div>
-              )}
-              style={{ minWidth: '110px' }}
-            />
-          </DataTable>
-        </div>
+
+          <div className="events-table-card">
+            <DataTable
+              value={contracts}
+              sortField="contractNo"
+              sortOrder={-1}
+              paginator
+              paginatorLeft={
+                <span className="events-paginator__count">
+                  Showing <strong>{contracts.length}</strong> Contracts
+                </span>
+              }
+              rows={5}
+              rowsPerPageOptions={[5, 10, 20]}
+              responsiveLayout="scroll"
+              stripedRows
+              className="events-datatable"
+            >
+              <Column field="contractNo" header="Contract #" sortable style={{ minWidth: '130px' }} />
+              <Column field="clientName" header="Client" sortable style={{ minWidth: '180px' }} />
+              <Column field="eventName" header="Event" style={{ minWidth: '200px' }} />
+              <Column field="contractType" header="Type" style={{ minWidth: '180px' }} />
+              <Column field="amount" header="Amount (₹)" body={(r) => `₹${r.amount.toLocaleString()}`} sortable style={{ minWidth: '130px' }} />
+              <Column field="status" header="Signature Status" body={(r) => <Tag value={r.status} severity={contractStatusSeverity(r.status)} />} style={{ minWidth: '150px' }} />
+              <Column
+                header="Actions"
+                body={(r) => (
+                  <div className="flex gap-1">
+                    <Button icon="pi pi-download" rounded text tooltip="Download PDF" onClick={() => triggerToast(`Downloading ${r.contractNo}...`)} />
+                    <Button icon="pi pi-print" rounded text tooltip="Print Contract" onClick={() => window.print()} />
+                  </div>
+                )}
+                style={{ minWidth: '110px' }}
+              />
+            </DataTable>
+          </div>
+        </>
       )}
 
       {/* ── TAB 2: DOCUMENT VAULT ── */}

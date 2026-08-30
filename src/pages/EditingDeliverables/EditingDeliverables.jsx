@@ -576,12 +576,10 @@ export default function EditingDeliverables({ onShowToast }) {
 
       {/* ── TAB 2: DELIVERABLES TABLE ── */}
       {activeTab === 'deliverables' && (
-        loading ? (
-          <PageLoader />
-        ) : (
         <div className="events-table-card">
           <DataTable
             value={filteredTasks}
+            loading={loading}
             sortField="id"
             sortOrder={-1}
             paginator
@@ -622,7 +620,6 @@ export default function EditingDeliverables({ onShowToast }) {
             />
           </DataTable>
         </div>
-        )
       )}
 
       {/* ── CREATE / EDIT TASK DIALOG ── */}

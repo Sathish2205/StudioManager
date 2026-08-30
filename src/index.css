@@ -157,11 +157,11 @@ img {
 }
 
 .portal-body {
-  padding: 10px 16px;
+  padding: 6px 12px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   min-height: 0;
   overflow-y: auto;
 }
@@ -195,7 +195,7 @@ img {
   font-weight: 600 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.04em !important;
-  padding: var(--space-3) var(--space-4) !important;
+  padding: 5px 8px !important;
   border-bottom: 1px solid var(--color-border) !important;
   border-top: none !important;
   border-left: none !important;
@@ -204,7 +204,7 @@ img {
 
 /* Table Body */
 .p-datatable .p-datatable-tbody > tr > td {
-  padding: var(--space-3) var(--space-4) !important;
+  padding: 4px 8px !important;
   font-size: var(--font-size-table) !important;
   color: var(--color-text) !important;
   border-bottom: 1px solid var(--color-border) !important;
@@ -787,6 +787,7 @@ textarea.p-inputtext {
   display: flex !important;
   flex-direction: column !important;
   flex: 1 1 0% !important;
+  gap: 6px !important;
   min-height: 0 !important;
   overflow: hidden !important;
 }
@@ -811,8 +812,8 @@ textarea.p-inputtext {
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
-  min-height: 320px !important;
-  max-height: calc(100vh - 200px) !important;
+  min-height: 280px !important;
+  max-height: none !important;
   margin-bottom: 0 !important;
 }
 
@@ -852,9 +853,9 @@ textarea.p-inputtext {
   border-right: none !important;
   border-bottom: none !important;
   border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
-  padding: 0 var(--space-4) !important;
-  height: 44px !important;
-  min-height: 44px !important;
+  padding: 0 12px !important;
+  height: 34px !important;
+  min-height: 34px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;

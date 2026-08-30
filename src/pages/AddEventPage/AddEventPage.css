@@ -15,14 +15,20 @@
   border-radius: var(--radius-lg);
   padding: var(--space-4) var(--space-5);
   box-shadow: var(--shadow-xs);
+  margin-right: 380px;
+}
+
+@media (max-width: 1024px) {
+  .add-event-topbar {
+    margin-right: 0;
+  }
 }
 
 .add-event-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-4);
-  flex-wrap: wrap;
 }
 
 .add-event-breadcrumb {

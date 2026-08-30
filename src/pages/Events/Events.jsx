@@ -416,11 +416,9 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
 
           {/* ─── PrimeReact DataTable with Sticky Bottom Paginator ─── */}
           <div className="events-table-card">
-            {loading ? (
-              <PageLoader />
-            ) : (
             <DataTable
               value={filteredEvents}
+              loading={loading}
               sortField="id"
               sortOrder={-1}
               paginator
@@ -443,7 +441,6 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
               <Column field="status" header="Status & Progress" body={statusBodyTemplate} sortable style={{ minWidth: '160px' }} />
               <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '110px' }} />
             </DataTable>
-            )}
           </div>
         </div>
       </div>

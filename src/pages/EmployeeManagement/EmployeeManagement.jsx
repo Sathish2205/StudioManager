@@ -390,17 +390,17 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
   const statusOptions = ['Active', 'Inactive', 'On Leave']
 
   return (
-    <div className="emp-page-container">
+    <div className="emp-container">
       <Toast ref={toastRef} />
       <ConfirmDialog />
 
       {/* Header Bar */}
-      <div className="emp-header-bar">
+      <div className="emp-header">
         <div>
-          <h1 className="emp-header-title">
-            <i className="pi pi-users text-primary" /> Employee Management & Attendance
+          <h1 className="emp-header__title">
+            Employee Management & Attendance
           </h1>
-          <p className="emp-header-sub">
+          <p className="emp-header__sub">
             Manage staff profiles, shifts, daily check-ins, working hours, leave applications, and payroll.
           </p>
         </div>
@@ -483,7 +483,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
 
       {/* ──────────────── TAB 1: EMPLOYEES LIST ──────────────── */}
       {currentSubTab === 'employees' && (
-        <div className="emp-table-card">
+        <>
           {/* Filters Bar */}
           <div className="events-toolbar">
             <div className="events-toolbar__left">
@@ -532,6 +532,8 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
               />
             </div>
           </div>
+
+          <div className="emp-table-card">
 
           <DataTable
             value={employees}
@@ -632,6 +634,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             />
           </DataTable>
         </div>
+      </>
       )}
 
       {/* ──────────────── TAB 2: CHECK-IN TERMINAL WIDGET ──────────────── */}
@@ -736,7 +739,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
 
       {/* ──────────────── TAB 4: LEAVE MANAGEMENT ──────────────── */}
       {currentSubTab === 'leave' && (
-        <div className="emp-table-card">
+        <>
           <div className="events-toolbar">
             <div className="events-toolbar__left">
               <span className="font-bold text-sm text-700">Leave Applications & Approvals</span>
@@ -753,6 +756,8 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
               />
             </div>
           </div>
+
+          <div className="emp-table-card">
 
           <DataTable
             value={leaves}
@@ -826,11 +831,12 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             />
           </DataTable>
         </div>
+      </>
       )}
 
       {/* ──────────────── TAB 5: PAYROLL ──────────────── */}
       {currentSubTab === 'payroll' && (
-        <div className="emp-table-card">
+        <>
           <div className="events-toolbar">
             <div className="events-toolbar__left">
               <span className="font-bold text-sm text-700">Monthly Payroll & Salary Slips</span>
@@ -847,6 +853,8 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
               />
             </div>
           </div>
+
+          <div className="emp-table-card">
 
           <DataTable
             value={payrolls}
@@ -883,11 +891,12 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             />
           </DataTable>
         </div>
+      </>
       )}
 
       {/* ──────────────── TAB 6: SHIFTS ──────────────── */}
       {currentSubTab === 'shifts' && (
-        <div className="emp-table-card">
+        <>
           <div className="events-toolbar">
             <div className="events-toolbar__left">
               <span className="font-bold text-sm text-700">Studio Shift Configurations</span>
@@ -901,6 +910,8 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
               />
             </div>
           </div>
+
+          <div className="emp-table-card">
 
           <DataTable
             value={shifts}
@@ -927,6 +938,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             />
           </DataTable>
         </div>
+      </>
       )}
 
       {/* ──────────────── DIALOG: ADD/EDIT EMPLOYEE ──────────────── */}

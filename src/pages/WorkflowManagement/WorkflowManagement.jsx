@@ -591,11 +591,9 @@ export default function WorkflowManagement() {
 
       {/* ─── PrimeReact DataTable with Sticky Bottom Paginator (Exact Events Page System) ─── */}
       <div className="events-table-card">
-        {loading ? (
-          <PageLoader />
-        ) : (
         <DataTable
           value={filteredWorkflows}
+          loading={loading}
           sortField="id"
           sortOrder={-1}
           paginator
@@ -617,7 +615,6 @@ export default function WorkflowManagement() {
           <Column field="overallStatus" header="Overall Status" body={statusBodyTemplate} sortable style={{ minWidth: '130px' }} />
           <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '120px', textAlign: 'center' }} />
         </DataTable>
-        )}
       </div>
 
       {/* ─── Wide Spacious Workflow Status Update Dialog (Width: 950px, Polished Footer) ─── */}

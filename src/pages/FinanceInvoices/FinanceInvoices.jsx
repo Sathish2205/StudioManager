@@ -369,11 +369,9 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
             <span className="text-sm font-bold text-700">Client Quotation Proposals ({quotations.length})</span>
             <Button label="New Quotation" icon="pi pi-plus" className="p-button-primary p-button-sm" onClick={onNavigateCreateQuotation} />
           </div>
-          {loading ? (
-            <PageLoader />
-          ) : (
-            <DataTable
-              value={quotations}
+          <DataTable
+            value={quotations}
+            loading={loading}
               sortField="quotationNumber"
               sortOrder={-1}
               paginator
@@ -430,13 +428,12 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
                 style={{ minWidth: '180px' }}
               />
             </DataTable>
-          )}
         </div>
       )}
 
       {/* ── TAB 3: INVOICES ── */}
       {activeTab === 'invoices' && (
-        <div className="events-table-card">
+        <>
           <div className="events-toolbar">
             <div className="events-toolbar__left">
               <span className="text-sm font-bold text-700">Tax Invoices ({invoices.length})</span>
@@ -456,67 +453,67 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
               />
             </div>
           </div>
-          {loading ? (
-            <PageLoader />
-          ) : (
+
+          <div className="events-table-card">
             <DataTable
               value={invoices}
-              sortField="invoiceNumber"
-              sortOrder={-1}
-              paginator
-              rows={5}
-              rowsPerPageOptions={[5, 10, 20]}
-              responsiveLayout="scroll"
-              stripedRows
-              className="events-datatable"
-              emptyMessage="No invoices found."
-              onRowClick={(e) => onNavigateInvoiceDetail && onNavigateInvoiceDetail(e.data)}
-              selectionMode="single"
-            >
-              <Column field="invoiceNumber" header="Invoice #" sortable style={{ minWidth: '130px' }} />
-              <Column field="clientName" header="Client Name" sortable style={{ minWidth: '170px' }} />
-              <Column field="eventName" header="Event Name" style={{ minWidth: '190px' }} />
-              <Column field="grandTotal" header="Total (₹)" body={(r) => `₹${(r.grandTotal || r.total || 0).toLocaleString()}`} sortable style={{ minWidth: '120px' }} />
-              <Column field="totalPaid" header="Paid (₹)" body={(r) => `₹${(r.totalPaid || 0).toLocaleString()}`} style={{ minWidth: '110px' }} />
-              <Column field="balance" header="Balance (₹)" body={(r) => <span className={r.balance > 0 ? 'text-red-600 font-bold' : 'text-green-600 font-bold'}>₹{(r.balance || 0).toLocaleString()}</span>} sortable style={{ minWidth: '120px' }} />
-              <Column field="dueDate" header="Due Date" style={{ minWidth: '110px' }} />
-              <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={invoiceStatusSeverity(r.status)} />} sortable style={{ minWidth: '130px' }} />
-              <Column
-                header="Actions"
-                body={(r) => (
-                  <div className="flex gap-2 align-items-center">
-                    {r.balance > 0 && (
+              loading={loading}
+                sortField="invoiceNumber"
+                sortOrder={-1}
+                paginator
+                rows={5}
+                rowsPerPageOptions={[5, 10, 20]}
+                responsiveLayout="scroll"
+                stripedRows
+                className="events-datatable"
+                emptyMessage="No invoices found."
+                onRowClick={(e) => onNavigateInvoiceDetail && onNavigateInvoiceDetail(e.data)}
+                selectionMode="single"
+              >
+                <Column field="invoiceNumber" header="Invoice #" sortable style={{ minWidth: '130px' }} />
+                <Column field="clientName" header="Client Name" sortable style={{ minWidth: '170px' }} />
+                <Column field="eventName" header="Event Name" style={{ minWidth: '190px' }} />
+                <Column field="grandTotal" header="Total (₹)" body={(r) => `₹${(r.grandTotal || r.total || 0).toLocaleString()}`} sortable style={{ minWidth: '120px' }} />
+                <Column field="totalPaid" header="Paid (₹)" body={(r) => `₹${(r.totalPaid || 0).toLocaleString()}`} style={{ minWidth: '110px' }} />
+                <Column field="balance" header="Balance (₹)" body={(r) => <span className={r.balance > 0 ? 'text-red-600 font-bold' : 'text-green-600 font-bold'}>₹{(r.balance || 0).toLocaleString()}</span>} sortable style={{ minWidth: '120px' }} />
+                <Column field="dueDate" header="Due Date" style={{ minWidth: '110px' }} />
+                <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={invoiceStatusSeverity(r.status)} />} sortable style={{ minWidth: '130px' }} />
+                <Column
+                  header="Actions"
+                  body={(r) => (
+                    <div className="flex gap-2 align-items-center">
+                      {r.balance > 0 && (
+                        <Button
+                          label="Record Pay"
+                          icon="pi pi-plus-circle"
+                          className="p-button-xs p-button-success"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectedInvoiceForPay(r)
+                            setPayClient(r.clientName || '')
+                            setPayEvent(r.eventName || '')
+                            setPayAmount(r.balance)
+                            setIsPaymentModalOpen(true)
+                          }}
+                        />
+                      )}
                       <Button
-                        label="Record Pay"
-                        icon="pi pi-plus-circle"
-                        className="p-button-xs p-button-success"
+                        icon="pi pi-eye"
+                        rounded
+                        text
+                        tooltip="View Invoice"
                         onClick={(e) => {
                           e.stopPropagation()
-                          setSelectedInvoiceForPay(r)
-                          setPayClient(r.clientName || '')
-                          setPayEvent(r.eventName || '')
-                          setPayAmount(r.balance)
-                          setIsPaymentModalOpen(true)
+                          if (onNavigateInvoiceDetail) onNavigateInvoiceDetail(r)
                         }}
                       />
-                    )}
-                    <Button
-                      icon="pi pi-eye"
-                      rounded
-                      text
-                      tooltip="View Invoice"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        if (onNavigateInvoiceDetail) onNavigateInvoiceDetail(r)
-                      }}
-                    />
-                  </div>
-                )}
-                style={{ minWidth: '170px' }}
-              />
-            </DataTable>
-          )}
-        </div>
+                    </div>
+                  )}
+                  style={{ minWidth: '170px' }}
+                />
+              </DataTable>
+          </div>
+        </>
       )}
 
       {/* ── TAB 4: PAYMENTS ── */}
@@ -537,21 +534,19 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
               }}
             />
           </div>
-          {loading ? (
-            <PageLoader />
-          ) : (
-            <DataTable
-              value={payments}
-              sortField="id"
-              sortOrder={-1}
-              paginator
-              rows={5}
-              rowsPerPageOptions={[5, 10, 20]}
-              responsiveLayout="scroll"
-              stripedRows
-              className="events-datatable"
-              emptyMessage="No payment receipts found."
-            >
+          <DataTable
+            value={payments}
+            loading={loading}
+            sortField="id"
+            sortOrder={-1}
+            paginator
+            rows={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            responsiveLayout="scroll"
+            stripedRows
+            className="events-datatable"
+            emptyMessage="No payment receipts found."
+          >
               <Column field="id" header="Payment Ref" sortable style={{ minWidth: '120px' }} />
               <Column field="clientName" header="Client Name" sortable style={{ minWidth: '180px' }} />
               <Column field="eventName" header="Event" sortable style={{ minWidth: '190px' }} />
@@ -561,7 +556,6 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
               <Column field="paymentMethod" header="Method" style={{ minWidth: '120px' }} />
               <Column field="transactionRef" header="Ref Code" style={{ minWidth: '140px' }} />
             </DataTable>
-          )}
         </div>
       )}
 

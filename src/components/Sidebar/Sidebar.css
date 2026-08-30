@@ -109,7 +109,7 @@
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: var(--space-3) var(--space-2) var(--space-1);
+  padding: 6px var(--space-2) 2px;
   white-space: nowrap;
   overflow: hidden;
 }
@@ -117,7 +117,7 @@
 .portal-sidebar__group-divider {
   height: 1px;
   background: var(--color-border);
-  margin: var(--space-2) var(--space-2);
+  margin: 3px var(--space-2);
 }
 
 /* ── Nav Items ── */

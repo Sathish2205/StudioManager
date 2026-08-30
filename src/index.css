@@ -46,13 +46,13 @@
   --font-size-table: 0.8125rem;/* 13px */
 
   /* ── Spacing ── */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
+  --space-1: 3px;
+  --space-2: 6px;
+  --space-3: 10px;
+  --space-4: 14px;
+  --space-5: 18px;
+  --space-6: 22px;
+  --space-8: 28px;
 
   /* ── Borders ── */
   --radius-sm: 4px;
@@ -157,11 +157,11 @@ img {
 }
 
 .portal-body {
-  padding: 16px 24px;
+  padding: 10px 16px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
   min-height: 0;
   overflow-y: auto;
 }
@@ -689,7 +689,7 @@ textarea.p-inputtext {
   border-bottom: 1px solid var(--color-border) !important;
   background: transparent !important;
   padding: 0 !important;
-  margin: 0 0 var(--space-5) 0 !important;
+  margin: 0 0 var(--space-2) 0 !important;
   box-shadow: none !important;
   border-radius: 0 !important;
   list-style-type: none !important;
@@ -812,7 +812,7 @@ textarea.p-inputtext {
   flex-direction: column !important;
   overflow: hidden !important;
   min-height: 320px !important;
-  max-height: calc(100vh - 270px) !important;
+  max-height: calc(100vh - 200px) !important;
   margin-bottom: 0 !important;
 }
 

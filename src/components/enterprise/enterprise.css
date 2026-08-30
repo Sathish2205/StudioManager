@@ -16,7 +16,7 @@
 }
 
 .ent-page-header__title {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--color-text);
   line-height: 1.2;
@@ -89,7 +89,7 @@
 }
 
 .ent-kpi-card__value {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--color-text);
   line-height: 1.2;

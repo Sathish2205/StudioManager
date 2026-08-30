@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useAuth } from '../../context/AuthContext'
 import './Sidebar.css'
 
 const NAV_GROUPS = [
@@ -54,11 +55,11 @@ const NAV_GROUPS = [
 ]
 
 export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onCloseMobile }) {
+  const { user, tenant, logout } = useAuth()
   const [isExpanded, setIsExpanded] = useState(true)
 
   const handleNavClick = (tabId) => {
     setActiveTab(tabId)
-    // Auto-close sidebar on mobile after navigation
     if (onCloseMobile) onCloseMobile()
   }
 
@@ -67,6 +68,11 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
     isExpanded ? 'portal-sidebar--expanded' : '',
     isMobileOpen ? 'portal-sidebar--mobile-open' : ''
   ].filter(Boolean).join(' ')
+
+  const userName = user?.name || user?.username || 'User'
+  const userRole = user?.role || 'admin'
+  const tenantName = tenant?.companyName || 'PhotoStudio PRO'
+  const avatarLetter = userName.charAt(0).toUpperCase()
 
   return (
     <>
@@ -92,8 +98,8 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
           </button>
 
           {isExpanded && (
-            <span className="portal-sidebar__brand-name">
-              PhotoStudio<span className="portal-sidebar__brand-accent">PRO</span>
+            <span className="portal-sidebar__brand-name" title={tenantName}>
+              {tenantName}
             </span>
           )}
         </div>
@@ -128,16 +134,21 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
         <div className="portal-sidebar__footer">
           <div className="portal-sidebar__profile">
             <div className="portal-sidebar__avatar-wrap">
-              <span className="portal-sidebar__avatar-initials">S</span>
+              <span className="portal-sidebar__avatar-initials">{avatarLetter}</span>
             </div>
             {isExpanded && (
               <div className="portal-sidebar__user-details">
-                <span className="portal-sidebar__user-name">Sathish</span>
-                <span className="portal-sidebar__user-role">Studio Manager</span>
+                <span className="portal-sidebar__user-name">{userName}</span>
+                <span className="portal-sidebar__user-role">{userRole}</span>
               </div>
             )}
             {isExpanded && (
-              <button className="portal-sidebar__logout-btn" aria-label="Logout" title="Logout">
+              <button
+                className="portal-sidebar__logout-btn"
+                aria-label="Logout"
+                title="Logout"
+                onClick={logout}
+              >
                 <i className="pi pi-sign-out" />
               </button>
             )}

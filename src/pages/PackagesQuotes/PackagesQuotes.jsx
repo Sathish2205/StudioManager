@@ -7,7 +7,10 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 
-import { getPackages } from '../../services/packageService'
+import { InputTextarea } from 'primereact/inputtextarea'
+import { Dropdown } from 'primereact/dropdown'
+
+import { getPackages, createPackage } from '../../services/packageService'
 import './PackagesQuotes.css'
 
 export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavigateCreateQuotation }) {
@@ -17,6 +20,15 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
   const [quotes, setQuotes] = useState(() => {
     try { return JSON.parse(localStorage.getItem('studio_quotes') || '[]') } catch { return [] }
   })
+
+  // Add Package Dialog State
+  const [isPkgModalOpen, setIsPkgModalOpen] = useState(false)
+  const [newPkgName, setNewPkgName] = useState('')
+  const [newPkgPrice, setNewPkgPrice] = useState(100000)
+  const [newPkgCategory, setNewPkgCategory] = useState('Wedding')
+  const [newPkgDesc, setNewPkgDesc] = useState('')
+  const [newPkgDeliverables, setNewPkgDeliverables] = useState('')
+  const [savingPkg, setSavingPkg] = useState(false)
 
   useEffect(() => {
     async function loadPackages() {
@@ -81,6 +93,64 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
     if (onNavigateAddEvent) onNavigateAddEvent()
   }
 
+  const handleSavePackage = async () => {
+    const pkgNameClean = (newPkgName || '').trim()
+    const pkgPriceNum = Number(newPkgPrice) || 0
+
+    if (!pkgNameClean) {
+      triggerToast('Package Name is required', 'error')
+      return
+    }
+    if (pkgPriceNum <= 0) {
+      triggerToast('Please enter a valid Package Price (greater than 0)', 'error')
+      return
+    }
+
+    setSavingPkg(true)
+    try {
+      const deliverablesArr = newPkgDeliverables
+        ? newPkgDeliverables.split(',').map((s) => s.trim()).filter(Boolean)
+        : []
+
+      const created = await createPackage({
+        name: pkgNameClean,
+        price: pkgPriceNum,
+        category: newPkgCategory,
+        description: (newPkgDesc || '').trim(),
+        deliverables: deliverablesArr,
+      })
+
+      if (created && (created.id || created._id)) {
+        const pkgObj = {
+          id: created.id || created._id,
+          name: created.name || pkgNameClean,
+          price: created.price || pkgPriceNum,
+          type: created.category || newPkgCategory,
+          deliverables: created.deliverables || deliverablesArr,
+          description: created.description || '',
+          photographers: 2,
+          videographers: 1,
+          status: 'Active',
+        }
+
+        setPackages([pkgObj, ...packages])
+        setIsPkgModalOpen(false)
+        setNewPkgName('')
+        setNewPkgPrice(100000)
+        setNewPkgCategory('Wedding')
+        setNewPkgDesc('')
+        setNewPkgDeliverables('')
+        triggerToast(`Package "${pkgObj.name}" created successfully!`, 'success')
+      } else {
+        triggerToast('Failed to save package: Invalid response', 'error')
+      }
+    } catch (err) {
+      triggerToast(err.message || 'Failed to save package', 'error')
+    } finally {
+      setSavingPkg(false)
+    }
+  }
+
   const quoteStatusSeverity = (st) => {
     switch (st) {
       case 'Approved': return 'success'
@@ -102,7 +172,13 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
           </p>
         </div>
 
-        <div className="packages-header__actions">
+        <div className="packages-header__actions flex gap-2">
+          <Button
+            label="Add New Package"
+            icon="pi pi-plus"
+            className="p-button-outlined p-button-primary"
+            onClick={() => setIsPkgModalOpen(true)}
+          />
           <Button
             label="Create Quotation"
             icon="pi pi-file-edit"
@@ -295,6 +371,95 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
           <div>
             <label className="block font-bold mb-1">Base Package Price (₹)</label>
             <InputNumber value={qAmount} onValueChange={(e) => setQAmount(e.value)} className="w-full" />
+          </div>
+        </div>
+      </Dialog>
+      {/* ── CREATE NEW PACKAGE DIALOG ── */}
+      <Dialog
+        header="Create New Studio Package"
+        visible={isPkgModalOpen}
+        style={{ width: '500px', maxWidth: '95vw' }}
+        onHide={() => setIsPkgModalOpen(false)}
+        dismissableMask
+      >
+        <div className="flex flex-column gap-3 py-2 text-xs">
+          <div>
+            <label className="block font-bold mb-1">Package Name <span className="text-red-500">*</span></label>
+            <InputText
+              value={newPkgName}
+              onChange={(e) => setNewPkgName(e.target.value)}
+              placeholder="e.g. Destination Luxury Wedding Package"
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold mb-1">Package Price (₹) <span className="text-red-500">*</span></label>
+            <InputNumber
+              value={newPkgPrice}
+              onValueChange={(e) => setNewPkgPrice(e.value)}
+              mode="currency"
+              currency="INR"
+              locale="en-IN"
+              className="w-full"
+              inputClassName="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold mb-1">Category</label>
+            <Dropdown
+              value={newPkgCategory}
+              options={[
+                { label: 'Wedding', value: 'Wedding' },
+                { label: 'Engagement', value: 'Engagement' },
+                { label: 'Reception', value: 'Reception' },
+                { label: 'Birthday', value: 'Birthday' },
+                { label: 'Corporate', value: 'Corporate' },
+                { label: 'Portrait', value: 'Portrait' },
+                { label: 'Other', value: 'Other' }
+              ]}
+              onChange={(e) => setNewPkgCategory(e.value)}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold mb-1">Package Description</label>
+            <InputTextarea
+              value={newPkgDesc}
+              onChange={(e) => setNewPkgDesc(e.target.value)}
+              placeholder="Package details and summary..."
+              rows={2}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold mb-1">Deliverables (comma separated)</label>
+            <InputText
+              value={newPkgDeliverables}
+              onChange={(e) => setNewPkgDeliverables(e.target.value)}
+              placeholder="e.g. 2 Photographers, 1 Drone, Canvera Album, Reels"
+              className="w-full"
+            />
+          </div>
+
+          <div className="flex justify-content-end gap-2 mt-3 pt-2 surface-border border-top-1">
+            <Button
+              type="button"
+              label="Cancel"
+              className="p-button-text p-button-secondary"
+              onClick={() => setIsPkgModalOpen(false)}
+            />
+            <Button
+              type="button"
+              label="Create Package"
+              icon="pi pi-check"
+              className="p-button-primary"
+              loading={savingPkg}
+              onClick={handleSavePackage}
+            />
           </div>
         </div>
       </Dialog>

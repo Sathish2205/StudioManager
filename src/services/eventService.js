@@ -24,7 +24,10 @@ export const createEvent = async (eventData) => {
   if (result && result.success) {
     return result
   }
-  return null
+  if (result && result.message) {
+    throw new Error(result.message)
+  }
+  throw new Error('Failed to create event document')
 }
 
 // PUT /api/events/:id
@@ -33,7 +36,10 @@ export const updateEvent = async (id, eventData) => {
   if (result && result.success) {
     return result.data
   }
-  return null
+  if (result && result.message) {
+    throw new Error(result.message)
+  }
+  throw new Error('Failed to update event document')
 }
 
 // DELETE /api/events/:id

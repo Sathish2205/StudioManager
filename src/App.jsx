@@ -22,6 +22,8 @@ import QuotationDetail from './pages/QuotationDetail/QuotationDetail'
 import InvoiceDetail from './pages/InvoiceDetail/InvoiceDetail'
 import EmployeeManagement from './pages/EmployeeManagement/EmployeeManagement'
 
+import { AuthProvider, useAuth } from './context/AuthContext'
+import Login from './pages/Login/Login'
 import AppLayout from './components/AppLayout'
 import './App.css'
 
@@ -79,7 +81,7 @@ function getTabFromUrl() {
   return ROUTE_MAP[cleanPath] || 'home'
 }
 
-function App() {
+function AppContent() {
   const [activeTab, setActiveTabState] = useState(() => getTabFromUrl())
   const [selectedInvoiceEvent, setSelectedInvoiceEvent] = useState(null)
   const [selectedEditEvent, setSelectedEditEvent] = useState(null)
@@ -356,4 +358,28 @@ function App() {
   )
 }
 
-export default App
+function MainApp() {
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', background: '#0f172a', color: '#fff' }}>
+        <i className="pi pi-spin pi-spinner text-3xl mr-3" /> Loading PhotoStudio Pro...
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <Login />
+  }
+
+  return <AppContent />
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
+  )
+}

@@ -9,10 +9,11 @@ import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
+import { Dialog } from 'primereact/dialog'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { eventSchema } from '../../validation/eventSchema'
 import { getClients } from '../../services/clientService'
-import { getPackages } from '../../services/packageService'
+import { getPackages, createPackage } from '../../services/packageService'
 import { getStaff } from '../../services/staffService'
 import { createEvent, updateEvent } from '../../services/eventService'
 import { createClient } from '../../services/clientService'
@@ -28,6 +29,78 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
   const [staff, setStaff] = useState({ photographers: [], videographers: [] })
   const [loadingData, setLoadingData] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Add Package Modal State
+  const [isAddPackageOpen, setIsAddPackageOpen] = useState(false)
+  const [newPkgName, setNewPkgName] = useState('')
+  const [newPkgPrice, setNewPkgPrice] = useState(100000)
+  const [newPkgCategory, setNewPkgCategory] = useState('Wedding')
+  const [newPkgDesc, setNewPkgDesc] = useState('')
+  const [newPkgDeliverables, setNewPkgDeliverables] = useState('')
+  const [savingPackage, setSavingPackage] = useState(false)
+
+  const handleSaveNewPackage = async () => {
+    const pkgNameClean = (newPkgName || '').trim()
+    const pkgPriceNum = Number(newPkgPrice) || 0
+
+    if (!pkgNameClean) {
+      toastRef.current?.show({ severity: 'error', summary: 'Error', detail: 'Package Name is required' })
+      return
+    }
+    if (pkgPriceNum <= 0) {
+      toastRef.current?.show({ severity: 'error', summary: 'Error', detail: 'Please enter a valid Package Price (greater than 0)' })
+      return
+    }
+
+    setSavingPackage(true)
+    try {
+      const deliverablesArr = newPkgDeliverables
+        ? newPkgDeliverables.split(',').map((s) => s.trim()).filter(Boolean)
+        : []
+
+      const createdPkg = await createPackage({
+        name: pkgNameClean,
+        price: pkgPriceNum,
+        category: newPkgCategory,
+        description: (newPkgDesc || '').trim(),
+        deliverables: deliverablesArr,
+      })
+
+      if (createdPkg && (createdPkg.id || createdPkg._id)) {
+        const pkgObj = {
+          id: createdPkg.id || createdPkg._id,
+          name: createdPkg.name || pkgNameClean,
+          price: createdPkg.price || pkgPriceNum,
+          category: createdPkg.category || newPkgCategory,
+          description: createdPkg.description || '',
+          deliverables: createdPkg.deliverables || deliverablesArr,
+        }
+
+        setPackages((prev) => [pkgObj, ...prev])
+        setValue('packageId', pkgObj.id, { shouldValidate: true })
+        setValue('packagePrice', pkgObj.price, { shouldValidate: true })
+
+        toastRef.current?.show({
+          severity: 'success',
+          summary: 'Package Created',
+          detail: `Package "${pkgObj.name}" created and selected!`,
+        })
+
+        setIsAddPackageOpen(false)
+        setNewPkgName('')
+        setNewPkgPrice(100000)
+        setNewPkgCategory('Wedding')
+        setNewPkgDesc('')
+        setNewPkgDeliverables('')
+      } else {
+        toastRef.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to save package' })
+      }
+    } catch (err) {
+      toastRef.current?.show({ severity: 'error', summary: 'Error', detail: err.message || 'Failed to create package' })
+    } finally {
+      setSavingPackage(false)
+    }
+  }
 
   const eventTypeOptions = [
     { label: 'Wedding', value: 'Wedding' },
@@ -312,13 +385,17 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
         }
       }
 
-      const eventId = res?.data?._id || res?._id || res?.id || targetId || `EVT-${Date.now()}`
+      if (!res || res.success === false) {
+        throw new Error(res?.message || 'Failed to save event to database.')
+      }
+
+      const createdEventData = res?.data || res
+      const eventId = createdEventData?._id || createdEventData?.id || targetId || `EVT-${Date.now()}`
       const fullEventData = {
         _id: eventId,
         id: eventId,
         ...backendPayload,
-        ...(res?.data || {}),
-        ...(typeof res === 'object' ? res : {})
+        ...(createdEventData || {})
       }
 
       toastRef.current?.show({
@@ -337,7 +414,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
       toastRef.current?.show({
         severity: 'error',
         summary: 'Submission Error',
-        detail: 'Failed to save event to backend.',
+        detail: error.message || 'Failed to save event to backend.',
         life: 3000
       })
     } finally {
@@ -818,9 +895,18 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
               <div className="form-grid">
                 {/* Package Dropdown */}
                 <div className="col-12 md:col-6 field-col">
-                  <label className="field-label">
-                    Photography Package <span className="req-star">*</span>
-                  </label>
+                  <div className="flex align-items-center justify-content-between mb-1">
+                    <label className="field-label mb-0">
+                      Photography Package <span className="req-star">*</span>
+                    </label>
+                    <Button
+                      type="button"
+                      label="+ Add Package"
+                      icon="pi pi-plus"
+                      className="p-button-text p-button-sm p-button-primary py-0 px-2 text-xs font-bold"
+                      onClick={() => setIsAddPackageOpen(true)}
+                    />
+                  </div>
                   <Controller
                     name="packageId"
                     control={control}
@@ -1065,6 +1151,96 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
         </div>
 
       </form>
+
+      {/* ── CREATE NEW PACKAGE DIALOG ── */}
+      <Dialog
+        header="Create New Photography Package"
+        visible={isAddPackageOpen}
+        style={{ width: '520px', maxWidth: '95vw' }}
+        onHide={() => setIsAddPackageOpen(false)}
+        dismissableMask
+      >
+        <div className="flex flex-column gap-3 py-2">
+          <div>
+            <label className="font-semibold text-sm mb-1 block">Package Name <span className="text-red-500">*</span></label>
+            <InputText
+              value={newPkgName}
+              onChange={(e) => setNewPkgName(e.target.value)}
+              placeholder="e.g. Destination Luxury Package"
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold text-sm mb-1 block">Package Base Price (₹) <span className="text-red-500">*</span></label>
+            <InputNumber
+              value={newPkgPrice}
+              onValueChange={(e) => setNewPkgPrice(e.value)}
+              mode="currency"
+              currency="INR"
+              locale="en-IN"
+              className="w-full"
+              inputClassName="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold text-sm mb-1 block">Category / Event Type</label>
+            <Dropdown
+              value={newPkgCategory}
+              options={[
+                { label: 'Wedding', value: 'Wedding' },
+                { label: 'Engagement', value: 'Engagement' },
+                { label: 'Reception', value: 'Reception' },
+                { label: 'Birthday', value: 'Birthday' },
+                { label: 'Corporate', value: 'Corporate' },
+                { label: 'Portrait', value: 'Portrait' },
+                { label: 'Other', value: 'Other' }
+              ]}
+              onChange={(e) => setNewPkgCategory(e.value)}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold text-sm mb-1 block">Package Description</label>
+            <InputTextarea
+              value={newPkgDesc}
+              onChange={(e) => setNewPkgDesc(e.target.value)}
+              placeholder="Full day coverage, 2 lead photographers, candid & drone..."
+              rows={2}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold text-sm mb-1 block">Key Deliverables (comma separated)</label>
+            <InputText
+              value={newPkgDeliverables}
+              onChange={(e) => setNewPkgDeliverables(e.target.value)}
+              placeholder="e.g. 2 Photographers, 1 Drone, Canvera Album, Reels"
+              className="w-full"
+            />
+          </div>
+
+          <div className="flex justify-content-end gap-2 mt-3 pt-2 surface-border border-top-1">
+            <Button
+              type="button"
+              label="Cancel"
+              className="p-button-text p-button-secondary"
+              onClick={() => setIsAddPackageOpen(false)}
+            />
+            <Button
+              type="button"
+              label="Create & Select Package"
+              icon="pi pi-check"
+              className="p-button-primary"
+              loading={savingPackage}
+              onClick={handleSaveNewPackage}
+            />
+          </div>
+        </div>
+      </Dialog>
     </div>
   )
 }

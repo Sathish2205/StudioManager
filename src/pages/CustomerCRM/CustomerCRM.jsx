@@ -54,10 +54,11 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
           notes: c.notes || ''
         }
       })
-      setCustomers(mapped)
-    } else {
-      setCustomers([])
-    }
+        mapped.sort((a, b) => String(b._id || b.id).localeCompare(String(a._id || a.id)))
+        setCustomers(mapped)
+      } else {
+        setCustomers([])
+      }
     } catch (err) {
       console.warn('[CRM] Failed to load clients:', err)
       setFetchError(true)
@@ -632,6 +633,8 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
             ) : (
             <DataTable
               value={filteredCustomers}
+              sortField="id"
+              sortOrder={-1}
               paginator
               paginatorLeft={paginatorLeftTemplate}
               rows={5}

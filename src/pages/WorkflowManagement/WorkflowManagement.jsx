@@ -64,8 +64,8 @@ export default function WorkflowManagement() {
           activityLog: wf.activityLog || [],
           tasks: wf.tasks || [],
           deliverables: wf.deliverables || [],
-          estimatedDeliveryDate: wf.estimatedDeliveryDate || 'TBD',
         }))
+        mapped.sort((a, b) => String(b.id || b._id).localeCompare(String(a.id || a._id)))
         setWorkflows(mapped)
       } else {
         setWorkflows([])
@@ -596,6 +596,8 @@ export default function WorkflowManagement() {
         ) : (
         <DataTable
           value={filteredWorkflows}
+          sortField="id"
+          sortOrder={-1}
           paginator
           paginatorLeft={paginatorLeftTemplate}
           rows={5}

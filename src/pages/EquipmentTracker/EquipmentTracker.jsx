@@ -38,6 +38,7 @@ export default function EquipmentTracker({ onShowToast }) {
         assignedToEvent: 'None',
         assignedDate: 'N/A'
       }))
+      mapped.sort((a, b) => String(b._id || b.id).localeCompare(String(a._id || a.id)))
       setEquipmentList(mapped)
     }
     setLoading(false)
@@ -373,6 +374,8 @@ export default function EquipmentTracker({ onShowToast }) {
           <div className="events-table-card">
             <DataTable
               value={filteredEquipment}
+              sortField="id"
+              sortOrder={-1}
               paginator
               paginatorLeft={
                 <span className="events-paginator__count">
@@ -406,6 +409,8 @@ export default function EquipmentTracker({ onShowToast }) {
         <div className="events-table-card">
           <DataTable
             value={equipmentList.filter((e) => e.status === 'Assigned')}
+            sortField="id"
+            sortOrder={-1}
             paginator
             paginatorLeft={
               <span className="events-paginator__count">
@@ -435,6 +440,8 @@ export default function EquipmentTracker({ onShowToast }) {
         <div className="events-table-card">
           <DataTable
             value={equipmentList}
+            sortField="id"
+            sortOrder={-1}
             paginator
             paginatorLeft={
               <span className="events-paginator__count">

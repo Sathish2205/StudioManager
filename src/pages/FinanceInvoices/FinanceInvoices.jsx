@@ -59,33 +59,33 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
             transactionRef: p.transactionId || p.transactionRef || `TXN-${Date.now()}`
           }
         })
-        setPayments(mappedPayments)
+        setPayments([...mappedPayments].sort((a, b) => String(b.id || b._id).localeCompare(String(a.id || a._id))))
       } else {
         setPayments([
-          { id: 'PAY-1001', clientName: 'Sophia & James Sterling', eventName: 'Wedding & Reception', amount: 30000, paymentDate: '2026-08-10', paymentType: 'Advance Payment', paymentMethod: 'UPI', transactionRef: 'UPI123456' },
-          { id: 'PAY-1002', clientName: 'Sophia & James Sterling', eventName: 'Wedding & Reception', amount: 20000, paymentDate: '2026-08-20', paymentType: 'Second Payment', method: 'Bank Transfer', transactionRef: 'TXN448102' }
+          { id: 'PAY-1002', clientName: 'Sophia & James Sterling', eventName: 'Wedding & Reception', amount: 20000, paymentDate: '2026-08-20', paymentType: 'Second Payment', method: 'Bank Transfer', transactionRef: 'TXN448102' },
+          { id: 'PAY-1001', clientName: 'Sophia & James Sterling', eventName: 'Wedding & Reception', amount: 30000, paymentDate: '2026-08-10', paymentType: 'Advance Payment', paymentMethod: 'UPI', transactionRef: 'UPI123456' }
         ])
       }
 
       // Quotations
       if (qData && qData.length > 0) {
-        setQuotations(qData)
+        setQuotations([...qData].sort((a, b) => String(b.quotationNumber || b._id).localeCompare(String(a.quotationNumber || a._id))))
       } else {
         setQuotations([
-          { _id: 'q1', quotationNumber: 'QT-2026-001', clientName: 'Sophia & James Sterling', eventName: 'Wedding & Reception', grandTotal: 130000, date: '2026-08-01', validUntil: '2026-09-01', status: 'Accepted' },
+          { _id: 'q3', quotationNumber: 'QT-2026-003', clientName: 'Olivia & Liam Vance', eventName: 'Destination Wedding', grandTotal: 210000, date: '2026-08-12', validUntil: '2026-09-12', status: 'Draft' },
           { _id: 'q2', quotationNumber: 'QT-2026-002', clientName: 'Priya & Rohan Sharma', eventName: 'Sangeet & Mehendi', grandTotal: 95000, date: '2026-08-05', validUntil: '2026-09-05', status: 'Sent' },
-          { _id: 'q3', quotationNumber: 'QT-2026-003', clientName: 'Olivia & Liam Vance', eventName: 'Destination Wedding', grandTotal: 210000, date: '2026-08-12', validUntil: '2026-09-12', status: 'Draft' }
+          { _id: 'q1', quotationNumber: 'QT-2026-001', clientName: 'Sophia & James Sterling', eventName: 'Wedding & Reception', grandTotal: 130000, date: '2026-08-01', validUntil: '2026-09-01', status: 'Accepted' }
         ])
       }
 
       // Invoices
       if (iData && iData.length > 0) {
-        setInvoices(iData)
+        setInvoices([...iData].sort((a, b) => String(b.invoiceNumber || b._id).localeCompare(String(a.invoiceNumber || a._id))))
       } else {
         setInvoices([
-          { _id: 'i1', invoiceNumber: 'INV-2026-001', clientName: 'Sophia & James Sterling', eventName: 'Wedding & Reception', grandTotal: 130000, totalPaid: 50000, balance: 80000, dueDate: '2026-08-30', status: 'Partially Paid' },
+          { _id: 'i3', invoiceNumber: 'INV-2026-003', clientName: 'Kavya & Rahul Patel', eventName: 'Engagement & Haldi', grandTotal: 75000, totalPaid: 0, balance: 75000, dueDate: '2026-08-15', status: 'Overdue' },
           { _id: 'i2', invoiceNumber: 'INV-2026-002', clientName: 'Ananya & Vikram Sharma', eventName: 'Royal Wedding & Reception', grandTotal: 185000, totalPaid: 185000, balance: 0, dueDate: '2026-08-20', status: 'Paid' },
-          { _id: 'i3', invoiceNumber: 'INV-2026-003', clientName: 'Kavya & Rahul Patel', eventName: 'Engagement & Haldi', grandTotal: 75000, totalPaid: 0, balance: 75000, dueDate: '2026-08-15', status: 'Overdue' }
+          { _id: 'i1', invoiceNumber: 'INV-2026-001', clientName: 'Sophia & James Sterling', eventName: 'Wedding & Reception', grandTotal: 130000, totalPaid: 50000, balance: 80000, dueDate: '2026-08-30', status: 'Partially Paid' }
         ])
       }
 
@@ -374,6 +374,8 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
           ) : (
             <DataTable
               value={quotations}
+              sortField="quotationNumber"
+              sortOrder={-1}
               paginator
               rows={5}
               rowsPerPageOptions={[5, 10, 20]}
@@ -459,6 +461,8 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
           ) : (
             <DataTable
               value={invoices}
+              sortField="invoiceNumber"
+              sortOrder={-1}
               paginator
               rows={5}
               rowsPerPageOptions={[5, 10, 20]}
@@ -538,6 +542,8 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
           ) : (
             <DataTable
               value={payments}
+              sortField="id"
+              sortOrder={-1}
               paginator
               rows={5}
               rowsPerPageOptions={[5, 10, 20]}
@@ -567,6 +573,8 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
           </div>
           <DataTable
             value={invoices.filter((i) => i.balance > 0)}
+            sortField="invoiceNumber"
+            sortOrder={-1}
             paginator
             rows={5}
             rowsPerPageOptions={[5, 10, 20]}

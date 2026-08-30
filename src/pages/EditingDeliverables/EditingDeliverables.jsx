@@ -64,33 +64,22 @@ export default function EditingDeliverables({ onShowToast }) {
           notes: t.notes || t.description || ''
         }
       })
+      mapped.sort((a, b) => String(b.id || b._id).localeCompare(String(a.id || a._id)))
       setTasks(mapped)
     } else {
-      // Default initial tasks if database is empty
+      // Default initial tasks if database is empty (sorted by last created first)
       const initialDefaultTasks = [
         {
-          id: 'TSK-101',
-          eventName: 'Ananya & Vikram Wedding',
-          clientName: 'Ananya Sharma',
+          id: 'TSK-104',
+          eventName: 'Pooja Hegde Portrait Shoot',
+          clientName: 'Pooja Hegde',
           assignedEditor: 'Deepa (Lead Editor)',
-          deliverableType: 'Edited Photos',
-          progress: 85,
-          deadline: '2026-08-22',
-          priority: 'High',
-          status: 'Editing & Album Design',
-          notes: 'Color grading requested for sunset couple portraits.'
-        },
-        {
-          id: 'TSK-102',
-          eventName: 'Harish Engagement Shoot',
-          clientName: 'Harish',
-          assignedEditor: 'Rahul Video Editor',
-          deliverableType: 'Teaser',
-          progress: 100,
-          deadline: '2026-08-20',
-          priority: 'Urgent',
-          status: 'Delivered',
-          notes: 'Teaser video delivered to client on WhatsApp.'
+          deliverableType: 'Highlight Video',
+          progress: 70,
+          deadline: '2026-08-25',
+          priority: 'Medium',
+          status: 'Final Approval',
+          notes: 'Awaiting client approval on draft video edit.'
         },
         {
           id: 'TSK-103',
@@ -105,16 +94,28 @@ export default function EditingDeliverables({ onShowToast }) {
           notes: 'Album culling in progress.'
         },
         {
-          id: 'TSK-104',
-          eventName: 'Pooja Hegde Portrait Shoot',
-          clientName: 'Pooja Hegde',
+          id: 'TSK-102',
+          eventName: 'Harish Engagement Shoot',
+          clientName: 'Harish',
+          assignedEditor: 'Rahul Video Editor',
+          deliverableType: 'Teaser',
+          progress: 100,
+          deadline: '2026-08-20',
+          priority: 'Urgent',
+          status: 'Delivered',
+          notes: 'Teaser video delivered to client on WhatsApp.'
+        },
+        {
+          id: 'TSK-101',
+          eventName: 'Ananya & Vikram Wedding',
+          clientName: 'Ananya Sharma',
           assignedEditor: 'Deepa (Lead Editor)',
-          deliverableType: 'Highlight Video',
-          progress: 70,
-          deadline: '2026-08-25',
-          priority: 'Medium',
-          status: 'Final Approval',
-          notes: 'Awaiting client approval on draft video edit.'
+          deliverableType: 'Edited Photos',
+          progress: 85,
+          deadline: '2026-08-22',
+          priority: 'High',
+          status: 'Editing & Album Design',
+          notes: 'Color grading requested for sunset couple portraits.'
         }
       ]
       setTasks(initialDefaultTasks)
@@ -581,6 +582,8 @@ export default function EditingDeliverables({ onShowToast }) {
         <div className="events-table-card">
           <DataTable
             value={filteredTasks}
+            sortField="id"
+            sortOrder={-1}
             paginator
             paginatorLeft={
               <span className="events-paginator__count">

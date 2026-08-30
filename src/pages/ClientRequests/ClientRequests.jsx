@@ -13,7 +13,10 @@ import './ClientRequests.css'
 
 export default function ClientRequests({ onShowToast }) {
   const [requests, setRequests] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('studio_client_requests') || '[]') } catch { return [] }
+    try {
+      const parsed = JSON.parse(localStorage.getItem('studio_client_requests') || '[]')
+      return parsed.sort((a, b) => String(b.id || b._id).localeCompare(String(a.id || a._id)))
+    } catch { return [] }
   })
   const [selectedReq, setSelectedReq] = useState(null)
 
@@ -170,6 +173,8 @@ export default function ClientRequests({ onShowToast }) {
       <div className="events-table-card">
         <DataTable
           value={filteredRequests}
+          sortField="id"
+          sortOrder={-1}
           paginator
           paginatorLeft={
             <span className="events-paginator__count">

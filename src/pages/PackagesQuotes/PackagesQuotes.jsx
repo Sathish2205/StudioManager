@@ -33,6 +33,7 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
           price: p.price || p.amount || 0,
           status: 'Active'
         }))
+        mapped.sort((a, b) => String(b.id).localeCompare(String(a.id)))
         setPackages(mapped)
       }
     }
@@ -194,6 +195,8 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
         <div className="events-table-card">
           <DataTable
             value={addons}
+            sortField="id"
+            sortOrder={-1}
             paginator
             paginatorLeft={
               <span className="events-paginator__count">
@@ -220,6 +223,8 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
         <div className="events-table-card">
           <DataTable
             value={quotes}
+            sortField="quoteNo"
+            sortOrder={-1}
             paginator
             paginatorLeft={
               <span className="events-paginator__count">

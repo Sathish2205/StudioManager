@@ -40,6 +40,7 @@ export default function CrewManagement({ onShowToast }) {
         upcomingEventsCount: 0,
         assignments: st.assignments || []
       }))
+      mapped.sort((a, b) => String(b._id || b.id).localeCompare(String(a._id || a.id)))
       setCrewList(mapped)
     }
     setLoading(false)
@@ -236,6 +237,8 @@ export default function CrewManagement({ onShowToast }) {
         <div className="events-table-card">
           <DataTable
             value={crewList.flatMap((c) => c.assignments.map((a) => ({ ...a, crewName: c.name, role: c.role })))}
+            sortField="date"
+            sortOrder={-1}
             paginator
             paginatorLeft={
               <span className="events-paginator__count">

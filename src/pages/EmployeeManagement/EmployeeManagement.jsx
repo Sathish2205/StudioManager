@@ -171,35 +171,40 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
     if (selectedStatus) query.status = selectedStatus
 
     const res = await getEmployees(query)
-    setEmployees(res.data || [])
+    const empArr = res.data || []
+    setEmployees([...empArr].sort((a, b) => String(b._id || b.employeeId || b.id).localeCompare(String(a._id || a.employeeId || a.id))))
     setLoadingEmps(false)
   }
 
   const loadAttendanceData = async () => {
     setLoadingAtt(true)
     const res = await getTodayAttendance()
-    setTodayAttData(res || { summary: {}, attendances: [] })
+    const attList = (res?.attendances || []).sort((a, b) => new Date(b.checkIn || b.createdAt || 0) - new Date(a.checkIn || a.createdAt || 0))
+    setTodayAttData(res ? { ...res, attendances: attList } : { summary: {}, attendances: [] })
     setLoadingAtt(false)
   }
 
   const loadLeavesData = async () => {
     setLoadingLeaves(true)
     const data = await getLeaves()
-    setLeaves(data || [])
+    const sortedLeaves = (data || []).sort((a, b) => String(b._id || b.id || b.createdAt).localeCompare(String(a._id || a.id || a.createdAt)))
+    setLeaves(sortedLeaves)
     setLoadingLeaves(false)
   }
 
   const loadPayrollData = async () => {
     setLoadingPayroll(true)
     const data = await getPayrolls()
-    setPayrolls(data || [])
+    const sortedPayrolls = (data || []).sort((a, b) => String(b._id || b.id || b.createdAt).localeCompare(String(a._id || a.id || a.createdAt)))
+    setPayrolls(sortedPayrolls)
     setLoadingPayroll(false)
   }
 
   const loadShiftsData = async () => {
     setLoadingShifts(true)
     const data = await getShifts()
-    setShifts(data || [])
+    const sortedShifts = (data || []).sort((a, b) => String(b._id || b.id || b.createdAt).localeCompare(String(a._id || a.id || a.createdAt)))
+    setShifts(sortedShifts)
     setLoadingShifts(false)
   }
 
@@ -530,6 +535,8 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
 
           <DataTable
             value={employees}
+            sortField="employeeId"
+            sortOrder={-1}
             loading={loadingEmps}
             paginator
             rows={10}

@@ -189,6 +189,8 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
         <TabPanel header="Attendance Logs" leftIcon="pi pi-calendar mr-2">
           <DataTable
             value={profileData.attendances || []}
+            sortField="date"
+            sortOrder={-1}
             paginator
             rows={10}
             className="p-datatable-sm events-datatable"
@@ -250,6 +252,8 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
         <TabPanel header="Assigned Events" leftIcon="pi pi-camera mr-2">
           <DataTable
             value={profileData.assignedEvents || []}
+            sortField="eventDate"
+            sortOrder={-1}
             paginator
             rows={5}
             className="p-datatable-sm events-datatable"
@@ -274,6 +278,8 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
         <TabPanel header="Assigned Tasks" leftIcon="pi pi-list mr-2">
           <DataTable
             value={profileData.tasks || []}
+            sortField="dueDate"
+            sortOrder={-1}
             paginator
             rows={5}
             className="p-datatable-sm events-datatable"

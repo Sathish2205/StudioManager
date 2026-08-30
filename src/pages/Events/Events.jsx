@@ -77,10 +77,11 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
           rawEvent: evt
         }
       })
-      setInitialEvents(mapped)
-    } else {
-      setInitialEvents([])
-    }
+        mapped.sort((a, b) => String(b._id || b.id).localeCompare(String(a._id || a.id)))
+        setInitialEvents(mapped)
+      } else {
+        setInitialEvents([])
+      }
     } catch (err) {
       console.warn('[Events] Failed to load events:', err)
       setFetchError(true)
@@ -420,6 +421,8 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
             ) : (
             <DataTable
               value={filteredEvents}
+              sortField="id"
+              sortOrder={-1}
               paginator
               paginatorLeft={paginatorLeftTemplate}
               rows={5}

@@ -12,10 +12,16 @@ import './ContractsDocs.css'
 export default function ContractsDocs({ onShowToast }) {
   const [activeTab, setActiveTab] = useState('contracts') // 'contracts', 'docs'
   const [contracts, setContracts] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('studio_contracts') || '[]') } catch { return [] }
+    try {
+      const parsed = JSON.parse(localStorage.getItem('studio_contracts') || '[]')
+      return parsed.sort((a, b) => String(b.contractNo || b._id).localeCompare(String(a.contractNo || a._id)))
+    } catch { return [] }
   })
   const [documents, setDocuments] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('studio_documents') || '[]') } catch { return [] }
+    try {
+      const parsed = JSON.parse(localStorage.getItem('studio_documents') || '[]')
+      return parsed.sort((a, b) => String(b.id || b._id).localeCompare(String(a.id || a._id)))
+    } catch { return [] }
   })
 
   // Filters
@@ -148,6 +154,8 @@ export default function ContractsDocs({ onShowToast }) {
           </div>
           <DataTable
             value={contracts}
+            sortField="contractNo"
+            sortOrder={-1}
             paginator
             paginatorLeft={
               <span className="events-paginator__count">
@@ -219,6 +227,8 @@ export default function ContractsDocs({ onShowToast }) {
           <div className="events-table-card">
             <DataTable
               value={filteredDocs}
+              sortField="id"
+              sortOrder={-1}
               paginator
               paginatorLeft={
                 <span className="events-paginator__count">

@@ -12,7 +12,10 @@ import './StudioHelpdesk.css'
 
 export default function StudioHelpdesk({ onShowToast }) {
   const [tickets, setTickets] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('studio_helpdesk_tickets') || '[]') } catch { return [] }
+    try {
+      const parsed = JSON.parse(localStorage.getItem('studio_helpdesk_tickets') || '[]')
+      return parsed.sort((a, b) => String(b.id || b._id).localeCompare(String(a.id || a._id)))
+    } catch { return [] }
   })
   const [selectedTicket, setSelectedTicket] = useState(null)
 
@@ -348,6 +351,8 @@ export default function StudioHelpdesk({ onShowToast }) {
       <div className="events-table-card">
         <DataTable
           value={filteredTickets}
+          sortField="id"
+          sortOrder={-1}
           paginator
           paginatorLeft={
             <span className="events-paginator__count">

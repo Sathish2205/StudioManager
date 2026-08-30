@@ -187,8 +187,17 @@ img {
   color: var(--color-primary) !important;
 }
 
-/* Table Header */
+/* Table Header (Sticky / Frozen Column Headers) */
+.p-datatable .p-datatable-thead {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+}
+
 .p-datatable .p-datatable-thead > tr > th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
   background: var(--color-surface-alt) !important;
   color: var(--color-text-secondary) !important;
   font-size: var(--font-size-xs) !important;
@@ -839,6 +848,7 @@ textarea.p-inputtext {
   flex: 1 1 0% !important;
   overflow-y: auto !important;
   min-height: 0 !important;
+  position: relative !important;
 }
 
 .p-datatable .p-paginator,

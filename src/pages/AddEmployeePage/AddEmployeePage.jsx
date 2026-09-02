@@ -197,12 +197,17 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
 
     setSaving(true)
 
-    // Format payload
+    // Format payload with safe defaults for email & phone to prevent backend validation errors
     const primaryRole = formData.roles.join(', ')
+    const cleanName = formData.name.trim()
+    const safeSlug = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'emp'
+    const fallbackEmail = `${safeSlug}.${Date.now().toString().slice(-4)}@studio.local`
+    const fallbackPhone = '9876543210'
+
     const payload = {
-      name: formData.name.trim(),
-      email: formData.email.trim(),
-      phone: formData.phone.trim(),
+      name: cleanName,
+      email: formData.email.trim() || fallbackEmail,
+      phone: formData.phone.trim() || fallbackPhone,
       role: primaryRole, // Backwards compatibility
       roles: formData.roles, // Multi-roles array
       employmentType: formData.employmentType,

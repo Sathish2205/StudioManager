@@ -46,40 +46,29 @@ export const createEmployee = async (employeeData) => {
  * 2. Create user account linked to employee
  */
 export const createEmployeeWithAccount = async (employeeData, accountData) => {
-  // Step 1: Create employee
-  const empResult = await apiPost('/employees', employeeData)
-  if (!empResult || !empResult.success) {
-    return { success: false, message: empResult?.message || 'Failed to create employee profile' }
+  // Single atomic payload to POST /api/employees
+  const combinedPayload = {
+    ...employeeData,
+    createLoginAccount: !!(accountData && accountData.username && accountData.password),
+    username: accountData?.username?.trim()?.toLowerCase(),
+    password: accountData?.password,
+    userRole: accountData?.role || 'Assistant',
+    permissions: accountData?.permissions || [],
   }
 
-  const employee = empResult.data
-  const employeeId = employee?._id || employee?.id
-
-  if (!accountData || !accountData.username || !accountData.password) {
-    return { success: true, data: employee, message: 'Employee created without login account' }
-  }
-
-  // Step 2: Create user account
-  const accountResult = await createUserAccount({
-    employeeId,
-    username: accountData.username.trim().toLowerCase(),
-    password: accountData.password,
-    role: accountData.role || 'Assistant',
-    permissions: accountData.permissions || [],
-  })
-
-  if (!accountResult || !accountResult.success) {
+  const empResult = await apiPost('/employees', combinedPayload)
+  if (empResult && empResult.success) {
     return {
-      success: false,
-      message: accountResult?.message || 'Employee created, but login account creation failed',
-      data: employee,
+      success: true,
+      data: empResult.data,
+      message: empResult.message || 'Employee and login account created successfully',
     }
   }
 
+  // Fallback if backend returned an error
   return {
-    success: true,
-    data: { ...employee, userAccount: accountResult.data },
-    message: 'Employee and login account created successfully',
+    success: false,
+    message: empResult?.message || 'Failed to create employee and login account',
   }
 }
 

@@ -61,6 +61,11 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab, onTo
         return [{ label: 'Crew & Staff', active: true }]
       case 'employees':
         return [{ label: 'Employees', active: true }]
+      case 'add-employee':
+        return [
+          { label: 'Employees', onClick: () => setActiveTab && setActiveTab('employees') },
+          { label: 'Add Employee', active: true }
+        ]
       case 'equipment':
         return [{ label: 'Equipment', active: true }]
       case 'helpdesk':

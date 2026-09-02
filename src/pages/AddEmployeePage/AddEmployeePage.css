@@ -145,10 +145,6 @@
   transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s !important;
 }
 
-.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
-  background: #3b82f6 !important;
-}
-
 .p-inputswitch .p-inputswitch-slider:before {
   background: #ffffff !important;
   width: 1.05rem !important;
@@ -162,8 +158,20 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider:before {
+/* Checked / Enabled State Overrides for all PrimeReact variations */
+.p-inputswitch.p-highlight .p-inputswitch-slider,
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider,
+.p-inputswitch[aria-checked="true"] .p-inputswitch-slider,
+.page-matrix-item--active .p-inputswitch-slider {
+  background: #3b82f6 !important;
+}
+
+.p-inputswitch.p-highlight .p-inputswitch-slider:before,
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider:before,
+.p-inputswitch[aria-checked="true"] .p-inputswitch-slider:before,
+.page-matrix-item--active .p-inputswitch-slider:before {
   transform: translate(1.25rem, -50%) !important;
+  background: #ffffff !important;
 }
 
 .p-inputswitch:focus-within .p-inputswitch-slider {

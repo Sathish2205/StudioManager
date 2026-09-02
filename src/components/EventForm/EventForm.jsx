@@ -368,21 +368,27 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
         res = await updateEvent(targetId, backendPayload)
       } else {
         res = await createEvent(backendPayload)
+
+        // Auto-create Kanban editing task for the new event
         try {
+          const newEventId = res?.data?._id || res?.data?.id
           await createTask({
             title: data.clientName || 'Client',
             eventName: data.eventName || `${data.clientName || 'Special'} Event`,
+            clientName: data.clientName || 'Valued Client',
             description: `${data.eventType || 'Wedding'} Shoot Deliverable`,
             deliverableType: 'Edited Photos',
             assignedEditor: 'Deepa (Lead Editor)',
             status: 'To Do',
             priority: 'Medium',
             dueDate: data.eventDate ? new Date(data.eventDate).toISOString().split('T')[0] : '2026-08-20',
-            progress: 0
+            progress: 0,
+            eventId: newEventId || undefined
           })
         } catch (err) {
           console.error('Failed to auto-create Kanban editing task:', err)
         }
+        // Note: Workflow entry is auto-created by the backend eventController
       }
 
       if (!res || res.success === false) {

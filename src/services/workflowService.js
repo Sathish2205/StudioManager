@@ -1,4 +1,4 @@
-import { apiGet, apiPut } from './apiClient'
+import { apiGet, apiPost, apiPut } from './apiClient'
 
 /**
  * Fetch aggregated workflow summaries (one per event) for the Workflow Management table.
@@ -40,6 +40,18 @@ export const updateWorkflowByEvent = async (eventId, data) => {
  */
 export const updateWorkflowStage = async (id, data) => {
   const result = await apiPut(`/workflows/stage/${id}`, data)
+  if (result && result.success) {
+    return result.data
+  }
+  return null
+}
+
+/**
+ * Create a new workflow entry for an event.
+ * Called automatically when a new event is booked via the EventForm.
+ */
+export const createWorkflow = async (workflowData) => {
+  const result = await apiPost('/workflows', workflowData)
   if (result && result.success) {
     return result.data
   }

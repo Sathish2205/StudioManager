@@ -179,54 +179,98 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
   }, [currentSubTab])
 
   const loadDashboardStats = async () => {
-    const stats = await getEmployeeDashboardStats()
-    if (stats) setDashboardStats(stats)
+    try {
+      const stats = await getEmployeeDashboardStats()
+      if (stats) setDashboardStats(stats)
+    } catch (err) {
+      console.warn('Dashboard stats load error:', err)
+    }
   }
 
   const loadEmployeesData = async () => {
     setLoadingEmps(true)
-    const query = {}
-    if (empSearch) query.search = empSearch
-    if (selectedRole) query.role = selectedRole
-    if (selectedType) query.employmentType = selectedType
-    if (selectedStatus) query.status = selectedStatus
+    try {
+      const query = {}
+      if (empSearch) query.search = empSearch
+      if (selectedRole) query.role = selectedRole
+      if (selectedType) query.employmentType = selectedType
+      if (selectedStatus) query.status = selectedStatus
 
-    const res = await getEmployees(query)
-    const empArr = res.data || []
-    setEmployees([...empArr].sort((a, b) => String(b._id || b.employeeId || b.id).localeCompare(String(a._id || a.employeeId || a.id))))
-    setLoadingEmps(false)
+      const res = await getEmployees(query)
+      const empArr = Array.isArray(res?.data) ? res.data : []
+      const sorted = [...empArr].sort((a, b) => {
+        const idA = String(a?._id || a?.employeeId || a?.id || '')
+        const idB = String(b?._id || b?.employeeId || b?.id || '')
+        return idB.localeCompare(idA)
+      })
+      setEmployees(sorted)
+    } catch (err) {
+      console.error('Error loading employees:', err)
+      setEmployees([])
+    } finally {
+      setLoadingEmps(false)
+    }
   }
 
   const loadAttendanceData = async () => {
     setLoadingAtt(true)
-    const res = await getTodayAttendance()
-    const attList = (res?.attendances || []).sort((a, b) => new Date(b.checkIn || b.createdAt || 0) - new Date(a.checkIn || a.createdAt || 0))
-    setTodayAttData(res ? { ...res, attendances: attList } : { summary: {}, attendances: [] })
-    setLoadingAtt(false)
+    try {
+      const res = await getTodayAttendance()
+      const attList = Array.isArray(res?.attendances)
+        ? [...res.attendances].sort((a, b) => new Date(b?.checkIn || b?.createdAt || 0) - new Date(a?.checkIn || a?.createdAt || 0))
+        : []
+      setTodayAttData(res ? { ...res, attendances: attList } : { summary: {}, attendances: [] })
+    } catch (err) {
+      console.error('Error loading attendance:', err)
+      setTodayAttData({ summary: {}, attendances: [] })
+    } finally {
+      setLoadingAtt(false)
+    }
   }
 
   const loadLeavesData = async () => {
     setLoadingLeaves(true)
-    const data = await getLeaves()
-    const sortedLeaves = (data || []).sort((a, b) => String(b._id || b.id || b.createdAt).localeCompare(String(a._id || a.id || a.createdAt)))
-    setLeaves(sortedLeaves)
-    setLoadingLeaves(false)
+    try {
+      const data = await getLeaves()
+      const empArr = Array.isArray(data) ? data : []
+      const sortedLeaves = [...empArr].sort((a, b) => String(b?._id || b?.id || b?.createdAt || '').localeCompare(String(a?._id || a?.id || a?.createdAt || '')))
+      setLeaves(sortedLeaves)
+    } catch (err) {
+      console.error('Error loading leaves:', err)
+      setLeaves([])
+    } finally {
+      setLoadingLeaves(false)
+    }
   }
 
   const loadPayrollData = async () => {
     setLoadingPayroll(true)
-    const data = await getPayrolls()
-    const sortedPayrolls = (data || []).sort((a, b) => String(b._id || b.id || b.createdAt).localeCompare(String(a._id || a.id || a.createdAt)))
-    setPayrolls(sortedPayrolls)
-    setLoadingPayroll(false)
+    try {
+      const data = await getPayrolls()
+      const empArr = Array.isArray(data) ? data : []
+      const sortedPayrolls = [...empArr].sort((a, b) => String(b?._id || b?.id || b?.createdAt || '').localeCompare(String(a?._id || a?.id || a?.createdAt || '')))
+      setPayrolls(sortedPayrolls)
+    } catch (err) {
+      console.error('Error loading payroll:', err)
+      setPayrolls([])
+    } finally {
+      setLoadingPayroll(false)
+    }
   }
 
   const loadShiftsData = async () => {
     setLoadingShifts(true)
-    const data = await getShifts()
-    const sortedShifts = (data || []).sort((a, b) => String(b._id || b.id || b.createdAt).localeCompare(String(a._id || a.id || a.createdAt)))
-    setShifts(sortedShifts)
-    setLoadingShifts(false)
+    try {
+      const data = await getShifts()
+      const empArr = Array.isArray(data) ? data : []
+      const sortedShifts = [...empArr].sort((a, b) => String(b?._id || b?.id || b?.createdAt || '').localeCompare(String(a?._id || a?.id || a?.createdAt || '')))
+      setShifts(sortedShifts)
+    } catch (err) {
+      console.error('Error loading shifts:', err)
+      setShifts([])
+    } finally {
+      setLoadingShifts(false)
+    }
   }
 
   // Handler: Open Add Employee
@@ -669,25 +713,31 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
               field="employeeId"
               header="Employee ID"
               sortable
-              body={(rd, idx) => (
-                <strong className="text-primary font-mono text-xs">
-                  {rd.employeeId || rd.empId || (rd._id ? `EMP-${String(rd._id).slice(-4).toUpperCase()}` : `EMP-${String((idx?.rowIndex || 0) + 1).padStart(4, '0')}`)}
-                </strong>
-              )}
+              body={(rd, idx) => {
+                if (!rd) return null
+                return (
+                  <strong className="text-primary font-mono text-xs">
+                    {rd.employeeId || rd.empId || (rd._id ? `EMP-${String(rd._id).slice(-4).toUpperCase()}` : `EMP-${String((idx?.rowIndex || 0) + 1).padStart(4, '0')}`)}
+                  </strong>
+                )
+              }}
             />
             <Column
               field="name"
               header="Employee Name"
               sortable
-              body={(rd) => (
-                <div className="flex align-items-center gap-2">
-                  <Avatar image={rd.avatar} icon={!rd.avatar ? 'pi pi-user' : undefined} shape="circle" />
-                  <div>
-                    <div className="font-semibold text-900">{rd.name}</div>
-                    <div className="text-xs text-500">{rd.email || 'No email'}</div>
+              body={(rd) => {
+                if (!rd) return null
+                return (
+                  <div className="flex align-items-center gap-2">
+                    <Avatar image={rd.avatar} icon={!rd.avatar ? 'pi pi-user' : undefined} shape="circle" />
+                    <div>
+                      <div className="font-semibold text-900">{rd.name || 'N/A'}</div>
+                      <div className="text-xs text-500">{rd.email || 'No email'}</div>
+                    </div>
                   </div>
-                </div>
-              )}
+                )
+              }}
             />
             <Column field="role" header="Role" sortable />
             <Column field="phone" header="Phone" />
@@ -695,28 +745,42 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
               field="employmentType"
               header="Type"
               sortable
-              body={(rd) => <Tag value={rd.employmentType || 'Full Time'} severity="info" />}
+              body={(rd) => {
+                if (!rd) return null
+                return <Tag value={rd.employmentType || 'Full Time'} severity="info" />
+              }}
             />
             <Column
               field="joiningDate"
               header="Joining Date"
               sortable
-              body={(rd) => (rd.joiningDate ? new Date(rd.joiningDate).toLocaleDateString() : 'N/A')}
+              body={(rd) => {
+                if (!rd || !rd.joiningDate) return 'N/A'
+                try {
+                  return new Date(rd.joiningDate).toLocaleDateString()
+                } catch {
+                  return 'N/A'
+                }
+              }}
             />
             <Column
               field="status"
               header="Status"
               sortable
-              body={(rd) => (
-                <Tag
-                  value={rd.status || 'Active'}
-                  severity={rd.status === 'Active' ? 'success' : 'danger'}
-                />
-              )}
+              body={(rd) => {
+                if (!rd) return null
+                return (
+                  <Tag
+                    value={rd.status || 'Active'}
+                    severity={rd.status === 'Active' ? 'success' : 'danger'}
+                  />
+                )
+              }}
             />
             <Column
               header="Account"
               body={(rd) => {
+                if (!rd) return null
                 const acct = rd.userAccount || rd.user
                 if (!acct) {
                   return (
@@ -737,34 +801,37 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             />
             <Column
               header="Actions"
-              body={(rd) => (
-                <div className="flex gap-1">
-                  <Button
-                    icon="pi pi-eye"
-                    rounded
-                    text
-                    severity="info"
-                    tooltip="View Profile"
-                    onClick={() => handleViewProfile(rd._id)}
-                  />
-                  <Button
-                    icon="pi pi-pencil"
-                    rounded
-                    text
-                    severity="warning"
-                    tooltip="Edit Employee"
-                    onClick={() => handleEditEmployee(rd)}
-                  />
-                  <Button
-                    icon="pi pi-trash"
-                    rounded
-                    text
-                    severity="danger"
-                    tooltip="Delete"
-                    onClick={() => handleDeleteEmployee(rd)}
-                  />
-                </div>
-              )}
+              body={(rd) => {
+                if (!rd) return null
+                return (
+                  <div className="flex gap-1">
+                    <Button
+                      icon="pi pi-eye"
+                      rounded
+                      text
+                      severity="info"
+                      tooltip="View Profile"
+                      onClick={() => handleViewProfile(rd._id)}
+                    />
+                    <Button
+                      icon="pi pi-pencil"
+                      rounded
+                      text
+                      severity="warning"
+                      tooltip="Edit Employee"
+                      onClick={() => handleEditEmployee(rd)}
+                    />
+                    <Button
+                      icon="pi pi-trash"
+                      rounded
+                      text
+                      severity="danger"
+                      tooltip="Delete"
+                      onClick={() => handleDeleteEmployee(rd)}
+                    />
+                  </div>
+                )
+              }}
             />
           </DataTable>
         </div>

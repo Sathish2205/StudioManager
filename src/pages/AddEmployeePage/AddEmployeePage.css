@@ -1,0 +1,152 @@
+/* ══════════════════════════════════════════════════════════
+   ADD / EDIT EMPLOYEE PAGE STYLES
+   ══════════════════════════════════════════════════════════ */
+
+.add-emp-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1.25rem);
+  padding: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Header */
+.add-emp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.add-emp-header__left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.add-emp-header__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text, #f1f5f9);
+  margin: 0;
+}
+
+.add-emp-header__sub {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #94a3b8);
+  margin: 0.25rem 0 0;
+}
+
+/* Section Card */
+.add-emp-card {
+  background: var(--color-surface, #1e293b);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.add-emp-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+}
+
+.add-emp-card__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary, #6366f1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.add-emp-card__title i {
+  font-size: 1.1rem;
+}
+
+/* Page Access Matrix Grid */
+.page-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.page-matrix-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.08));
+  border-radius: 8px;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.page-matrix-item:hover {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.page-matrix-item--active {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: var(--color-primary, #6366f1);
+}
+
+.page-matrix-item__info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.page-matrix-item__icon {
+  font-size: 1rem;
+  color: var(--color-primary, #6366f1);
+}
+
+.page-matrix-item__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text, #f1f5f9);
+}
+
+/* Role Chip Badges in MultiSelect */
+.role-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  margin-right: 0.25rem;
+}
+
+/* Form Actions Footer */
+.add-emp-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.25rem 0;
+}
+
+@media (max-width: 768px) {
+  .add-emp-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .page-matrix-grid {
+    grid-template-columns: 1fr;
+  }
+}

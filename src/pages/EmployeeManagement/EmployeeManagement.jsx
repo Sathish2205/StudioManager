@@ -59,7 +59,7 @@ import CheckinWidget from './CheckinWidget'
 import EmployeeProfileModal from './EmployeeProfileModal'
 import './EmployeeManagement.css'
 
-export default function EmployeeManagement({ activeTab = 'employees', setActiveTab }) {
+export default function EmployeeManagement({ activeTab = 'employees', setActiveTab, onNavigateAddEmployee, onNavigateEditEmployee }) {
   const toastRef = useRef(null)
 
   // Current Sub-Tab inside Employee Module
@@ -685,7 +685,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                 label="Add New Employee"
                 icon="pi pi-user-plus"
                 className="p-button-primary"
-                onClick={handleOpenAddEmp}
+                onClick={() => onNavigateAddEmployee ? onNavigateAddEmployee() : handleOpenAddEmp()}
               />
             </div>
           </div>
@@ -739,7 +739,25 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                 )
               }}
             />
-            <Column field="role" header="Role" sortable />
+            <Column
+              header="Roles / Designations"
+              sortable
+              field="role"
+              body={(rd) => {
+                if (!rd) return null
+                const roleList = Array.isArray(rd.roles) && rd.roles.length > 0
+                  ? rd.roles
+                  : (rd.role ? rd.role.split(',').map(r => r.trim()) : [])
+                if (roleList.length === 0) return <span className="text-500 text-xs">N/A</span>
+                return (
+                  <div className="flex flex-wrap gap-1">
+                    {roleList.map((r, i) => (
+                      <Tag key={i} value={r} severity="secondary" style={{ fontSize: '0.7rem' }} />
+                    ))}
+                  </div>
+                )
+              }}
+            />
             <Column field="phone" header="Phone" />
             <Column
               field="employmentType"
@@ -819,7 +837,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                       text
                       severity="warning"
                       tooltip="Edit Employee"
-                      onClick={() => handleEditEmployee(rd)}
+                      onClick={() => onNavigateEditEmployee ? onNavigateEditEmployee(rd) : handleEditEmployee(rd)}
                     />
                     <Button
                       icon="pi pi-trash"

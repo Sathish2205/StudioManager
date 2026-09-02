@@ -21,6 +21,7 @@ import CreateQuotation from './pages/CreateQuotation/CreateQuotation'
 import QuotationDetail from './pages/QuotationDetail/QuotationDetail'
 import InvoiceDetail from './pages/InvoiceDetail/InvoiceDetail'
 import EmployeeManagement from './pages/EmployeeManagement/EmployeeManagement'
+import AddEmployeePage from './pages/AddEmployeePage/AddEmployeePage'
 
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/Login/Login'
@@ -47,6 +48,8 @@ const ROUTE_MAP = {
   '/contracts': 'contracts',
   '/crew': 'crew',
   '/employees': 'employees',
+  '/add-employee': 'add-employee',
+  '/edit-employee': 'add-employee',
   '/attendance': 'employees',
   '/equipment': 'equipment',
   '/helpdesk': 'helpdesk',
@@ -70,6 +73,7 @@ const TAB_TO_PATH = {
   'contracts': '/contracts',
   'crew': '/crew',
   'employees': '/employees',
+  'add-employee': '/add-employee',
   'equipment': '/equipment',
   'helpdesk': '/helpdesk',
   'requests': '/requests',
@@ -110,6 +114,7 @@ function AppContent() {
   const [selectedQuotation, setSelectedQuotation] = useState(null)
   const [selectedInvoice, setSelectedInvoice] = useState(null)
   const [selectedPackageForQuote, setSelectedPackageForQuote] = useState(null)
+  const [selectedEditEmployee, setSelectedEditEmployee] = useState(null)
   const [globalToastMsg, setGlobalToastMsg] = useState(null)
   const [prefillEventDate, setPrefillEventDate] = useState(null)
 
@@ -361,7 +366,34 @@ function AppContent() {
       {activeTab === 'employees' && (
         <ProtectedRoute tabKey="employees" setActiveTab={setActiveTab}>
           <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-            <EmployeeManagement activeTab={activeTab} setActiveTab={setActiveTab} />
+            <EmployeeManagement
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              onNavigateAddEmployee={() => {
+                setSelectedEditEmployee(null)
+                setActiveTab('add-employee')
+              }}
+              onNavigateEditEmployee={(emp) => {
+                setSelectedEditEmployee(emp)
+                setActiveTab('add-employee')
+              }}
+            />
+          </AppLayout>
+        </ProtectedRoute>
+      )}
+
+      {/* ── ADD / EDIT EMPLOYEE FULL PAGE ── */}
+      {activeTab === 'add-employee' && (
+        <ProtectedRoute tabKey="add-employee" setActiveTab={setActiveTab}>
+          <AppLayout activeTab="employees" setActiveTab={setActiveTab}>
+            <AddEmployeePage
+              employeeToEdit={selectedEditEmployee}
+              onNavigateBack={() => {
+                setSelectedEditEmployee(null)
+                setActiveTab('employees')
+              }}
+              onShowToast={showGlobalToast}
+            />
           </AppLayout>
         </ProtectedRoute>
       )}

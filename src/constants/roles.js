@@ -84,6 +84,22 @@ export const PERMISSIONS = {
   ACCOUNTS_MANAGE: 'accounts.manage',
 }
 
+// ── App Page Permission Modules (for Admin Page Access Toggling) ──
+export const PAGE_PERMISSION_OPTIONS = [
+  { id: 'events', label: 'Events & Shoots', icon: 'pi pi-calendar', permission: PERMISSIONS.EVENTS_VIEW },
+  { id: 'calendar', label: 'Shoot Calendar', icon: 'pi pi-calendar-plus', permission: PERMISSIONS.CALENDAR_VIEW },
+  { id: 'workflow', label: 'Workflow Management', icon: 'pi pi-sitemap', permission: PERMISSIONS.WORKFLOW_VIEW },
+  { id: 'crm', label: 'Customer CRM', icon: 'pi pi-id-card', permission: PERMISSIONS.CRM_VIEW },
+  { id: 'requests', label: 'Client Requests', icon: 'pi pi-inbox', permission: PERMISSIONS.REQUESTS_VIEW },
+  { id: 'finance', label: 'Finance & Invoices', icon: 'pi pi-wallet', permission: PERMISSIONS.FINANCE_VIEW },
+  { id: 'packages', label: 'Packages & Quotes', icon: 'pi pi-tag', permission: PERMISSIONS.PACKAGES_VIEW },
+  { id: 'employees', label: 'Employee Management', icon: 'pi pi-users', permission: PERMISSIONS.EMPLOYEES_VIEW },
+  { id: 'equipment', label: 'Equipment Tracker', icon: 'pi pi-camera', permission: PERMISSIONS.EQUIPMENT_VIEW },
+  { id: 'tasks', label: 'Editing & Deliverables', icon: 'pi pi-images', permission: PERMISSIONS.EDITING_VIEW },
+  { id: 'contracts', label: 'Contracts & Docs', icon: 'pi pi-file', permission: PERMISSIONS.CONTRACTS_VIEW },
+  { id: 'helpdesk', label: 'Studio Helpdesk', icon: 'pi pi-question-circle', permission: PERMISSIONS.HELPDESK_VIEW },
+]
+
 // ── Default Role → Permissions Mapping ──
 // Used as fallback when backend doesn't return permissions
 export const DEFAULT_ROLE_PERMISSIONS = {
@@ -233,6 +249,7 @@ export const ROUTE_PERMISSIONS = {
   'contracts': PERMISSIONS.CONTRACTS_VIEW,
   'crew': PERMISSIONS.EMPLOYEES_VIEW,
   'employees': PERMISSIONS.EMPLOYEES_VIEW,
+  'add-employee': PERMISSIONS.EMPLOYEES_VIEW,
   'equipment': PERMISSIONS.EQUIPMENT_VIEW,
   'helpdesk': PERMISSIONS.HELPDESK_VIEW,
   'requests': PERMISSIONS.REQUESTS_VIEW,

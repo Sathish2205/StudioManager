@@ -111,17 +111,25 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
     }))
   }
 
-  // Pure frontend username validation (no backend API call)
-  const handleUsernameChange = (value) => {
+  // Debounced username availability check
+  const handleUsernameChange = useCallback((value) => {
     setFormData(prev => ({ ...prev, username: value }))
+    setUsernameStatus(null)
+
+    if (usernameCheckTimer.current) clearTimeout(usernameCheckTimer.current)
+
     const trimmed = value.trim()
-    if (!trimmed) {
+    if (trimmed.length < 3) {
       setUsernameStatus(null)
       return
     }
-    const valResult = validateUsername(trimmed)
-    setUsernameStatus(valResult.isValid ? 'available' : 'invalid')
-  }
+
+    setUsernameStatus('checking')
+    usernameCheckTimer.current = setTimeout(async () => {
+      const result = await checkUsernameAvailable(trimmed)
+      setUsernameStatus(result.available ? 'available' : 'taken')
+    }, 600)
+  }, [])
 
   // Page permission check/uncheck toggle handler
   const togglePagePermission = (permString) => {
@@ -178,6 +186,11 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
 
       if (!passwordsMatch(formData.password, formData.confirmPassword)) {
         showToast('warn', 'Password Mismatch', 'Password and Confirm Password must match.')
+        return
+      }
+
+      if (usernameStatus === 'taken') {
+        showToast('warn', 'Username Taken', 'Username already exists. Please choose another.')
         return
       }
     }
@@ -428,16 +441,21 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
                       value={formData.username}
                       onChange={(e) => handleUsernameChange(e.target.value)}
                       placeholder="e.g. sathish.kumar"
-                      className={usernameStatus === 'invalid' ? 'p-invalid' : ''}
+                      className={usernameStatus === 'taken' ? 'p-invalid' : ''}
                     />
-                    {usernameStatus === 'available' && (
-                      <div className="username-check username-check--available">
-                        <i className="pi pi-check-circle" /> Valid username format
+                    {usernameStatus === 'checking' && (
+                      <div className="username-check username-check--checking">
+                        <i className="pi pi-spin pi-spinner" /> Checking availability...
                       </div>
                     )}
-                    {usernameStatus === 'invalid' && (
+                    {usernameStatus === 'available' && (
+                      <div className="username-check username-check--available">
+                        <i className="pi pi-check-circle" /> Username is available
+                      </div>
+                    )}
+                    {usernameStatus === 'taken' && (
                       <div className="username-check username-check--taken">
-                        <i className="pi pi-times-circle" /> Username must be 3-30 chars (letters, numbers, dots, underscores)
+                        <i className="pi pi-times-circle" /> Username already exists. Choose another.
                       </div>
                     )}
                   </div>

@@ -93,20 +93,22 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
     }
   }, [employeeToEdit])
 
-  // Automatically update suggested permissions when roles change
+  // Automatically update suggested permissions when designation roles change
   const handleRolesChange = (selectedRoles) => {
-    setFormData(prev => {
-      let combinedPerms = new Set(prev.selectedPermissions)
-      selectedRoles.forEach(r => {
-        const defaultPerms = DEFAULT_ROLE_PERMISSIONS[r] || []
-        defaultPerms.forEach(p => combinedPerms.add(p))
-      })
-      return {
-        ...prev,
-        roles: selectedRoles,
-        selectedPermissions: Array.from(combinedPerms),
-      }
-    })
+    setFormData(prev => ({
+      ...prev,
+      roles: selectedRoles,
+    }))
+  }
+
+  // Automatically pre-select default permissions when Primary Application Role changes
+  const handleUserRoleChange = (newRole) => {
+    const defaultPerms = DEFAULT_ROLE_PERMISSIONS[newRole] || []
+    setFormData(prev => ({
+      ...prev,
+      userRole: newRole,
+      selectedPermissions: [...defaultPerms],
+    }))
   }
 
   // Debounced username availability check
@@ -464,7 +466,7 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
                     <Dropdown
                       value={formData.userRole}
                       options={assignableRoles.map(r => ({ label: r, value: r }))}
-                      onChange={(e) => setFormData({ ...formData, userRole: e.value })}
+                      onChange={(e) => handleUserRoleChange(e.value)}
                       placeholder="Select Role"
                     />
                   </div>
@@ -578,7 +580,10 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
                           </div>
                           <InputSwitch
                             checked={isEnabled}
-                            onChange={() => togglePagePermission(item.permission)}
+                            onChange={(e) => {
+                              if (e && e.stopPropagation) e.stopPropagation()
+                              togglePagePermission(item.permission)
+                            }}
                           />
                         </div>
                       )

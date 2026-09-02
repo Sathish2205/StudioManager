@@ -6,9 +6,16 @@ import { Avatar } from 'primereact/avatar'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+import { InputText } from 'primereact/inputtext'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 
 import { getEmployeeById } from '../../services/employeeService'
 import { getMonthlyAttendance } from '../../services/attendanceService'
+import { getUserByEmployee, changeUserRole, changeUserStatus, resetUserPassword } from '../../services/userService'
+import { useAuth } from '../../context/AuthContext'
+import { ACCOUNT_CREATOR_ROLES, getAssignableRoles } from '../../constants/roles'
+import { validatePasswordStrength, passwordsMatch } from '../../validation/passwordValidation'
 
 export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
   const [profileData, setProfileData] = useState(null)
@@ -17,9 +24,26 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [monthlyCalData, setMonthlyCalData] = useState({ calendar: {}, summary: {} })
 
+  // Account management state
+  const [userAccount, setUserAccount] = useState(null)
+  const [loadingAccount, setLoadingAccount] = useState(false)
+  const [roleDialogVisible, setRoleDialogVisible] = useState(false)
+  const [resetPwdDialogVisible, setResetPwdDialogVisible] = useState(false)
+  const [newRole, setNewRole] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const [showNewPwd, setShowNewPwd] = useState(false)
+  const [showConfirmNewPwd, setShowConfirmNewPwd] = useState(false)
+  const [actionLoading, setActionLoading] = useState(false)
+
+  const { user: authUser } = useAuth()
+  const canManageAccounts = ACCOUNT_CREATOR_ROLES.includes(authUser?.role) || authUser?.role === 'admin'
+  const assignableRoles = getAssignableRoles(authUser?.role || 'Owner/Admin')
+
   useEffect(() => {
     if (visible && employeeId) {
       loadProfile()
+      loadUserAccount()
     }
   }, [visible, employeeId])
 
@@ -32,6 +56,63 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
     const cal = await getMonthlyAttendance(employeeId, selectedYear, selectedMonth)
     if (cal) setMonthlyCalData(cal)
     setLoading(false)
+  }
+
+  const loadUserAccount = async () => {
+    setLoadingAccount(true)
+    const acct = await getUserByEmployee(employeeId)
+    setUserAccount(acct)
+    setLoadingAccount(false)
+  }
+
+  // Change Role handler
+  const handleChangeRole = async () => {
+    if (!userAccount || !newRole) return
+    setActionLoading(true)
+    const result = await changeUserRole(userAccount._id || userAccount.id, { role: newRole })
+    setActionLoading(false)
+    if (result && result.success) {
+      setUserAccount({ ...userAccount, role: newRole })
+      setRoleDialogVisible(false)
+    }
+  }
+
+  // Reset Password handler
+  const handleResetPassword = async () => {
+    if (!userAccount) return
+
+    const pwdCheck = validatePasswordStrength(newPassword)
+    if (!pwdCheck.isValid) return
+    if (!passwordsMatch(newPassword, confirmNewPassword)) return
+
+    setActionLoading(true)
+    const result = await resetUserPassword(userAccount._id || userAccount.id, { newPassword })
+    setActionLoading(false)
+    if (result && result.success) {
+      setResetPwdDialogVisible(false)
+      setNewPassword('')
+      setConfirmNewPassword('')
+    }
+  }
+
+  // Toggle Account Status
+  const handleToggleStatus = () => {
+    if (!userAccount) return
+    const currentStatus = userAccount.status === 'active' ? 'inactive' : 'active'
+    const actionLabel = currentStatus === 'active' ? 'Activate' : 'Deactivate'
+
+    confirmDialog({
+      message: `Are you sure you want to ${actionLabel.toLowerCase()} this account?`,
+      header: `${actionLabel} Account`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptClassName: currentStatus === 'inactive' ? 'p-button-danger' : 'p-button-success',
+      accept: async () => {
+        const result = await changeUserStatus(userAccount._id || userAccount.id, { status: currentStatus })
+        if (result && result.success) {
+          setUserAccount({ ...userAccount, status: currentStatus })
+        }
+      },
+    })
   }
 
   if (!profileData) {
@@ -53,6 +134,8 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
       modal
       className="employee-profile-dialog"
     >
+      <ConfirmDialog />
+
       {/* Header Profile Summary Banner */}
       <div className="surface-card p-4 border-round-xl border-1 surface-border mb-4 flex flex-column md:flex-row align-items-center justify-content-between gap-4">
         <div className="flex align-items-center gap-3">
@@ -185,7 +268,105 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
           </div>
         </TabPanel>
 
-        {/* Tab 2: Attendance */}
+        {/* Tab 2: Account Management */}
+        <TabPanel header="Account" leftIcon="pi pi-shield mr-2">
+          {loadingAccount ? (
+            <div className="p-4 text-center">
+              <i className="pi pi-spin pi-spinner mr-2" /> Loading account details...
+            </div>
+          ) : userAccount ? (
+            <div className="account-info-card">
+              <h4 className="m-0 mb-3 text-base font-bold text-900">
+                <i className="pi pi-shield mr-2 text-primary" /> Employee Login Account
+              </h4>
+
+              <div className="account-info-row">
+                <span className="account-info-row__label">Username</span>
+                <span className="account-info-row__value">{userAccount.username}</span>
+              </div>
+
+              <div className="account-info-row">
+                <span className="account-info-row__label">Role</span>
+                <span className="account-info-row__value">
+                  <Tag value={userAccount.role || 'N/A'} severity="info" />
+                </span>
+              </div>
+
+              <div className="account-info-row">
+                <span className="account-info-row__label">Status</span>
+                <span className="account-info-row__value">
+                  <Tag
+                    value={userAccount.status === 'active' ? 'Active' : 'Inactive'}
+                    severity={userAccount.status === 'active' ? 'success' : 'danger'}
+                  />
+                </span>
+              </div>
+
+              <div className="account-info-row">
+                <span className="account-info-row__label">Last Login</span>
+                <span className="account-info-row__value">
+                  {userAccount.lastLoginAt
+                    ? new Date(userAccount.lastLoginAt).toLocaleString()
+                    : 'Never'}
+                </span>
+              </div>
+
+              {canManageAccounts && (
+                <div className="flex gap-2 mt-3 pt-3 border-top-1 surface-border">
+                  <Button
+                    label="Change Role"
+                    icon="pi pi-pencil"
+                    severity="info"
+                    size="small"
+                    outlined
+                    onClick={() => {
+                      setNewRole(userAccount.role || '')
+                      setRoleDialogVisible(true)
+                    }}
+                  />
+                  <Button
+                    label="Reset Password"
+                    icon="pi pi-key"
+                    severity="warning"
+                    size="small"
+                    outlined
+                    onClick={() => {
+                      setNewPassword('')
+                      setConfirmNewPassword('')
+                      setShowNewPwd(false)
+                      setShowConfirmNewPwd(false)
+                      setResetPwdDialogVisible(true)
+                    }}
+                  />
+                  <Button
+                    label={userAccount.status === 'active' ? 'Deactivate Account' : 'Activate Account'}
+                    icon={userAccount.status === 'active' ? 'pi pi-ban' : 'pi pi-check-circle'}
+                    severity={userAccount.status === 'active' ? 'danger' : 'success'}
+                    size="small"
+                    outlined
+                    onClick={handleToggleStatus}
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="p-4 text-center">
+              <div className="mb-3">
+                <i className="pi pi-user-minus text-4xl text-500" />
+              </div>
+              <p className="text-600 text-sm mb-3">
+                This employee does not have a login account.
+              </p>
+              {canManageAccounts && (
+                <p className="text-xs text-500">
+                  To create a login account, edit this employee and enable "Create Login Account".
+                </p>
+              )}
+            </div>
+          )}
+        </TabPanel>
+
+        {/* Tab 3: Attendance */}
         <TabPanel header="Attendance Logs" leftIcon="pi pi-calendar mr-2">
           <DataTable
             value={profileData.attendances || []}
@@ -248,7 +429,7 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
           </DataTable>
         </TabPanel>
 
-        {/* Tab 3: Events */}
+        {/* Tab 4: Events */}
         <TabPanel header="Assigned Events" leftIcon="pi pi-camera mr-2">
           <DataTable
             value={profileData.assignedEvents || []}
@@ -274,7 +455,7 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
           </DataTable>
         </TabPanel>
 
-        {/* Tab 4: Tasks */}
+        {/* Tab 5: Tasks */}
         <TabPanel header="Assigned Tasks" leftIcon="pi pi-list mr-2">
           <DataTable
             value={profileData.tasks || []}
@@ -305,6 +486,105 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
           </DataTable>
         </TabPanel>
       </TabView>
+
+      {/* ── Change Role Dialog ── */}
+      <Dialog
+        visible={roleDialogVisible}
+        onHide={() => setRoleDialogVisible(false)}
+        header="Change User Role"
+        style={{ width: '400px' }}
+        modal
+      >
+        <div className="flex flex-column gap-3 p-fluid">
+          <div>
+            <label className="font-bold text-sm mb-1 block">New Role</label>
+            <Dropdown
+              value={newRole}
+              options={assignableRoles.map(r => ({ label: r, value: r }))}
+              onChange={(e) => setNewRole(e.value)}
+              placeholder="Select Role"
+            />
+          </div>
+        </div>
+        <div className="flex justify-content-end gap-2 mt-4">
+          <Button label="Cancel" outlined onClick={() => setRoleDialogVisible(false)} />
+          <Button
+            label="Update Role"
+            icon="pi pi-check"
+            onClick={handleChangeRole}
+            loading={actionLoading}
+            disabled={!newRole}
+          />
+        </div>
+      </Dialog>
+
+      {/* ── Reset Password Dialog ── */}
+      <Dialog
+        visible={resetPwdDialogVisible}
+        onHide={() => setResetPwdDialogVisible(false)}
+        header="Reset Password"
+        style={{ width: '420px' }}
+        modal
+      >
+        <div className="flex flex-column gap-3 p-fluid">
+          <div>
+            <label className="font-bold text-sm mb-1 block">New Password</label>
+            <div className="pwd-field-wrap">
+              <InputText
+                type={showNewPwd ? 'text' : 'password'}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Min 8 characters"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="pwd-eye-btn"
+                onClick={() => setShowNewPwd(!showNewPwd)}
+                tabIndex={-1}
+              >
+                <i className={showNewPwd ? 'pi pi-eye-slash' : 'pi pi-eye'} />
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="font-bold text-sm mb-1 block">Confirm Password</label>
+            <div className="pwd-field-wrap">
+              <InputText
+                type={showConfirmNewPwd ? 'text' : 'password'}
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                placeholder="Re-enter password"
+                autoComplete="new-password"
+                className={confirmNewPassword && !passwordsMatch(newPassword, confirmNewPassword) ? 'p-invalid' : ''}
+              />
+              <button
+                type="button"
+                className="pwd-eye-btn"
+                onClick={() => setShowConfirmNewPwd(!showConfirmNewPwd)}
+                tabIndex={-1}
+              >
+                <i className={showConfirmNewPwd ? 'pi pi-eye-slash' : 'pi pi-eye'} />
+              </button>
+            </div>
+            {confirmNewPassword && !passwordsMatch(newPassword, confirmNewPassword) && (
+              <div className="field-error">Passwords do not match</div>
+            )}
+          </div>
+        </div>
+        <div className="flex justify-content-end gap-2 mt-4">
+          <Button label="Cancel" outlined onClick={() => setResetPwdDialogVisible(false)} />
+          <Button
+            label="Reset Password"
+            icon="pi pi-key"
+            severity="warning"
+            onClick={handleResetPassword}
+            loading={actionLoading}
+            disabled={!newPassword || !passwordsMatch(newPassword, confirmNewPassword) || !validatePasswordStrength(newPassword).isValid}
+          />
+        </div>
+      </Dialog>
     </Dialog>
   )
 }

@@ -175,6 +175,243 @@
 }
 
 /* ══════════════════════════════════════════════════════════
+   LOGIN ACCOUNT SECTION IN ADD/EDIT DIALOG
+   ══════════════════════════════════════════════════════════ */
+
+/* Section divider / title */
+.emp-dialog-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border, rgba(255,255,255,0.08));
+}
+
+.emp-dialog-section__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary, #6366f1);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+}
+
+.emp-dialog-section__title i {
+  font-size: 0.9rem;
+}
+
+/* Toggle switch for "Create Login Account" */
+.emp-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.8rem;
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.emp-toggle-row label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text, #f1f5f9);
+}
+
+.emp-toggle-row .p-inputswitch {
+  transform: scale(0.9);
+}
+
+/* Password field wrapper with eye toggle */
+.pwd-field-wrap {
+  position: relative;
+}
+
+.pwd-field-wrap .p-inputtext {
+  padding-right: 2.5rem;
+}
+
+.pwd-eye-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted, #94a3b8);
+  font-size: 0.9rem;
+  padding: 4px;
+  z-index: 2;
+  transition: color 0.2s;
+}
+
+.pwd-eye-btn:hover {
+  color: var(--color-primary, #6366f1);
+}
+
+/* Password strength indicator bar */
+.pwd-strength-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 4px;
+}
+
+.pwd-strength-bar__track {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+
+.pwd-strength-bar__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s, background 0.3s;
+}
+
+.pwd-strength--weak .pwd-strength-bar__fill {
+  width: 30%;
+  background: #ef4444;
+}
+
+.pwd-strength--medium .pwd-strength-bar__fill {
+  width: 65%;
+  background: #eab308;
+}
+
+.pwd-strength--strong .pwd-strength-bar__fill {
+  width: 100%;
+  background: #22c55e;
+}
+
+.pwd-strength-bar__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 48px;
+  text-align: right;
+}
+
+.pwd-strength--weak .pwd-strength-bar__label {
+  color: #ef4444;
+}
+
+.pwd-strength--medium .pwd-strength-bar__label {
+  color: #eab308;
+}
+
+.pwd-strength--strong .pwd-strength-bar__label {
+  color: #22c55e;
+}
+
+/* Username inline validation */
+.username-check {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  margin-top: 3px;
+}
+
+.username-check--available {
+  color: #22c55e;
+}
+
+.username-check--taken {
+  color: #ef4444;
+}
+
+.username-check--checking {
+  color: var(--color-text-muted, #94a3b8);
+}
+
+/* Account status badge in employee list table */
+.account-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+}
+
+.account-badge--active {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.account-badge--inactive {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.account-badge--none {
+  color: var(--color-text-muted, #94a3b8);
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.account-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.account-badge--active .account-badge__dot {
+  background: #22c55e;
+}
+
+.account-badge--inactive .account-badge__dot {
+  background: #ef4444;
+}
+
+/* Field validation error message */
+.field-error {
+  font-size: 0.7rem;
+  color: #ef4444;
+  margin-top: 2px;
+}
+
+/* Account management section in profile modal */
+.account-info-card {
+  background: var(--color-surface, #1e293b);
+  border: 1px solid var(--color-border, rgba(255,255,255,0.08));
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.account-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.account-info-row:last-child {
+  border-bottom: none;
+}
+
+.account-info-row__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.account-info-row__value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text, #f1f5f9);
+}
+
+/* ══════════════════════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {

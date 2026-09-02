@@ -1,4 +1,5 @@
 import { apiGet, apiPost, apiPut, apiDelete } from './apiClient'
+import { createUserAccount } from './userService'
 
 // GET /api/employees with full query filters
 export const getEmployees = async (queryParams = {}) => {
@@ -28,12 +29,57 @@ export const getEmployeeById = async (id) => {
 }
 
 // POST /api/employees
+// Accepts optional login account fields: createLoginAccount, username, password, userRole
+// Backend creates employee + user account atomically
 export const createEmployee = async (employeeData) => {
   const result = await apiPost('/employees', employeeData)
   if (result && result.success) {
     return result.data
   }
   return null
+}
+
+/**
+ * Create employee with login account in two steps (fallback if backend
+ * doesn't support atomic creation).
+ * 1. Create employee
+ * 2. Create user account linked to employee
+ */
+export const createEmployeeWithAccount = async (employeeData, accountData) => {
+  // Step 1: Create employee
+  const empResult = await apiPost('/employees', employeeData)
+  if (!empResult || !empResult.success) {
+    return { success: false, message: empResult?.message || 'Failed to create employee' }
+  }
+
+  const employee = empResult.data
+  const employeeId = employee?._id || employee?.id
+
+  if (!accountData || !accountData.username || !accountData.password) {
+    return { success: true, data: employee, message: 'Employee created without login account' }
+  }
+
+  // Step 2: Create user account
+  const accountResult = await createUserAccount({
+    employeeId,
+    username: accountData.username.trim().toLowerCase(),
+    password: accountData.password,
+    role: accountData.role || 'Assistant',
+  })
+
+  if (!accountResult || !accountResult.success) {
+    return {
+      success: true,
+      data: employee,
+      accountError: accountResult?.message || 'Employee created but login account creation failed',
+    }
+  }
+
+  return {
+    success: true,
+    data: { ...employee, userAccount: accountResult.data },
+    message: 'Employee and login account created successfully',
+  }
 }
 
 // PUT /api/employees/:id

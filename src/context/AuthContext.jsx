@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import { getPermissionsForRole, DEFAULT_ROLE_PERMISSIONS } from '../constants/roles'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'https://student-data-manager-ruc1.onrender.com/api'
 
@@ -11,6 +12,20 @@ export const AuthProvider = ({ children }) => {
   })
   const [tenant, setTenant] = useState(() => {
     try { return JSON.parse(localStorage.getItem('tenant') || 'null') } catch { return null }
+  })
+  const [permissions, setPermissions] = useState(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('permissions') || 'null')
+      if (stored && stored.length > 0) return stored
+    } catch { /* ignore */ }
+    // Derive from stored user role as fallback
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user') || 'null')
+      if (storedUser?.role) {
+        return getPermissionsForRole(storedUser.role, null)
+      }
+    } catch { /* ignore */ }
+    return []
   })
   const [loading, setLoading] = useState(true)
 
@@ -31,10 +46,21 @@ export const AuthProvider = ({ children }) => {
         if (res.ok) {
           const result = await res.json()
           if (result.success) {
-            setUser(result.data.user)
-            setTenant(result.data.tenant)
-            localStorage.setItem('user', JSON.stringify(result.data.user))
-            localStorage.setItem('tenant', JSON.stringify(result.data.tenant))
+            const userData = result.data.user
+            const tenantData = result.data.tenant
+
+            setUser(userData)
+            setTenant(tenantData)
+            localStorage.setItem('user', JSON.stringify(userData))
+            localStorage.setItem('tenant', JSON.stringify(tenantData))
+
+            // Resolve permissions: prefer backend-provided, fallback to role defaults
+            const resolvedPerms = getPermissionsForRole(
+              userData?.role,
+              result.data.permissions || userData?.permissions
+            )
+            setPermissions(resolvedPerms)
+            localStorage.setItem('permissions', JSON.stringify(resolvedPerms))
           }
         } else {
           // Token invalid or expired
@@ -71,6 +97,14 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('user', JSON.stringify(userObj))
     localStorage.setItem('tenant', JSON.stringify(tenantObj))
 
+    // Resolve permissions from login response
+    const resolvedPerms = getPermissionsForRole(
+      userObj?.role,
+      result.data.permissions || userObj?.permissions
+    )
+    setPermissions(resolvedPerms)
+    localStorage.setItem('permissions', JSON.stringify(resolvedPerms))
+
     return result.data
   }
 
@@ -87,23 +121,47 @@ export const AuthProvider = ({ children }) => {
     setToken(null)
     setUser(null)
     setTenant(null)
+    setPermissions([])
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     localStorage.removeItem('tenant')
+    localStorage.removeItem('permissions')
   }
 
+  /**
+   * Check if the current user has a specific permission.
+   * Owner/Admin always returns true.
+   */
+  const hasPermission = useCallback((permission) => {
+    if (!permission) return true // null permission means no restriction
+    if (user?.role === 'Owner/Admin' || user?.role === 'admin') return true
+    return permissions.includes(permission)
+  }, [permissions, user])
+
+  /**
+   * Check if the current user has ANY of the listed permissions.
+   */
+  const hasAnyPermission = useCallback((permList) => {
+    if (!permList || permList.length === 0) return true
+    if (user?.role === 'Owner/Admin' || user?.role === 'admin') return true
+    return permList.some((p) => permissions.includes(p))
+  }, [permissions, user])
+
+  const contextValue = useMemo(() => ({
+    token,
+    user,
+    tenant,
+    permissions,
+    isAuthenticated: !!token && !!user,
+    loading,
+    login,
+    logout,
+    hasPermission,
+    hasAnyPermission,
+  }), [token, user, tenant, permissions, loading, hasPermission, hasAnyPermission])
+
   return (
-    <AuthContext.Provider
-      value={{
-        token,
-        user,
-        tenant,
-        isAuthenticated: !!token && !!user,
-        loading,
-        login,
-        logout
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   )

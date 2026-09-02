@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -11,15 +11,19 @@ import { Toast } from 'primereact/toast'
 import { Calendar } from 'primereact/calendar'
 import { InputNumber } from 'primereact/inputnumber'
 import { InputTextarea } from 'primereact/inputtextarea'
+import { InputSwitch } from 'primereact/inputswitch'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 
 import {
   getEmployees,
   createEmployee,
+  createEmployeeWithAccount,
   updateEmployee,
   deleteEmployee,
   getEmployeeDashboardStats,
 } from '../../services/employeeService'
+
+import { checkUsernameAvailable } from '../../services/userService'
 
 import {
   getTodayAttendance,
@@ -46,6 +50,10 @@ import {
   updateShift,
   deleteShift,
 } from '../../services/shiftService'
+
+import { useAuth } from '../../context/AuthContext'
+import { ROLES, ROLE_OPTIONS, ACCOUNT_CREATOR_ROLES, getAssignableRoles } from '../../constants/roles'
+import { validatePasswordStrength, validateUsername, passwordsMatch, getStrengthClass, getStrengthLabel } from '../../validation/passwordValidation'
 
 import CheckinWidget from './CheckinWidget'
 import EmployeeProfileModal from './EmployeeProfileModal'
@@ -88,7 +96,20 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
     emergencyName: '',
     emergencyPhone: '',
     emergencyRelation: '',
+    // Login Account fields
+    createLoginAccount: false,
+    username: '',
+    password: '',
+    confirmPassword: '',
+    userRole: 'Assistant',
   })
+
+  // Login Account UI state
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [usernameStatus, setUsernameStatus] = useState(null) // null | 'checking' | 'available' | 'taken'
+  const usernameCheckTimer = useRef(null)
+  const { user: authUser, hasPermission } = useAuth()
 
   // Attendance Tab State
   const [todayAttData, setTodayAttData] = useState({ summary: {}, attendances: [] })
@@ -224,7 +245,15 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
       emergencyName: '',
       emergencyPhone: '',
       emergencyRelation: '',
+      createLoginAccount: false,
+      username: '',
+      password: '',
+      confirmPassword: '',
+      userRole: 'Assistant',
     })
+    setShowPassword(false)
+    setShowConfirmPassword(false)
+    setUsernameStatus(null)
     setEmpDialogVisible(true)
   }
 
@@ -233,6 +262,31 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
     if (!empFormData.name) {
       showToast('warn', 'Validation Error', 'Employee name is required')
       return
+    }
+
+    // Validate login account fields if creating account
+    if (!editMode && empFormData.createLoginAccount) {
+      const usernameValidation = validateUsername(empFormData.username)
+      if (!usernameValidation.isValid) {
+        showToast('warn', 'Invalid Username', usernameValidation.errors[0])
+        return
+      }
+
+      const pwdValidation = validatePasswordStrength(empFormData.password)
+      if (!pwdValidation.isValid) {
+        showToast('warn', 'Weak Password', pwdValidation.errors[0])
+        return
+      }
+
+      if (!passwordsMatch(empFormData.password, empFormData.confirmPassword)) {
+        showToast('warn', 'Password Mismatch', 'Password and Confirm Password must match')
+        return
+      }
+
+      if (usernameStatus === 'taken') {
+        showToast('warn', 'Username Taken', 'Username already exists. Please choose another.')
+        return
+      }
     }
 
     const payload = {
@@ -244,6 +298,16 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
       },
     }
 
+    // Remove login account fields from employee payload
+    delete payload.createLoginAccount
+    delete payload.username
+    delete payload.password
+    delete payload.confirmPassword
+    delete payload.userRole
+    delete payload.emergencyName
+    delete payload.emergencyPhone
+    delete payload.emergencyRelation
+
     if (editMode && empFormData._id) {
       const res = await updateEmployee(empFormData._id, payload)
       if (res) {
@@ -252,15 +316,59 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
         setEmpDialogVisible(false)
       }
     } else {
-      const res = await createEmployee(payload)
-      if (res) {
-        showToast('success', 'Created', 'Employee added successfully')
-        loadEmployeesData()
-        loadDashboardStats()
-        setEmpDialogVisible(false)
+      // Create new employee
+      if (empFormData.createLoginAccount) {
+        // Create employee + user account together
+        const accountData = {
+          username: empFormData.username.trim().toLowerCase(),
+          password: empFormData.password,
+          role: empFormData.userRole,
+        }
+        const result = await createEmployeeWithAccount(payload, accountData)
+        if (result && result.success) {
+          if (result.accountError) {
+            showToast('warn', 'Partial Success', result.accountError)
+          } else {
+            showToast('success', 'Created', 'Employee and login account created successfully')
+          }
+          loadEmployeesData()
+          loadDashboardStats()
+          setEmpDialogVisible(false)
+        } else {
+          showToast('error', 'Failed', result?.message || 'Failed to create employee')
+        }
+      } else {
+        // Create employee without login account
+        const res = await createEmployee(payload)
+        if (res) {
+          showToast('success', 'Created', 'Employee added successfully')
+          loadEmployeesData()
+          loadDashboardStats()
+          setEmpDialogVisible(false)
+        }
       }
     }
   }
+
+  // Debounced username availability check
+  const handleUsernameChange = useCallback((value) => {
+    setEmpFormData((prev) => ({ ...prev, username: value }))
+    setUsernameStatus(null)
+
+    if (usernameCheckTimer.current) clearTimeout(usernameCheckTimer.current)
+
+    const trimmed = value.trim()
+    if (trimmed.length < 3) {
+      setUsernameStatus(null)
+      return
+    }
+
+    setUsernameStatus('checking')
+    usernameCheckTimer.current = setTimeout(async () => {
+      const result = await checkUsernameAvailable(trimmed)
+      setUsernameStatus(result.available ? 'available' : 'taken')
+    }, 600)
+  }, [])
 
   // Handler: Edit Employee
   const handleEditEmployee = (emp) => {
@@ -382,12 +490,17 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
     }
   }
 
-  const roleOptions = [
+  const designationOptions = [
     'Photographer', 'Videographer', 'Photo Editor', 'Video Editor',
     'Album Designer', 'Manager', 'Assistant', 'Driver', 'Accountant', 'Other',
   ]
   const typeOptions = ['Full Time', 'Part Time', 'Freelancer', 'Contract']
   const statusOptions = ['Active', 'Inactive', 'On Leave']
+  const canCreateAccounts = ACCOUNT_CREATOR_ROLES.includes(authUser?.role) || authUser?.role === 'admin'
+  const assignableRoles = getAssignableRoles(authUser?.role || 'Owner/Admin')
+
+  // Password strength for display
+  const pwdStrength = empFormData.password ? validatePasswordStrength(empFormData.password) : null
 
   return (
     <div className="emp-container">
@@ -600,6 +713,27 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                   severity={rd.status === 'Active' ? 'success' : 'danger'}
                 />
               )}
+            />
+            <Column
+              header="Account"
+              body={(rd) => {
+                const acct = rd.userAccount || rd.user
+                if (!acct) {
+                  return (
+                    <span className="account-badge account-badge--none">
+                      No Account
+                    </span>
+                  )
+                }
+                const isActive = acct.status === 'active' || acct.status === 'Active'
+                return (
+                  <span className={`account-badge ${isActive ? 'account-badge--active' : 'account-badge--inactive'}`}>
+                    <span className="account-badge__dot" />
+                    {isActive ? 'Active' : 'Inactive'}
+                  </span>
+                )
+              }}
+              style={{ minWidth: '100px' }}
             />
             <Column
               header="Actions"
@@ -946,10 +1080,14 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
         visible={empDialogVisible}
         onHide={() => setEmpDialogVisible(false)}
         header={editMode ? 'Edit Employee Profile' : 'Add New Employee'}
-        style={{ width: '600px' }}
+        style={{ width: '650px' }}
         modal
         className="emp-dialog"
       >
+        {/* ── Section 1: Employee Information ── */}
+        <div className="emp-dialog-section__title">
+          <i className="pi pi-user" /> Employee Information
+        </div>
         <div className="grid p-fluid">
           <div className="col-12 md:col-6">
             <label className="font-bold text-sm">Full Name *</label>
@@ -961,10 +1099,10 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
           </div>
 
           <div className="col-12 md:col-6">
-            <label className="font-bold text-sm">Role *</label>
+            <label className="font-bold text-sm">Designation *</label>
             <Dropdown
               value={empFormData.role}
-              options={roleOptions.map(r => ({ label: r, value: r }))}
+              options={designationOptions.map(r => ({ label: r, value: r }))}
               onChange={(e) => setEmpFormData({ ...empFormData, role: e.value })}
             />
           </div>
@@ -1007,6 +1145,15 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             />
           </div>
 
+          <div className="col-12 md:col-6">
+            <label className="font-bold text-sm">Status</label>
+            <Dropdown
+              value={empFormData.status}
+              options={statusOptions.map(s => ({ label: s, value: s }))}
+              onChange={(e) => setEmpFormData({ ...empFormData, status: e.value })}
+            />
+          </div>
+
           <div className="col-12">
             <label className="font-bold text-sm">Address</label>
             <InputTextarea
@@ -1017,9 +1164,128 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
           </div>
         </div>
 
+        {/* ── Section 2: Login Account (only for new employees) ── */}
+        {!editMode && canCreateAccounts && (
+          <div className="emp-dialog-section">
+            <div className="emp-dialog-section__title">
+              <i className="pi pi-shield" /> Login Account
+            </div>
+
+            <div className="emp-toggle-row">
+              <label>Create Login Account</label>
+              <InputSwitch
+                checked={empFormData.createLoginAccount}
+                onChange={(e) => setEmpFormData({ ...empFormData, createLoginAccount: e.value })}
+              />
+            </div>
+
+            {empFormData.createLoginAccount && (
+              <div className="grid p-fluid">
+                {/* Username */}
+                <div className="col-12">
+                  <label className="font-bold text-sm">Login Username *</label>
+                  <InputText
+                    value={empFormData.username}
+                    onChange={(e) => handleUsernameChange(e.target.value)}
+                    placeholder="e.g. sathish.kumar"
+                    className={usernameStatus === 'taken' ? 'p-invalid' : ''}
+                  />
+                  {usernameStatus === 'checking' && (
+                    <div className="username-check username-check--checking">
+                      <i className="pi pi-spin pi-spinner" /> Checking availability...
+                    </div>
+                  )}
+                  {usernameStatus === 'available' && (
+                    <div className="username-check username-check--available">
+                      <i className="pi pi-check-circle" /> Username is available
+                    </div>
+                  )}
+                  {usernameStatus === 'taken' && (
+                    <div className="username-check username-check--taken">
+                      <i className="pi pi-times-circle" /> Username already exists. Please choose another.
+                    </div>
+                  )}
+                </div>
+
+                {/* Password */}
+                <div className="col-12 md:col-6">
+                  <label className="font-bold text-sm">Password *</label>
+                  <div className="pwd-field-wrap">
+                    <InputText
+                      type={showPassword ? 'text' : 'password'}
+                      value={empFormData.password}
+                      onChange={(e) => setEmpFormData({ ...empFormData, password: e.target.value })}
+                      placeholder="Min 8 characters"
+                      autoComplete="new-password"
+                    />
+                    <button
+                      type="button"
+                      className="pwd-eye-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                    >
+                      <i className={showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'} />
+                    </button>
+                  </div>
+                  {pwdStrength && empFormData.password && (
+                    <div className={`pwd-strength-bar ${getStrengthClass(pwdStrength.strength)}`}>
+                      <div className="pwd-strength-bar__track">
+                        <div className="pwd-strength-bar__fill" />
+                      </div>
+                      <span className="pwd-strength-bar__label">{getStrengthLabel(pwdStrength.strength)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Confirm Password */}
+                <div className="col-12 md:col-6">
+                  <label className="font-bold text-sm">Confirm Password *</label>
+                  <div className="pwd-field-wrap">
+                    <InputText
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={empFormData.confirmPassword}
+                      onChange={(e) => setEmpFormData({ ...empFormData, confirmPassword: e.target.value })}
+                      placeholder="Re-enter password"
+                      autoComplete="new-password"
+                      className={empFormData.confirmPassword && !passwordsMatch(empFormData.password, empFormData.confirmPassword) ? 'p-invalid' : ''}
+                    />
+                    <button
+                      type="button"
+                      className="pwd-eye-btn"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      tabIndex={-1}
+                    >
+                      <i className={showConfirmPassword ? 'pi pi-eye-slash' : 'pi pi-eye'} />
+                    </button>
+                  </div>
+                  {empFormData.confirmPassword && !passwordsMatch(empFormData.password, empFormData.confirmPassword) && (
+                    <div className="field-error">Passwords do not match</div>
+                  )}
+                  {empFormData.confirmPassword && passwordsMatch(empFormData.password, empFormData.confirmPassword) && (
+                    <div className="username-check username-check--available">
+                      <i className="pi pi-check-circle" /> Passwords match
+                    </div>
+                  )}
+                </div>
+
+                {/* Role */}
+                <div className="col-12 md:col-6">
+                  <label className="font-bold text-sm">Application Role *</label>
+                  <Dropdown
+                    value={empFormData.userRole}
+                    options={assignableRoles.map(r => ({ label: r, value: r }))}
+                    onChange={(e) => setEmpFormData({ ...empFormData, userRole: e.value })}
+                    placeholder="Select Role"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex justify-content-end gap-2 mt-4">
           <Button label="Cancel" outlined onClick={() => setEmpDialogVisible(false)} />
-          <Button label={editMode ? 'Update Employee' : 'Save Employee'} icon="pi pi-check" onClick={handleSaveEmployee} />
+          <Button label={editMode ? 'Update Employee' : 'Create Employee'} icon="pi pi-check" onClick={handleSaveEmployee} />
         </div>
       </Dialog>
 

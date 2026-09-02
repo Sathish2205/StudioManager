@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import { NAV_PERMISSIONS } from '../../constants/roles'
 import './Sidebar.css'
 
 const NAV_GROUPS = [
@@ -55,7 +56,7 @@ const NAV_GROUPS = [
 ]
 
 export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onCloseMobile }) {
-  const { user, tenant, logout } = useAuth()
+  const { user, tenant, logout, hasPermission } = useAuth()
   const [isExpanded, setIsExpanded] = useState(true)
 
   const handleNavClick = (tabId) => {
@@ -73,6 +74,15 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
   const userRole = user?.role || 'admin'
   const tenantName = tenant?.companyName || 'PhotoStudio PRO'
   const avatarLetter = userName.charAt(0).toUpperCase()
+
+  // Filter nav groups based on user permissions
+  const filteredNavGroups = NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => {
+      const requiredPerm = NAV_PERMISSIONS[item.id]
+      return hasPermission(requiredPerm) // null perm = always visible
+    })
+  })).filter((group) => group.items.length > 0)
 
   return (
     <>
@@ -104,9 +114,9 @@ export default function Sidebar({ activeTab, setActiveTab, isMobileOpen, onClose
           )}
         </div>
 
-        {/* Navigation Groups */}
+        {/* Navigation Groups — filtered by permissions */}
         <nav className="portal-sidebar__nav">
-          {NAV_GROUPS.map((group) => (
+          {filteredNavGroups.map((group) => (
             <div key={group.label} className="portal-sidebar__group">
               {isExpanded && (
                 <div className="portal-sidebar__group-label">{group.label}</div>

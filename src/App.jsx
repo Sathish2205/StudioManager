@@ -25,6 +25,8 @@ import EmployeeManagement from './pages/EmployeeManagement/EmployeeManagement'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/Login/Login'
 import AppLayout from './components/AppLayout'
+import AccessDenied from './components/AccessDenied/AccessDenied'
+import { ROUTE_PERMISSIONS } from './constants/roles'
 import './App.css'
 
 const ROUTE_MAP = {
@@ -79,6 +81,25 @@ function getTabFromUrl() {
   const path = window.location.pathname.toLowerCase()
   const cleanPath = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path
   return ROUTE_MAP[cleanPath] || 'home'
+}
+
+/**
+ * Route permission guard wrapper.
+ * Renders children if user has permission, otherwise shows AccessDenied.
+ */
+function ProtectedRoute({ tabKey, setActiveTab, children }) {
+  const { hasPermission } = useAuth()
+  const requiredPerm = ROUTE_PERMISSIONS[tabKey]
+
+  if (!hasPermission(requiredPerm)) {
+    return (
+      <AppLayout activeTab={tabKey} setActiveTab={setActiveTab}>
+        <AccessDenied onNavigateHome={() => setActiveTab('home')} />
+      </AppLayout>
+    )
+  }
+
+  return children
 }
 
 function AppContent() {
@@ -148,26 +169,32 @@ function AppContent() {
 
       {/* ── EVENTS & SHOOTS ── */}
       {activeTab === 'events' && (
-        <Events
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          onNavigateInvoice={handleNavigateInvoice}
-          onNavigateEditEvent={handleNavigateEditEvent}
-        />
+        <ProtectedRoute tabKey="events" setActiveTab={setActiveTab}>
+          <Events
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onNavigateInvoice={handleNavigateInvoice}
+            onNavigateEditEvent={handleNavigateEditEvent}
+          />
+        </ProtectedRoute>
       )}
 
       {/* ── WORKFLOW MANAGEMENT ── */}
       {activeTab === 'workflow' && (
-        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          <WorkflowManagement />
-        </AppLayout>
+        <ProtectedRoute tabKey="workflow" setActiveTab={setActiveTab}>
+          <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+            <WorkflowManagement />
+          </AppLayout>
+        </ProtectedRoute>
       )}
 
       {/* ── CUSTOMER CRM ── */}
       {activeTab === 'crm' && (
-        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          <CustomerCRM onNavigateAddEvent={() => handleNavigateEditEvent(null)} />
-        </AppLayout>
+        <ProtectedRoute tabKey="crm" setActiveTab={setActiveTab}>
+          <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+            <CustomerCRM onNavigateAddEvent={() => handleNavigateEditEvent(null)} />
+          </AppLayout>
+        </ProtectedRoute>
       )}
 
       {/* ── ADD / EDIT EVENT PAGE ── */}
@@ -228,29 +255,31 @@ function AppContent() {
 
       {/* ── MODULE 3: FINANCE & INVOICES ── */}
       {activeTab === 'finance' && (
-        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          <FinanceInvoices
-            onShowToast={showGlobalToast}
-            onNavigateCreateQuotation={(pkg) => {
-              setSelectedQuotation(null)
-              setSelectedPackageForQuote(pkg || null)
-              setActiveTab('create-quotation')
-            }}
-            onNavigateEditQuotation={(quote) => {
-              setSelectedQuotation(quote)
-              setSelectedPackageForQuote(null)
-              setActiveTab('create-quotation')
-            }}
-            onNavigateQuotationDetail={(quote) => {
-              setSelectedQuotation(quote)
-              setActiveTab('quotation-detail')
-            }}
-            onNavigateInvoiceDetail={(inv) => {
-              setSelectedInvoice(inv)
-              setActiveTab('invoice-detail')
-            }}
-          />
-        </AppLayout>
+        <ProtectedRoute tabKey="finance" setActiveTab={setActiveTab}>
+          <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+            <FinanceInvoices
+              onShowToast={showGlobalToast}
+              onNavigateCreateQuotation={(pkg) => {
+                setSelectedQuotation(null)
+                setSelectedPackageForQuote(pkg || null)
+                setActiveTab('create-quotation')
+              }}
+              onNavigateEditQuotation={(quote) => {
+                setSelectedQuotation(quote)
+                setSelectedPackageForQuote(null)
+                setActiveTab('create-quotation')
+              }}
+              onNavigateQuotationDetail={(quote) => {
+                setSelectedQuotation(quote)
+                setActiveTab('quotation-detail')
+              }}
+              onNavigateInvoiceDetail={(inv) => {
+                setSelectedInvoice(inv)
+                setActiveTab('invoice-detail')
+              }}
+            />
+          </AppLayout>
+        </ProtectedRoute>
       )}
 
       {/* ── MODULE 4: PACKAGES & QUOTES ── */}
@@ -329,16 +358,20 @@ function AppContent() {
 
       {/* ── EMPLOYEE MANAGEMENT & ATTENDANCE MODULE ── */}
       {activeTab === 'employees' && (
-        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          <EmployeeManagement activeTab={activeTab} setActiveTab={setActiveTab} />
-        </AppLayout>
+        <ProtectedRoute tabKey="employees" setActiveTab={setActiveTab}>
+          <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+            <EmployeeManagement activeTab={activeTab} setActiveTab={setActiveTab} />
+          </AppLayout>
+        </ProtectedRoute>
       )}
 
       {/* ── MODULE 7: EQUIPMENT TRACKER ── */}
       {activeTab === 'equipment' && (
-        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          <EquipmentTracker onShowToast={showGlobalToast} />
-        </AppLayout>
+        <ProtectedRoute tabKey="equipment" setActiveTab={setActiveTab}>
+          <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+            <EquipmentTracker onShowToast={showGlobalToast} />
+          </AppLayout>
+        </ProtectedRoute>
       )}
 
       {/* ── MODULE 8: STUDIO HELPDESK ── */}

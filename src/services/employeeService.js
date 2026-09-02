@@ -49,7 +49,7 @@ export const createEmployeeWithAccount = async (employeeData, accountData) => {
   // Step 1: Create employee
   const empResult = await apiPost('/employees', employeeData)
   if (!empResult || !empResult.success) {
-    return { success: false, message: empResult?.message || 'Failed to create employee' }
+    return { success: false, message: empResult?.message || 'Failed to create employee profile' }
   }
 
   const employee = empResult.data
@@ -65,13 +65,14 @@ export const createEmployeeWithAccount = async (employeeData, accountData) => {
     username: accountData.username.trim().toLowerCase(),
     password: accountData.password,
     role: accountData.role || 'Assistant',
+    permissions: accountData.permissions || [],
   })
 
   if (!accountResult || !accountResult.success) {
     return {
-      success: true,
+      success: false,
+      message: accountResult?.message || 'Employee created, but login account creation failed',
       data: employee,
-      accountError: accountResult?.message || 'Employee created but login account creation failed',
     }
   }
 

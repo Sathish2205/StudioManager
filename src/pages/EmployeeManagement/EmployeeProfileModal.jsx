@@ -14,7 +14,7 @@ import { getEmployeeById } from '../../services/employeeService'
 import { getMonthlyAttendance } from '../../services/attendanceService'
 import { getUserByEmployee, changeUserRole, changeUserStatus, resetUserPassword } from '../../services/userService'
 import { useAuth } from '../../context/AuthContext'
-import { ACCOUNT_CREATOR_ROLES, getAssignableRoles } from '../../constants/roles'
+import { ACCOUNT_CREATOR_ROLES, getAssignableRoles, isOwnerOrAdmin } from '../../constants/roles'
 import { validatePasswordStrength, passwordsMatch } from '../../validation/passwordValidation'
 
 export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
@@ -37,7 +37,7 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
   const [actionLoading, setActionLoading] = useState(false)
 
   const { user: authUser } = useAuth()
-  const canManageAccounts = ACCOUNT_CREATOR_ROLES.includes(authUser?.role) || authUser?.role === 'admin'
+  const canManageAccounts = isOwnerOrAdmin(authUser?.role) || String(authUser?.role || '').toLowerCase().includes('manager')
   const assignableRoles = getAssignableRoles(authUser?.role || 'Owner/Admin')
 
   useEffect(() => {

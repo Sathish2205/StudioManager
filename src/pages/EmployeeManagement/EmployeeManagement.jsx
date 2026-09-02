@@ -52,7 +52,7 @@ import {
 } from '../../services/shiftService'
 
 import { useAuth } from '../../context/AuthContext'
-import { ROLES, ROLE_OPTIONS, ACCOUNT_CREATOR_ROLES, getAssignableRoles } from '../../constants/roles'
+import { ROLES, ROLE_OPTIONS, ACCOUNT_CREATOR_ROLES, getAssignableRoles, isOwnerOrAdmin } from '../../constants/roles'
 import { validatePasswordStrength, validateUsername, passwordsMatch, getStrengthClass, getStrengthLabel } from '../../validation/passwordValidation'
 
 import CheckinWidget from './CheckinWidget'
@@ -496,7 +496,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
   ]
   const typeOptions = ['Full Time', 'Part Time', 'Freelancer', 'Contract']
   const statusOptions = ['Active', 'Inactive', 'On Leave']
-  const canCreateAccounts = ACCOUNT_CREATOR_ROLES.includes(authUser?.role) || authUser?.role === 'admin'
+  const canCreateAccounts = isOwnerOrAdmin(authUser?.role) || String(authUser?.role || '').toLowerCase().includes('manager')
   const assignableRoles = getAssignableRoles(authUser?.role || 'Owner/Admin')
 
   // Password strength for display

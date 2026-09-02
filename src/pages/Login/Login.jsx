@@ -128,6 +128,18 @@ export default function Login() {
             <button
               type="button"
               className="login-demo-chip"
+              onClick={() => handleQuickLogin('superadmin@studiomanager.com')}
+            >
+              <i className="pi pi-shield text-purple-500" />
+              <div>
+                <strong>Super Admin</strong>
+                <span className="block text-xs text-500">superadmin@studiomanager.com</span>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              className="login-demo-chip"
               onClick={() => handleQuickLogin('admin@abcstudio.com')}
             >
               <i className="pi pi-building text-primary" />

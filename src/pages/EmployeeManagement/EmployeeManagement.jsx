@@ -656,7 +656,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
 
               <Dropdown
                 value={selectedRole}
-                options={roleOptions.map(r => ({ label: r, value: r }))}
+                options={designationOptions.map(r => ({ label: r, value: r }))}
                 onChange={(e) => setSelectedRole(e.value)}
                 placeholder="All Roles"
                 showClear

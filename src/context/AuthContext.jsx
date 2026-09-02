@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
-import { getPermissionsForRole, DEFAULT_ROLE_PERMISSIONS } from '../constants/roles'
+import { getPermissionsForRole, DEFAULT_ROLE_PERMISSIONS, isOwnerOrAdmin } from '../constants/roles'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'https://student-data-manager-ruc1.onrender.com/api'
 
@@ -134,7 +134,7 @@ export const AuthProvider = ({ children }) => {
    */
   const hasPermission = useCallback((permission) => {
     if (!permission) return true // null permission means no restriction
-    if (user?.role === 'Owner/Admin' || user?.role === 'admin') return true
+    if (isOwnerOrAdmin(user?.role)) return true
     return permissions.includes(permission)
   }, [permissions, user])
 
@@ -143,7 +143,7 @@ export const AuthProvider = ({ children }) => {
    */
   const hasAnyPermission = useCallback((permList) => {
     if (!permList || permList.length === 0) return true
-    if (user?.role === 'Owner/Admin' || user?.role === 'admin') return true
+    if (isOwnerOrAdmin(user?.role)) return true
     return permList.some((p) => permissions.includes(p))
   }, [permissions, user])
 

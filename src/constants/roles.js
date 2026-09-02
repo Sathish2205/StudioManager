@@ -88,8 +88,29 @@ export const PERMISSIONS = {
 // Used as fallback when backend doesn't return permissions
 export const DEFAULT_ROLE_PERMISSIONS = {
   'Owner/Admin': Object.values(PERMISSIONS), // Full access
+  'owner': Object.values(PERMISSIONS),
+  'admin': Object.values(PERMISSIONS),
+  'Owner': Object.values(PERMISSIONS),
+  'Admin': Object.values(PERMISSIONS),
 
   'Manager': [
+    PERMISSIONS.EVENTS_VIEW, PERMISSIONS.EVENTS_CREATE, PERMISSIONS.EVENTS_EDIT,
+    PERMISSIONS.EDITING_VIEW, PERMISSIONS.EDITING_UPDATE, PERMISSIONS.EDITING_ASSIGN,
+    PERMISSIONS.DELIVERABLES_VIEW, PERMISSIONS.DELIVERABLES_UPDATE,
+    PERMISSIONS.FINANCE_VIEW, PERMISSIONS.FINANCE_CREATE, PERMISSIONS.FINANCE_RECORD_PAYMENT,
+    PERMISSIONS.EMPLOYEES_VIEW, PERMISSIONS.EMPLOYEES_CREATE, PERMISSIONS.EMPLOYEES_EDIT,
+    PERMISSIONS.ATTENDANCE_VIEW, PERMISSIONS.ATTENDANCE_MANAGE,
+    PERMISSIONS.CRM_VIEW, PERMISSIONS.CRM_CREATE, PERMISSIONS.CRM_EDIT,
+    PERMISSIONS.CALENDAR_VIEW,
+    PERMISSIONS.WORKFLOW_VIEW, PERMISSIONS.WORKFLOW_MANAGE,
+    PERMISSIONS.PACKAGES_VIEW, PERMISSIONS.PACKAGES_CREATE,
+    PERMISSIONS.CONTRACTS_VIEW, PERMISSIONS.CONTRACTS_CREATE,
+    PERMISSIONS.EQUIPMENT_VIEW, PERMISSIONS.EQUIPMENT_MANAGE,
+    PERMISSIONS.HELPDESK_VIEW, PERMISSIONS.HELPDESK_MANAGE,
+    PERMISSIONS.REQUESTS_VIEW, PERMISSIONS.REQUESTS_MANAGE,
+    PERMISSIONS.ACCOUNTS_CREATE, PERMISSIONS.ACCOUNTS_MANAGE,
+  ],
+  'manager': [
     PERMISSIONS.EVENTS_VIEW, PERMISSIONS.EVENTS_CREATE, PERMISSIONS.EVENTS_EDIT,
     PERMISSIONS.EDITING_VIEW, PERMISSIONS.EDITING_UPDATE, PERMISSIONS.EDITING_ASSIGN,
     PERMISSIONS.DELIVERABLES_VIEW, PERMISSIONS.DELIVERABLES_UPDATE,
@@ -218,6 +239,15 @@ export const ROUTE_PERMISSIONS = {
 }
 
 /**
+ * Check if a role is Owner or Admin.
+ */
+export function isOwnerOrAdmin(role) {
+  if (!role) return false
+  const r = String(role).toLowerCase()
+  return r === 'owner' || r === 'admin' || r === 'owner/admin' || r.includes('owner') || r.includes('admin')
+}
+
+/**
  * Get permissions for a given role name.
  * First checks backend-provided permissions, falls back to defaults.
  */
@@ -225,24 +255,29 @@ export function getPermissionsForRole(roleName, backendPermissions) {
   if (backendPermissions && backendPermissions.length > 0) {
     return backendPermissions
   }
-  return DEFAULT_ROLE_PERMISSIONS[roleName] || []
+  if (isOwnerOrAdmin(roleName)) {
+    return Object.values(PERMISSIONS)
+  }
+  const keys = Object.keys(DEFAULT_ROLE_PERMISSIONS)
+  const match = keys.find(k => k.toLowerCase() === String(roleName || '').toLowerCase())
+  return match ? DEFAULT_ROLE_PERMISSIONS[match] : []
 }
 
 /**
  * Roles that can create other accounts.
  * Used for privilege escalation prevention.
  */
-export const ACCOUNT_CREATOR_ROLES = ['Owner/Admin', 'Manager']
+export const ACCOUNT_CREATOR_ROLES = ['Owner/Admin', 'owner', 'admin', 'Manager', 'manager']
 
 /**
  * Get the roles that a given role is allowed to assign.
  * Prevents privilege escalation.
  */
 export function getAssignableRoles(currentUserRole) {
-  if (currentUserRole === 'Owner/Admin') {
+  if (isOwnerOrAdmin(currentUserRole)) {
     return ROLES // Can assign any role
   }
-  if (currentUserRole === 'Manager') {
+  if (String(currentUserRole || '').toLowerCase().includes('manager')) {
     // Manager cannot create Owner/Admin accounts
     return ROLES.filter((r) => r !== 'Owner/Admin')
   }

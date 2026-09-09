@@ -25,10 +25,10 @@ import AddEmployeePage from './pages/AddEmployeePage/AddEmployeePage'
 
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/Login/Login'
-import AppLayout from './components/AppLayout'
 import AccessDenied from './components/AccessDenied/AccessDenied'
 import ErrorBoundary from './components/ErrorBoundary'
 import { ROUTE_PERMISSIONS } from './constants/roles'
+import SuperAdminApp from './pages/SuperAdmin/SuperAdminApp'
 import './App.css'
 
 const ROUTE_MAP = {
@@ -443,6 +443,13 @@ function MainApp() {
 }
 
 export default function App() {
+  // Route-level isolation: /super-admin paths render the Super Admin portal
+  const isSuperAdminPath = window.location.pathname.toLowerCase().startsWith('/super-admin')
+
+  if (isSuperAdminPath) {
+    return <SuperAdminApp />
+  }
+
   return (
     <AuthProvider>
       <MainApp />

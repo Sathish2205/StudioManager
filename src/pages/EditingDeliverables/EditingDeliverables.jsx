@@ -10,6 +10,8 @@ import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 
 import { getTasks, createTask, updateTask, deleteTask } from '../../services/taskService'
+import { getStaff } from '../../services/staffService'
+import { useAuth } from '../../context/AuthContext'
 import PageLoader from '../../components/PageLoader/PageLoader'
 import './EditingDeliverables.css'
 
@@ -25,9 +27,57 @@ const KANBAN_STAGES = [
 ]
 
 export default function EditingDeliverables({ onShowToast }) {
+  const { user } = useAuth()
   const [tasks, setTasks] = useState([])
   const [activeTab, setActiveTab] = useState('kanban') // 'kanban' or 'deliverables'
   const [loading, setLoading] = useState(true)
+  const [editorOptions, setEditorOptions] = useState([
+    'Sathish (Owner)',
+    'Deepa (Lead Editor)',
+    'Rahul Video Editor',
+    'Arun Retoucher'
+  ])
+
+  useEffect(() => {
+    const fetchEditors = async () => {
+      const list = []
+      
+      // 1. Add Owner / Admin name
+      const ownerName = user?.name || user?.fullName || 'Sathish'
+      const ownerRole = user?.role || 'Owner'
+      const ownerLabel = `${ownerName} (${ownerRole})`
+      list.push(ownerLabel)
+
+      // 2. Fetch Employees from backend API
+      try {
+        const staff = await getStaff()
+        if (Array.isArray(staff) && staff.length > 0) {
+          staff.forEach((emp) => {
+            if (emp.name) {
+              const label = emp.role ? `${emp.name} (${emp.role})` : emp.name
+              if (!list.includes(label)) {
+                list.push(label)
+              }
+            }
+          })
+        }
+      } catch (err) {
+        console.warn('Error fetching staff for editors dropdown:', err)
+      }
+
+      // 3. Fallbacks to ensure default editor roles exist
+      const defaults = ['Deepa (Lead Editor)', 'Rahul Video Editor', 'Arun Retoucher']
+      defaults.forEach((d) => {
+        if (!list.includes(d)) {
+          list.push(d)
+        }
+      })
+
+      setEditorOptions(list)
+    }
+
+    fetchEditors()
+  }, [user])
 
   const loadTasks = async () => {
     setLoading(true)
@@ -190,7 +240,7 @@ export default function EditingDeliverables({ onShowToast }) {
     setFormEventName('')
     setFormClientName('')
     setFormType('Edited Photos')
-    setFormEditor('Deepa (Lead Editor)')
+    setFormEditor(editorOptions[0] || 'Sathish (Owner)')
     setFormProgress(0)
     setFormStage('To Do')
     setFormDeadline('2026-08-20')
@@ -385,9 +435,7 @@ export default function EditingDeliverables({ onShowToast }) {
             value={filterEditor}
             options={[
               { label: 'All Editors', value: 'All Editors' },
-              { label: 'Deepa (Lead Editor)', value: 'Deepa (Lead Editor)' },
-              { label: 'Rahul Video Editor', value: 'Rahul Video Editor' },
-              { label: 'Arun Retoucher', value: 'Arun Retoucher' }
+              ...editorOptions.map((opt) => ({ label: opt, value: opt }))
             ]}
             onChange={(e) => setFilterEditor(e.value)}
             placeholder="Assigned Editor"
@@ -480,9 +528,7 @@ export default function EditingDeliverables({ onShowToast }) {
               value={draftEditor}
               options={[
                 { label: 'All Editors', value: 'All Editors' },
-                { label: 'Deepa (Lead Editor)', value: 'Deepa (Lead Editor)' },
-                { label: 'Rahul Video Editor', value: 'Rahul Video Editor' },
-                { label: 'Arun Retoucher', value: 'Arun Retoucher' }
+                ...editorOptions.map((opt) => ({ label: opt, value: opt }))
               ]}
               onChange={(e) => setDraftEditor(e.value)}
               placeholder="Assigned Editor"
@@ -660,7 +706,7 @@ export default function EditingDeliverables({ onShowToast }) {
               <label className="block font-bold mb-1">Assigned Editor</label>
               <Dropdown
                 value={formEditor}
-                options={['Deepa (Lead Editor)', 'Rahul Video Editor', 'Arun Retoucher']}
+                options={editorOptions}
                 onChange={(e) => setFormEditor(e.value)}
                 className="w-full"
               />

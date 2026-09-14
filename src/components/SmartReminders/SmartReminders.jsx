@@ -1,154 +1,111 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Tag } from 'primereact/tag'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
+import { getDashboardData } from '../../services/dashboardService'
 import './SmartReminders.css'
 
-export const INITIAL_REMINDERS = [
-  {
-    id: 'REM-101',
-    category: 'wedding',
-    categoryLabel: 'Upcoming Wedding',
-    icon: 'pi pi-calendar-plus',
-    badgeClass: 'sr-badge--danger',
-    title: '🔔 Wedding of Arun & Priya is in 3 days',
-    details: [
-      { label: 'Photographer assigned', val: 'Karthik & Team (3 Photographers, 2 Cinematographers)' },
-      { label: 'Reporting', val: '5:30 AM' },
-      { label: 'Venue', val: 'ABC Convention Hall, Bengaluru' }
-    ],
-    daysLeft: '3 days left',
-    whatsappMsg: 'Hi Karthik, reminder for Arun & Priya wedding on Aug 11. Reporting time: 5:30 AM at ABC Convention Hall.',
-    unread: true,
-    completed: false
-  },
-  {
-    id: 'REM-102',
-    category: 'reporting',
-    categoryLabel: 'Reporting Time',
-    icon: 'pi pi-clock',
-    badgeClass: 'sr-badge--warning',
-    title: '⏰ Photographer Reporting Time Alert',
-    details: [
-      { label: 'Photographer assigned', val: 'Rahul Sharma & Lead Assistant' },
-      { label: 'Reporting', val: '6:00 AM (Tomorrow)' },
-      { label: 'Venue', val: 'The Leela Palace, Hall B' }
-    ],
-    daysLeft: 'Tomorrow',
-    whatsappMsg: 'Hi Rahul, reporting time for tomorrow at Leela Palace is 6:00 AM sharp.',
-    unread: true,
-    completed: false
-  },
-  {
-    id: 'REM-103',
-    category: 'advance',
-    categoryLabel: 'Pending Advance',
-    icon: 'pi pi-wallet',
-    badgeClass: 'sr-badge--danger',
-    title: '💰 Pending Advance Payment Overdue',
-    details: [
-      { label: 'Client', val: 'Sathish & Priya Kumar' },
-      { label: 'Amount Due', val: '₹45,000 (Balance of ₹1.5L Package)' },
-      { label: 'Due Date', val: 'Overdue (Target: Aug 05)' }
-    ],
-    daysLeft: 'Overdue',
-    whatsappMsg: 'Dear Sathish, gentle reminder regarding the pending advance payment of ₹45,000 for your upcoming shoot.',
-    unread: true,
-    completed: false
-  },
-  {
-    id: 'REM-104',
-    category: 'editing',
-    categoryLabel: 'Editing Deadline',
-    icon: 'pi pi-video',
-    badgeClass: 'sr-badge--warning',
-    title: '🎬 Editing Deadline Approaching',
-    details: [
-      { label: 'Project', val: 'Teaser Video & 4K Reel - Vikram & Ananya' },
-      { label: 'Editor assigned', val: 'Deepa (Lead Video Editor)' },
-      { label: 'Deadline', val: 'Aug 09, 2026 (24 hours left)' }
-    ],
-    daysLeft: '24 hrs left',
-    whatsappMsg: 'Hi Deepa, teaser video for Vikram & Ananya is due tomorrow. Please check timeline.',
-    unread: false,
-    completed: false
-  },
-  {
-    id: 'REM-105',
-    category: 'album',
-    categoryLabel: 'Album Approval',
-    icon: 'pi pi-book',
-    badgeClass: 'sr-badge--info',
-    title: '📖 Album Approval Awaiting Client Feedback',
-    details: [
-      { label: 'Client', val: 'Rajesh & Meera' },
-      { label: 'Status', val: 'Draft Sent 3 days ago via Online Proofing Gallery' },
-      { label: 'Album Specs', val: '40 Pages Premium Flush Mount Album' }
-    ],
-    daysLeft: '3 days pending',
-    whatsappMsg: 'Hi Rajesh & Meera, checking in to see if you had a chance to review the album draft link!',
-    unread: false,
-    completed: false
-  },
-  {
-    id: 'REM-106',
-    category: 'changes',
-    categoryLabel: 'Client Changes',
-    icon: 'pi pi-file-edit',
-    badgeClass: 'sr-badge--purple',
-    title: '✏️ Client Revisions Requested',
-    details: [
-      { label: 'Client', val: 'Sneha & Karan' },
-      { label: 'Revisions', val: 'Requested 3 photo swaps on Page 12 & 14 + Warm color grading' },
-      { label: 'Submitted', val: 'Aug 07, 2026' }
-    ],
-    daysLeft: 'New Request',
-    whatsappMsg: 'Hi Designer, Sneha & Karan requested minor photo swaps on Page 12 & 14.',
-    unread: true,
-    completed: false
-  },
-  {
-    id: 'REM-107',
-    category: 'delivery',
-    categoryLabel: 'Final Delivery',
-    icon: 'pi pi-box',
-    badgeClass: 'sr-badge--success',
-    title: '📦 Final Box Set & USB Delivery Due',
-    details: [
-      { label: 'Client', val: 'Pooja & Aditya' },
-      { label: 'Deliverables', val: '1TB Custom Wooden USB + 2 Leather Canvas Albums' },
-      { label: 'Target Date', val: 'Aug 10, 2026 (BlueDart Express)' }
-    ],
-    daysLeft: 'In 2 days',
-    whatsappMsg: 'Hi Pooja & Aditya, your wedding album box set is packed and ready for dispatch!',
-    unread: false,
-    completed: false
-  },
-  {
-    id: 'REM-108',
-    category: 'anniversary',
-    categoryLabel: 'Wedding Anniversary',
-    icon: 'pi pi-heart-fill',
-    badgeClass: 'sr-badge--pink',
-    title: '🎉 1st Wedding Anniversary Tomorrow',
-    details: [
-      { label: 'Couple', val: 'Suresh & Divya' },
-      { label: 'Wedding Date', val: 'Aug 09, 2025' },
-      { label: 'Offer', val: 'Send 20% Off Anniversary Shoot Voucher' }
-    ],
-    daysLeft: 'Tomorrow',
-    whatsappMsg: 'Happy 1st Anniversary Suresh & Divya! 💖 Wishing you a lifetime of happiness from team PhotoStudio PRO.',
-    unread: true,
-    completed: false
+// Auto-generate reminders from real backend data
+const buildRemindersFromData = (dashData) => {
+  if (!dashData) return []
+  const reminders = []
+  const today = new Date()
+  let idCounter = 100
+
+  // Generate reminders from recent events
+  if (dashData.recentEvents && dashData.recentEvents.length > 0) {
+    dashData.recentEvents.forEach((evt) => {
+      const clientName = evt.clientId
+        ? `${evt.clientId.firstName || ''} ${evt.clientId.lastName || ''}`.trim()
+        : evt.clientName || 'Client'
+      const eventDate = evt.eventDate ? new Date(evt.eventDate) : null
+      const eventName = evt.eventName || evt.eventType || 'Event'
+      const venue = evt.venueName || evt.venue || 'Venue TBD'
+      const status = evt.eventStatus || evt.status || 'Booked'
+
+      // Upcoming event reminder (within next 7 days)
+      if (eventDate && eventDate >= today) {
+        const diffDays = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24))
+        if (diffDays <= 7) {
+          idCounter++
+          reminders.push({
+            id: `REM-${idCounter}`,
+            category: 'wedding',
+            categoryLabel: `Upcoming ${evt.eventType || 'Event'}`,
+            icon: 'pi pi-calendar-plus',
+            badgeClass: diffDays <= 1 ? 'sr-badge--danger' : 'sr-badge--warning',
+            title: `🔔 ${eventName} for ${clientName} ${diffDays <= 1 ? 'is tomorrow' : `is in ${diffDays} days`}`,
+            details: [
+              { label: 'Client', val: clientName },
+              { label: 'Venue', val: `${venue}${evt.city ? `, ${evt.city}` : ''}` },
+              { label: 'Event Date', val: eventDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) }
+            ],
+            daysLeft: diffDays <= 1 ? 'Tomorrow' : `${diffDays} days left`,
+            whatsappMsg: `Reminder: ${eventName} for ${clientName} on ${eventDate.toLocaleDateString('en-IN')} at ${venue}.`,
+            unread: true,
+            completed: false
+          })
+        }
+      }
+
+      // Pending payment reminder
+      const packageAmt = Number(evt.packageAmount) || 0
+      const totalPaid = Number(evt.totalPaid) || 0
+      const remaining = packageAmt - totalPaid
+      if (remaining > 0 && status !== 'Cancelled') {
+        idCounter++
+        reminders.push({
+          id: `REM-${idCounter}`,
+          category: 'advance',
+          categoryLabel: 'Pending Payment',
+          icon: 'pi pi-wallet',
+          badgeClass: 'sr-badge--danger',
+          title: `💰 Pending payment of ₹${remaining.toLocaleString('en-IN')} from ${clientName}`,
+          details: [
+            { label: 'Client', val: clientName },
+            { label: 'Amount Due', val: `₹${remaining.toLocaleString('en-IN')} (of ₹${packageAmt.toLocaleString('en-IN')} Package)` },
+            { label: 'Event', val: eventName }
+          ],
+          daysLeft: 'Pending',
+          whatsappMsg: `Dear ${clientName}, gentle reminder regarding the pending payment of ₹${remaining.toLocaleString('en-IN')} for your ${eventName}.`,
+          unread: true,
+          completed: false
+        })
+      }
+    })
   }
-]
+
+  // Pending tasks reminder
+  if (dashData.pendingTasks > 0) {
+    idCounter++
+    reminders.push({
+      id: `REM-${idCounter}`,
+      category: 'editing',
+      categoryLabel: 'Pending Tasks',
+      icon: 'pi pi-video',
+      badgeClass: 'sr-badge--warning',
+      title: `🎬 ${dashData.pendingTasks} editing/delivery task${dashData.pendingTasks > 1 ? 's' : ''} pending`,
+      details: [
+        { label: 'Pending Tasks', val: `${dashData.pendingTasks} task${dashData.pendingTasks > 1 ? 's' : ''} awaiting completion` },
+        { label: 'Action', val: 'Review and assign editors for pending deliverables' }
+      ],
+      daysLeft: 'Active',
+      whatsappMsg: `Reminder: ${dashData.pendingTasks} editing tasks are pending. Please review the Editing & Deliverables module.`,
+      unread: false,
+      completed: false
+    })
+  }
+
+  return reminders
+}
 
 export default function SmartReminders({ onShowToast }) {
-  const [reminders, setReminders] = useState(INITIAL_REMINDERS)
+  const [reminders, setReminders] = useState([])
   const [filterCategory, setFilterCategory] = useState('all')
   const [isAddOpen, setIsAddOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   // New Reminder Form State
   const [newTitle, setNewTitle] = useState('')
@@ -156,6 +113,18 @@ export default function SmartReminders({ onShowToast }) {
   const [newPhotographer, setNewPhotographer] = useState('')
   const [newReporting, setNewReporting] = useState('')
   const [newVenue, setNewVenue] = useState('')
+
+  // Fetch real data and auto-generate reminders
+  useEffect(() => {
+    async function loadReminders() {
+      setLoading(true)
+      const data = await getDashboardData()
+      const autoReminders = buildRemindersFromData(data)
+      setReminders(autoReminders)
+      setLoading(false)
+    }
+    loadReminders()
+  }, [])
 
   const handleActionClick = (rem) => {
     if (onShowToast) {
@@ -187,7 +156,7 @@ export default function SmartReminders({ onShowToast }) {
     if (!newTitle.trim()) return
 
     const newRem = {
-      id: `REM-${100 + reminders.length + 1}`,
+      id: `REM-${200 + reminders.length + 1}`,
       category: newCategory,
       categoryLabel: newCategory.toUpperCase(),
       icon: 'pi pi-bell',
@@ -215,14 +184,11 @@ export default function SmartReminders({ onShowToast }) {
 
   const categoryOptions = [
     { label: 'All Categories', value: 'all' },
-    { label: 'Weddings', value: 'wedding' },
-    { label: 'Reporting Time', value: 'reporting' },
-    { label: 'Pending Advance', value: 'advance' },
-    { label: 'Editing Deadline', value: 'editing' },
+    { label: 'Upcoming Events', value: 'wedding' },
+    { label: 'Pending Payment', value: 'advance' },
+    { label: 'Editing / Tasks', value: 'editing' },
     { label: 'Album Approval', value: 'album' },
-    { label: 'Client Changes', value: 'changes' },
     { label: 'Final Delivery', value: 'delivery' },
-    { label: 'Anniversary', value: 'anniversary' }
   ]
 
   const filteredReminders = reminders.filter((r) => {
@@ -246,7 +212,7 @@ export default function SmartReminders({ onShowToast }) {
               {unreadCount > 0 && <span className="sr-unread-pill">{unreadCount} New</span>}
             </h2>
             <p className="sr-card-sub">
-              Automated triggers for upcoming weddings, reporting times, pending payments & deliveries
+              Automated triggers for upcoming events, pending payments & deliveries
             </p>
           </div>
         </div>
@@ -284,10 +250,19 @@ export default function SmartReminders({ onShowToast }) {
 
       {/* Reminders List */}
       <div className="sr-list">
-        {filteredReminders.length === 0 ? (
+        {loading ? (
+          <div className="sr-empty-state">
+            <i className="pi pi-spin pi-spinner text-3xl text-400 mb-2" />
+            <p className="text-sm font-semibold text-600">Loading reminders...</p>
+          </div>
+        ) : filteredReminders.length === 0 ? (
           <div className="sr-empty-state">
             <i className="pi pi-check-circle text-3xl text-400 mb-2" />
-            <p className="text-sm font-semibold text-600">No reminders found in this category.</p>
+            <p className="text-sm font-semibold text-600">
+              {filterCategory === 'all'
+                ? 'No reminders yet. Reminders will appear automatically based on your events and tasks.'
+                : 'No reminders found in this category.'}
+            </p>
           </div>
         ) : (
           filteredReminders.map((rem) => (
@@ -378,7 +353,7 @@ export default function SmartReminders({ onShowToast }) {
             <InputText
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="e.g. Wedding of Arun & Priya is in 3 days"
+              placeholder="e.g. Wedding shoot for client in 3 days"
               className="w-full"
             />
           </div>
@@ -388,7 +363,7 @@ export default function SmartReminders({ onShowToast }) {
             <InputText
               value={newPhotographer}
               onChange={(e) => setNewPhotographer(e.target.value)}
-              placeholder="e.g. Karthik & Team"
+              placeholder="e.g. Lead Photographer & Team"
               className="w-full"
             />
           </div>
@@ -408,7 +383,7 @@ export default function SmartReminders({ onShowToast }) {
             <InputText
               value={newVenue}
               onChange={(e) => setNewVenue(e.target.value)}
-              placeholder="e.g. ABC Convention Hall"
+              placeholder="e.g. Convention Hall, Bengaluru"
               className="w-full"
             />
           </div>

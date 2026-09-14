@@ -8,9 +8,12 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { InputTextarea } from 'primereact/inputtextarea'
 
+import { useAuth } from '../../context/AuthContext'
 import './StudioHelpdesk.css'
 
 export default function StudioHelpdesk({ onShowToast }) {
+  const { user } = useAuth()
+  const currentUserName = user?.name || user?.username || 'Studio Manager'
   const [tickets, setTickets] = useState(() => {
     try {
       const parsed = JSON.parse(localStorage.getItem('studio_helpdesk_tickets') || '[]')
@@ -85,13 +88,13 @@ export default function StudioHelpdesk({ onShowToast }) {
       description: tDesc,
       category: tCategory,
       priority: tPriority,
-      createdBy: 'Studio Manager',
+      createdBy: currentUserName,
       assignedTo: tAssignee,
       createdDate: new Date().toISOString().split('T')[0],
       dueDate: '2026-08-15',
       status: 'Open',
       comments: [
-        { user: 'Studio Manager', time: 'Just Now', text: tDesc }
+        { user: currentUserName, time: 'Just Now', text: tDesc }
       ]
     }
 
@@ -104,7 +107,7 @@ export default function StudioHelpdesk({ onShowToast }) {
     if (!newComment.trim() || !selectedTicket) return
 
     const updatedComment = {
-      user: 'Sathish Manager',
+      user: currentUserName,
       time: 'Just Now',
       text: newComment
     }

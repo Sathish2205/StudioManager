@@ -348,7 +348,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
         packageAmount: Number(data.packagePrice || 0),
         advanceAmount: Number(data.advancePaid || 0),
         balanceAmount: Math.max(0, Number(data.packagePrice || 0) - Number(data.advancePaid || 0)),
-        photographer: selectedPhotographerObj ? selectedPhotographerObj.name : 'Sathish Kumar & Lead Team',
+        photographer: selectedPhotographerObj ? selectedPhotographerObj.name : 'Lead Photographer',
         videographer: selectedVideographerObj ? selectedVideographerObj.name : 'Lead Videographer',
         droneRequired: !!data.droneRequired,
         liveStreaming: !!data.liveStreaming,

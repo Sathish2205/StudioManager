@@ -15,15 +15,15 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
   }
 
   // Dynamic Fields
-  const rawId = String(raw._id || raw.id || raw.eventId || 'EVT-2026-0891')
+  const rawId = String(raw._id || raw.id || raw.eventId || 'NEW')
   const invoiceNumStr = rawId.includes('EVT') ? rawId.replace('EVT', 'INV') : `INV-${rawId.replace(/[^a-zA-Z0-9]/g, '').slice(-8).toUpperCase()}`
 
-  const clientName = raw.clientName || raw.couple || (raw.clientId ? `${raw.clientId.firstName || ''} ${raw.clientId.lastName || ''}`.trim() : '') || 'Ananya & Vikram Sharma'
-  const clientPhone = raw.clientPhone || raw.clientId?.phone || '+91 98765 43210'
-  const clientEmail = raw.clientEmail || raw.clientId?.email || 'client@example.com'
+  const clientName = raw.clientName || raw.couple || (raw.clientId ? `${raw.clientId.firstName || ''} ${raw.clientId.lastName || ''}`.trim() : '') || 'Client'
+  const clientPhone = raw.clientPhone || raw.clientId?.phone || ''
+  const clientEmail = raw.clientEmail || raw.clientId?.email || ''
 
-  const eventName = raw.eventName || raw.couple || 'Royal Wedding & Reception'
-  const eventType = raw.eventType || 'Wedding & Reception'
+  const eventName = raw.eventName || raw.couple || 'Event'
+  const eventType = raw.eventType || 'Shoot'
   
   let formattedDate = '2026-08-20'
   if (raw.eventDate || raw.date) {
@@ -35,9 +35,9 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
     }
   }
 
-  const venueLocation = raw.venue || raw.venueName ? `${raw.venueName || raw.venue}${raw.city ? `, ${raw.city}` : ''}` : 'Leela Palace Ballroom, Bengaluru'
-  const packageName = raw.package || raw.packageName || 'Royal Cinematic 4K Photography & Film Package'
-  const leadPhotographer = raw.photographer || (raw.assignedPhotographers?.[0]?.name) || 'Sathish Kumar & Lead Team'
+  const venueLocation = raw.venue || raw.venueName ? `${raw.venueName || raw.venue}${raw.city ? `, ${raw.city}` : ''}` : 'Venue'
+  const packageName = raw.package || raw.packageName || 'Photography Package'
+  const leadPhotographer = raw.photographer || (raw.assignedPhotographers?.[0]?.name) || 'Lead Photographer'
 
   // Dynamic Included Services List
   const serviceItems = []
@@ -53,8 +53,8 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
     : `Includes 4K Cinematic Highlights, Full Event Coverage, Lead Photographer (${leadPhotographer}), Drone Aerial Views, Luxe Hardbound Album.`
 
   // Dynamic Financial Calculations
-  const totalCost = parseAmt(raw.packageAmount || raw.packagePrice || raw.amount || raw.totalAmount || 185000)
-  const advancePaid = parseAmt(raw.advanceAmount || raw.advancePaid || raw.totalPaid || raw.paidAmount || 75000)
+  const totalCost = parseAmt(raw.packageAmount || raw.packagePrice || raw.amount || raw.totalAmount || 0)
+  const advancePaid = parseAmt(raw.advanceAmount || raw.advancePaid || raw.totalPaid || raw.paidAmount || 0)
   const balanceDue = Math.max(0, parseAmt(raw.balanceAmount) || (totalCost - advancePaid))
   const gstTax = Math.round(totalCost * 0.18)
   const grandTotal = totalCost + gstTax

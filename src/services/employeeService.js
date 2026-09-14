@@ -31,22 +31,27 @@ export const getEmployeeById = async (id) => {
 // POST /api/employees
 // Accepts optional login account fields: createLoginAccount, username, password, userRole
 // Backend creates employee + user account atomically
+// POST /api/employees
 export const createEmployee = async (employeeData) => {
   const result = await apiPost('/employees', employeeData)
   if (result && result.success) {
-    return result.data
+    return {
+      success: true,
+      data: result.data,
+      message: result.message || 'Employee created successfully'
+    }
   }
-  return null
+  return {
+    success: false,
+    message: result?.message || 'Failed to create employee',
+    errors: result?.errors || null,
+  }
 }
 
 /**
- * Create employee with login account in two steps (fallback if backend
- * doesn't support atomic creation).
- * 1. Create employee
- * 2. Create user account linked to employee
+ * Create employee with login account in two steps
  */
 export const createEmployeeWithAccount = async (employeeData, accountData) => {
-  // Single atomic payload to POST /api/employees
   const combinedPayload = {
     ...employeeData,
     createLoginAccount: !!(accountData && accountData.username && accountData.password),
@@ -65,10 +70,10 @@ export const createEmployeeWithAccount = async (employeeData, accountData) => {
     }
   }
 
-  // Fallback if backend returned an error
   return {
     success: false,
     message: empResult?.message || 'Failed to create employee and login account',
+    errors: empResult?.errors || null,
   }
 }
 
@@ -76,18 +81,30 @@ export const createEmployeeWithAccount = async (employeeData, accountData) => {
 export const updateEmployee = async (id, employeeData) => {
   const result = await apiPut(`/employees/${id}`, employeeData)
   if (result && result.success) {
-    return result.data
+    return {
+      success: true,
+      data: result.data,
+      message: result.message || 'Employee updated successfully'
+    }
   }
-  return null
+  return {
+    success: false,
+    message: result?.message || 'Failed to update employee',
+    errors: result?.errors || null,
+  }
 }
 
 // DELETE /api/employees/:id
 export const deleteEmployee = async (id) => {
   const result = await apiDelete(`/employees/${id}`)
   if (result && result.success) {
-    return true
+    return { success: true, message: result.message || 'Employee deleted successfully' }
   }
-  return false
+  return {
+    success: false,
+    message: result?.message || 'Failed to delete employee',
+    errors: result?.errors || null,
+  }
 }
 
 // GET /api/employees/dropdown

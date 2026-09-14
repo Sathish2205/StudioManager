@@ -152,8 +152,15 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
   }
 
   const showToast = (severity, summary, detail) => {
-    if (onShowToast) onShowToast(detail)
-    else if (toastRef.current) toastRef.current.show({ severity, summary, detail, life: 3500 })
+    if (onShowToast) onShowToast(detail, severity)
+    if (toastRef.current) toastRef.current.show({ severity, summary, detail, life: 5000 })
+  }
+
+  const formatApiErrorMsg = (result) => {
+    if (result?.errors && Array.isArray(result.errors) && result.errors.length > 0) {
+      return result.errors.map(e => e.message || `${e.field} is invalid`).join('. ')
+    }
+    return result?.message || 'API request failed while saving employee.'
   }
 
   // Save Employee Form Submission
@@ -197,37 +204,44 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
 
     setSaving(true)
 
-    // Format payload with safe defaults for email & phone to prevent backend validation errors
-    const primaryRole = formData.roles.join(', ')
+    // Valid single role enum options expected by backend Mongoose model
+    const validRoles = [
+      'Photographer', 'Videographer', 'Photo Editor', 'Video Editor',
+      'Album Designer', 'Editor', 'Designer', 'Manager', 'Assistant',
+      'Driver', 'Accountant', 'Drone Pilot', 'Staff', 'Other'
+    ]
+    const primaryRole = formData.roles.find(r => validRoles.includes(r)) || 'Photographer'
     const cleanName = formData.name.trim()
-    const safeSlug = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'emp'
-    const fallbackEmail = `${safeSlug}.${Date.now().toString().slice(-4)}@studio.local`
-    const fallbackPhone = '9876543210'
+    const cleanEmail = formData.email?.trim() || null
+    const cleanPhone = formData.phone?.trim() || null
 
     const payload = {
       name: cleanName,
-      email: formData.email.trim() || fallbackEmail,
-      phone: formData.phone.trim() || fallbackPhone,
-      role: primaryRole, // Backwards compatibility
-      roles: formData.roles, // Multi-roles array
-      employmentType: formData.employmentType,
-      salary: formData.salary,
-      joiningDate: formData.joiningDate,
-      status: formData.status,
-      address: formData.address,
+      email: cleanEmail,
+      phone: cleanPhone,
+      role: primaryRole,
+      specialization: formData.roles.join(', '),
+      roles: formData.roles,
+      employmentType: formData.employmentType || 'Full Time',
+      salary: Number(formData.salary) || 0,
+      joiningDate: formData.joiningDate || new Date(),
+      status: formData.status || 'Active',
+      address: formData.address?.trim() || null,
       emergencyContact: {
-        name: formData.emergencyName,
-        phone: formData.emergencyPhone,
-        relation: formData.emergencyRelation,
+        name: formData.emergencyName?.trim() || null,
+        phone: formData.emergencyPhone?.trim() || null,
+        relation: formData.emergencyRelation?.trim() || null,
       },
     }
 
     if (isEditMode && formData._id) {
       const res = await updateEmployee(formData._id, payload)
       setSaving(false)
-      if (res) {
+      if (res && res.success) {
         showToast('success', 'Updated', 'Employee profile updated successfully.')
         if (onNavigateBack) onNavigateBack()
+      } else {
+        showToast('error', 'Update Failed', formatApiErrorMsg(res))
       }
     } else {
       if (formData.createLoginAccount) {
@@ -243,14 +257,16 @@ export default function AddEmployeePage({ employeeToEdit, onNavigateBack, onShow
           showToast('success', 'Created', 'Employee and login account created successfully.')
           if (onNavigateBack) onNavigateBack()
         } else {
-          showToast('error', 'Failed', result?.message || 'Failed to create employee.')
+          showToast('error', 'Creation Failed', formatApiErrorMsg(result))
         }
       } else {
         const res = await createEmployee(payload)
         setSaving(false)
-        if (res) {
+        if (res && res.success) {
           showToast('success', 'Created', 'Employee added successfully.')
           if (onNavigateBack) onNavigateBack()
+        } else {
+          showToast('error', 'Creation Failed', formatApiErrorMsg(res))
         }
       }
     }

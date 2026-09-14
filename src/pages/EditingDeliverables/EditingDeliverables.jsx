@@ -31,12 +31,7 @@ export default function EditingDeliverables({ onShowToast }) {
   const [tasks, setTasks] = useState([])
   const [activeTab, setActiveTab] = useState('kanban') // 'kanban' or 'deliverables'
   const [loading, setLoading] = useState(true)
-  const [editorOptions, setEditorOptions] = useState([
-    'Sathish (Owner)',
-    'Deepa (Lead Editor)',
-    'Rahul Video Editor',
-    'Arun Retoucher'
-  ])
+  const [editorOptions, setEditorOptions] = useState([])
 
   useEffect(() => {
     const fetchEditors = async () => {
@@ -44,7 +39,7 @@ export default function EditingDeliverables({ onShowToast }) {
       
       // 1. Add Owner / Admin name
       const ownerName = user?.name || user?.fullName || 'Sathish'
-      const ownerRole = user?.role || 'Owner'
+      const ownerRole = user?.role || 'owner'
       const ownerLabel = `${ownerName} (${ownerRole})`
       list.push(ownerLabel)
 
@@ -55,7 +50,7 @@ export default function EditingDeliverables({ onShowToast }) {
           staff.forEach((emp) => {
             if (emp.name) {
               const label = emp.role ? `${emp.name} (${emp.role})` : emp.name
-              if (!list.includes(label)) {
+              if (!list.includes(label) && !list.includes(emp.name)) {
                 list.push(label)
               }
             }
@@ -64,14 +59,6 @@ export default function EditingDeliverables({ onShowToast }) {
       } catch (err) {
         console.warn('Error fetching staff for editors dropdown:', err)
       }
-
-      // 3. Fallbacks to ensure default editor roles exist
-      const defaults = ['Deepa (Lead Editor)', 'Rahul Video Editor', 'Arun Retoucher']
-      defaults.forEach((d) => {
-        if (!list.includes(d)) {
-          list.push(d)
-        }
-      })
 
       setEditorOptions(list)
     }
@@ -87,7 +74,8 @@ export default function EditingDeliverables({ onShowToast }) {
         const eventName = t.eventName || t.eventId?.eventName || t.eventId?.couple || t.title || 'Studio Deliverable'
         const clientName = t.clientName || t.title || 'Client'
         const deliverableType = t.deliverableType || t.description || 'Edited Photos'
-        const assignedEditor = t.assignedEditor || t.assignedTo?.name || 'Deepa (Lead Editor)'
+        const defaultOwnerName = user?.name ? `${user.name} (${user.role || 'owner'})` : 'Sathish (owner)'
+        const assignedEditor = t.assignedEditor || t.assignedTo?.name || defaultOwnerName
         
         let status = t.status || 'To Do'
         if (status === 'New') status = 'To Do'
@@ -117,13 +105,14 @@ export default function EditingDeliverables({ onShowToast }) {
       mapped.sort((a, b) => String(b.id || b._id).localeCompare(String(a.id || a._id)))
       setTasks(mapped)
     } else {
+      const defaultOwnerName = user?.name ? `${user.name} (${user.role || 'owner'})` : 'Sathish (owner)'
       // Default initial tasks if database is empty (sorted by last created first)
       const initialDefaultTasks = [
         {
           id: 'TSK-104',
           eventName: 'Pooja Hegde Portrait Shoot',
           clientName: 'Pooja Hegde',
-          assignedEditor: 'Deepa (Lead Editor)',
+          assignedEditor: defaultOwnerName,
           deliverableType: 'Highlight Video',
           progress: 70,
           deadline: '2026-08-25',
@@ -135,7 +124,7 @@ export default function EditingDeliverables({ onShowToast }) {
           id: 'TSK-103',
           eventName: 'Gokulnath Royal Wedding',
           clientName: 'Gokulnath',
-          assignedEditor: 'Arun Retoucher',
+          assignedEditor: defaultOwnerName,
           deliverableType: 'Album',
           progress: 30,
           deadline: '2026-08-28',
@@ -147,7 +136,7 @@ export default function EditingDeliverables({ onShowToast }) {
           id: 'TSK-102',
           eventName: 'Harish Engagement Shoot',
           clientName: 'Harish',
-          assignedEditor: 'Rahul Video Editor',
+          assignedEditor: defaultOwnerName,
           deliverableType: 'Teaser',
           progress: 100,
           deadline: '2026-08-20',
@@ -159,7 +148,7 @@ export default function EditingDeliverables({ onShowToast }) {
           id: 'TSK-101',
           eventName: 'Ananya & Vikram Wedding',
           clientName: 'Ananya Sharma',
-          assignedEditor: 'Deepa (Lead Editor)',
+          assignedEditor: defaultOwnerName,
           deliverableType: 'Edited Photos',
           progress: 85,
           deadline: '2026-08-22',

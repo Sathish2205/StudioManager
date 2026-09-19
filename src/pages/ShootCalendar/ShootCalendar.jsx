@@ -14,7 +14,7 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
   const { events, loading, WORKFLOW_STAGES } = useEvents()
 
   // Calendar Navigation State
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 7, 1)) // August 2026
+  const [currentDate, setCurrentDate] = useState(new Date())
   const [calendarView, setCalendarView] = useState('month') // 'month', 'week', 'day'
 
   // Events Dataset mapped from EventsContext
@@ -165,7 +165,7 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
   }
 
   const handleToday = () => {
-    setCurrentDate(new Date(2026, 7, 12)) // Aug 12, 2026 (Today reference)
+    setCurrentDate(new Date())
   }
 
   // Event Status Badge Helper Function
@@ -228,7 +228,11 @@ export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
       const mm = String(month + 1).padStart(2, '0')
       const dd = String(dayNum).padStart(2, '0')
       const dateStr = `${yyyy}-${mm}-${dd}`
-      const isToday = dayNum === 12 && month === 7 && year === 2026 // Aug 12, 2026 is Today
+      const now = new Date()
+      const isToday =
+        dayNum === now.getDate() &&
+        month === now.getMonth() &&
+        year === now.getFullYear()
 
       grid.push({
         dayNum,

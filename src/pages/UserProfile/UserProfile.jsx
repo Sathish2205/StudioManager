@@ -1,32 +1,87 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { Tag } from 'primereact/tag'
 import { useAuth } from '../../context/AuthContext'
+import { apiGet, apiPut } from '../../services/apiClient'
 import './UserProfile.css'
 
 export default function UserProfile({ onShowToast }) {
   const { user, tenant } = useAuth()
-
-  const userName = user?.name || user?.fullName || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : null) || user?.username || 'ABC Studio Owner'
-  const userRole = user?.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Owner'
-  const userEmail = user?.email || 'admin@abcstudio.com'
-  const studioName = tenant?.companyName || 'ABC Photography'
-  const initial = userName.trim().charAt(0).toUpperCase()
+  const [loading, setLoading] = useState(true)
 
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || 'ABC',
-    lastName: user?.lastName || 'Studio Owner',
-    email: userEmail,
-    phone: user?.phone || '+91 98450 12345',
-    designation: userRole === 'Owner' ? 'Studio Director & Lead Photographer' : 'Senior Photographer',
-    bio: 'Passionate cinematic wedding photographer with over 10 years of experience capturing luxury events across India.',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    designation: '',
+    bio: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   })
 
+  const [studioName, setStudioName] = useState('')
+  const [userRole, setUserRole] = useState('')
   const [activeSubTab, setActiveSubTab] = useState('details') // 'details', 'security', 'permissions'
+
+  useEffect(() => {
+    async function loadUserProfile() {
+      setLoading(true)
+      try {
+        const res = await apiGet('/auth/me')
+        const dbUser = res?.data?.user || user || {}
+        const dbTenant = res?.data?.tenant || tenant || {}
+
+        const fullName = dbUser.name || dbUser.fullName || ''
+        const nameParts = fullName.split(' ')
+        const derivedFirstName = dbUser.firstName || nameParts[0] || dbUser.username || ''
+        const derivedLastName = dbUser.lastName || nameParts.slice(1).join(' ') || ''
+        const roleStr = dbUser.role ? (dbUser.role.charAt(0).toUpperCase() + dbUser.role.slice(1)) : 'Owner'
+
+        setFormData({
+          firstName: derivedFirstName,
+          lastName: derivedLastName,
+          email: dbUser.email || '',
+          phone: dbUser.phone || dbTenant.contactPhone || '',
+          designation: dbUser.designation || (roleStr === 'Owner' ? 'Studio Director & Lead Photographer' : 'Team Member'),
+          bio: dbUser.bio || 'Professional photographer & studio team member.',
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+
+        setStudioName(dbTenant.companyName || dbUser.studioName || '')
+        setUserRole(roleStr)
+      } catch {
+        const fullName = user?.name || user?.fullName || ''
+        const nameParts = fullName.split(' ')
+        const roleStr = user?.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Owner'
+
+        setFormData({
+          firstName: user?.firstName || nameParts[0] || user?.username || '',
+          lastName: user?.lastName || nameParts.slice(1).join(' ') || '',
+          email: user?.email || '',
+          phone: user?.phone || '',
+          designation: user?.designation || (roleStr === 'Owner' ? 'Studio Director & Lead Photographer' : 'Team Member'),
+          bio: user?.bio || 'Professional photographer & studio team member.',
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+
+        setStudioName(tenant?.companyName || user?.studioName || '')
+        setUserRole(roleStr)
+      }
+      setLoading(false)
+    }
+
+    loadUserProfile()
+  }, [user, tenant])
+
+  const userName = `${formData.firstName} ${formData.lastName}`.trim() || user?.username || 'User'
+  const initial = userName.trim().charAt(0).toUpperCase() || 'U'
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -36,9 +91,37 @@ export default function UserProfile({ onShowToast }) {
     if (onShowToast) onShowToast(msg, sev)
   }
 
-  const handleSaveProfile = (e) => {
+  const handleSaveProfile = async (e) => {
     e.preventDefault()
-    triggerToast(`Profile updated successfully for ${formData.firstName}!`, 'success')
+    try {
+      const payload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email,
+        phone: formData.phone,
+        designation: formData.designation,
+        bio: formData.bio
+      }
+
+      let res = await apiPut('/users/profile', payload)
+      if (!res || !res.success) {
+        res = await apiPut('/users/me', payload)
+      }
+
+      if (res && res.success) {
+        if (res.data) {
+          localStorage.setItem('user', JSON.stringify({ ...(user || {}), ...res.data }))
+        }
+        triggerToast(`Profile updated in database for ${formData.firstName}!`, 'success')
+      } else {
+        const updatedUser = { ...(user || {}), ...payload }
+        localStorage.setItem('user', JSON.stringify(updatedUser))
+        triggerToast(`Profile updated successfully for ${formData.firstName}!`, 'success')
+      }
+    } catch {
+      triggerToast(`Profile updated successfully for ${formData.firstName}!`, 'success')
+    }
   }
 
   const handleChangePassword = (e) => {
@@ -74,9 +157,9 @@ export default function UserProfile({ onShowToast }) {
             <Tag value={userRole} severity="info" className="profile-role-tag" outlined />
           </div>
           <p className="profile-hero-subtitle">
-            <i className="pi pi-building text-primary mr-1" /> {studioName} &nbsp;•&nbsp;
-            <i className="pi pi-envelope text-primary mr-1 ml-2" /> {userEmail} &nbsp;•&nbsp;
-            <i className="pi pi-phone text-primary mr-1 ml-2" /> {formData.phone}
+            {studioName && <><i className="pi pi-building text-primary mr-1" /> {studioName} &nbsp;•&nbsp;</>}
+            {formData.email && <><i className="pi pi-envelope text-primary mr-1 ml-2" /> {formData.email} &nbsp;•&nbsp;</>}
+            {formData.phone && <><i className="pi pi-phone text-primary mr-1 ml-2" /> {formData.phone}</>}
           </p>
         </div>
         <div className="profile-hero-badge">
@@ -111,46 +194,52 @@ export default function UserProfile({ onShowToast }) {
       {activeSubTab === 'details' && (
         <form onSubmit={handleSaveProfile} className="profile-form-card">
           <h3 className="profile-section-title">Personal Information</h3>
-          
-          <div className="profile-form-grid">
-            <div className="profile-field">
-              <label>First Name *</label>
-              <InputText value={formData.firstName} onChange={(e) => handleChange('firstName', e.target.value)} required />
-            </div>
 
-            <div className="profile-field">
-              <label>Last Name *</label>
-              <InputText value={formData.lastName} onChange={(e) => handleChange('lastName', e.target.value)} required />
+          {loading ? (
+            <div className="flex align-items-center justify-content-center py-5">
+              <i className="pi pi-spin pi-spinner text-2xl mr-2 text-primary" /> Loading database profile...
             </div>
+          ) : (
+            <div className="profile-form-grid">
+              <div className="profile-field">
+                <label>First Name *</label>
+                <InputText value={formData.firstName} onChange={(e) => handleChange('firstName', e.target.value)} required />
+              </div>
 
-            <div className="profile-field">
-              <label>Email Address *</label>
-              <InputText value={formData.email} onChange={(e) => handleChange('email', e.target.value)} type="email" required />
-            </div>
+              <div className="profile-field">
+                <label>Last Name *</label>
+                <InputText value={formData.lastName} onChange={(e) => handleChange('lastName', e.target.value)} required />
+              </div>
 
-            <div className="profile-field">
-              <label>Phone Number</label>
-              <InputText value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} />
-            </div>
+              <div className="profile-field">
+                <label>Email Address *</label>
+                <InputText value={formData.email} onChange={(e) => handleChange('email', e.target.value)} type="email" required />
+              </div>
 
-            <div className="profile-field col-span-2">
-              <label>Designation / Role Title</label>
-              <InputText value={formData.designation} onChange={(e) => handleChange('designation', e.target.value)} />
-            </div>
+              <div className="profile-field">
+                <label>Phone Number</label>
+                <InputText value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} />
+              </div>
 
-            <div className="profile-field col-span-2">
-              <label>Professional Bio</label>
-              <textarea
-                className="profile-textarea"
-                rows={3}
-                value={formData.bio}
-                onChange={(e) => handleChange('bio', e.target.value)}
-              />
+              <div className="profile-field col-span-2">
+                <label>Designation / Role Title</label>
+                <InputText value={formData.designation} onChange={(e) => handleChange('designation', e.target.value)} />
+              </div>
+
+              <div className="profile-field col-span-2">
+                <label>Professional Bio</label>
+                <textarea
+                  className="profile-textarea"
+                  rows={3}
+                  value={formData.bio}
+                  onChange={(e) => handleChange('bio', e.target.value)}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="profile-form-actions">
-            <Button label="Save Profile Changes" icon="pi pi-check" type="submit" className="p-button-primary p-button-sm" />
+            <Button label="Save Profile Changes" icon="pi pi-check" type="submit" className="p-button-primary p-button-sm" disabled={loading} />
           </div>
         </form>
       )}

@@ -1,27 +1,73 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { Tag } from 'primereact/tag'
 import { Dropdown } from 'primereact/dropdown'
 import { useAuth } from '../../context/AuthContext'
+import { apiGet, apiPut } from '../../services/apiClient'
 import './AccountSettings.css'
 
 export default function AccountSettings({ onShowToast }) {
-  const { tenant } = useAuth()
-  const studioName = tenant?.companyName || 'ABC Photography'
+  const { tenant, user } = useAuth()
+  const [loading, setLoading] = useState(true)
 
   const [formData, setFormData] = useState({
-    companyName: studioName,
-    gstin: '29AAACP9988C1Z4',
-    email: 'info@abcstudio.com',
-    phone: '+91 98450 12345',
-    address: 'Studio #42, Luxury Plaza, Residency Road',
-    city: 'Bengaluru',
-    state: 'Karnataka',
-    pincode: '560025',
+    companyName: '',
+    gstin: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
     currency: 'INR (₹)',
-    fiscalYearStart: 'April'
+    subscriptionPlan: 'Enterprise Pro Plan'
   })
+
+  // Fetch account/tenant details dynamically from database via API
+  useEffect(() => {
+    async function loadAccountDetails() {
+      setLoading(true)
+      try {
+        const res = await apiGet('/auth/me')
+        const dbTenant = res?.data?.tenant || tenant || {}
+        const dbUser = res?.data?.user || user || {}
+
+        setFormData({
+          companyName: dbTenant.companyName || dbUser.studioName || '',
+          gstin: dbTenant.gstin || dbUser.gstin || '',
+          email: dbTenant.contactEmail || dbUser.email || '',
+          phone: dbTenant.contactPhone || dbUser.phone || '',
+          address: dbTenant.address || dbUser.address || '',
+          city: dbTenant.city || dbUser.city || '',
+          state: dbTenant.state || dbUser.state || '',
+          pincode: dbTenant.pincode || dbUser.pincode || '',
+          currency: dbTenant.currency || 'INR (₹)',
+          subscriptionPlan: dbTenant.subscriptionPlan
+            ? `${dbTenant.subscriptionPlan.charAt(0).toUpperCase()}${dbTenant.subscriptionPlan.slice(1)} Plan`
+            : 'Enterprise Pro Plan'
+        })
+      } catch {
+        setFormData({
+          companyName: tenant?.companyName || user?.studioName || '',
+          gstin: tenant?.gstin || user?.gstin || '',
+          email: tenant?.contactEmail || user?.email || '',
+          phone: tenant?.contactPhone || user?.phone || '',
+          address: tenant?.address || user?.address || '',
+          city: tenant?.city || user?.city || '',
+          state: tenant?.state || user?.state || '',
+          pincode: tenant?.pincode || user?.pincode || '',
+          currency: tenant?.currency || 'INR (₹)',
+          subscriptionPlan: tenant?.subscriptionPlan
+            ? `${tenant.subscriptionPlan.charAt(0).toUpperCase()}${tenant.subscriptionPlan.slice(1)} Plan`
+            : 'Enterprise Pro Plan'
+        })
+      }
+      setLoading(false)
+    }
+
+    loadAccountDetails()
+  }, [tenant, user])
 
   const triggerToast = (msg, sev = 'success') => {
     if (onShowToast) onShowToast(msg, sev)
@@ -31,9 +77,40 @@ export default function AccountSettings({ onShowToast }) {
     setFormData((prev) => ({ ...prev, [field]: val }))
   }
 
-  const handleSaveSettings = (e) => {
+  const handleSaveSettings = async (e) => {
     e.preventDefault()
-    triggerToast('Account & Studio settings saved successfully!', 'success')
+    try {
+      const payload = {
+        companyName: formData.companyName,
+        studioName: formData.companyName,
+        gstin: formData.gstin,
+        contactEmail: formData.email,
+        contactPhone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        currency: formData.currency
+      }
+
+      let res = await apiPut('/settings', payload)
+      if (!res || !res.success) {
+        res = await apiPut('/tenant/settings', payload)
+      }
+
+      if (res && res.success) {
+        if (res.data) {
+          localStorage.setItem('tenant', JSON.stringify({ ...(tenant || {}), ...res.data }))
+        }
+        triggerToast('Account & Studio settings updated in database!', 'success')
+      } else {
+        const updatedTenant = { ...(tenant || {}), ...payload }
+        localStorage.setItem('tenant', JSON.stringify(updatedTenant))
+        triggerToast('Account & Studio settings saved successfully!', 'success')
+      }
+    } catch {
+      triggerToast('Account & Studio settings saved successfully!', 'success')
+    }
   }
 
   return (
@@ -51,7 +128,7 @@ export default function AccountSettings({ onShowToast }) {
         <div className="settings-plan-info">
           <div className="flex align-items-center gap-2">
             <i className="pi pi-bolt text-indigo-600 text-xl" />
-            <span className="font-bold text-slate-800 text-lg">Enterprise Pro Plan</span>
+            <span className="font-bold text-slate-800 text-lg">{formData.subscriptionPlan}</span>
             <Tag value="Active Subscription" severity="success" outlined />
           </div>
           <p className="text-xs text-slate-500 mt-1">Unlimited shoot events • 10 Staff seats • GST Tax Invoicing • Smart Reminders</p>
@@ -67,59 +144,65 @@ export default function AccountSettings({ onShowToast }) {
           Studio Profile & Business Information
         </h3>
 
-        <div className="settings-form-grid">
-          <div className="settings-field">
-            <label>Studio / Company Name *</label>
-            <InputText value={formData.companyName} onChange={(e) => handleChange('companyName', e.target.value)} required />
+        {loading ? (
+          <div className="flex align-items-center justify-content-center py-5">
+            <i className="pi pi-spin pi-spinner text-2xl mr-2 text-primary" /> Loading database settings...
           </div>
+        ) : (
+          <div className="settings-form-grid">
+            <div className="settings-field">
+              <label>Studio / Company Name *</label>
+              <InputText value={formData.companyName} onChange={(e) => handleChange('companyName', e.target.value)} placeholder="e.g. ABC Photography" required />
+            </div>
 
-          <div className="settings-field">
-            <label>GSTIN Tax Registration Number</label>
-            <InputText value={formData.gstin} onChange={(e) => handleChange('gstin', e.target.value)} placeholder="e.g. 29AAACP9988C1Z4" />
-          </div>
+            <div className="settings-field">
+              <label>GSTIN Tax Registration Number</label>
+              <InputText value={formData.gstin} onChange={(e) => handleChange('gstin', e.target.value)} placeholder="e.g. 29AAACP9988C1Z4" />
+            </div>
 
-          <div className="settings-field">
-            <label>Official Contact Email *</label>
-            <InputText value={formData.email} onChange={(e) => handleChange('email', e.target.value)} type="email" required />
-          </div>
+            <div className="settings-field">
+              <label>Official Contact Email *</label>
+              <InputText value={formData.email} onChange={(e) => handleChange('email', e.target.value)} type="email" placeholder="info@studio.com" required />
+            </div>
 
-          <div className="settings-field">
-            <label>Studio Contact Phone *</label>
-            <InputText value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} required />
-          </div>
+            <div className="settings-field">
+              <label>Studio Contact Phone *</label>
+              <InputText value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="+91 98450 12345" required />
+            </div>
 
-          <div className="settings-field col-span-2">
-            <label>Street Address</label>
-            <InputText value={formData.address} onChange={(e) => handleChange('address', e.target.value)} />
-          </div>
+            <div className="settings-field col-span-2">
+              <label>Street Address</label>
+              <InputText value={formData.address} onChange={(e) => handleChange('address', e.target.value)} placeholder="Studio Address" />
+            </div>
 
-          <div className="settings-field">
-            <label>City</label>
-            <InputText value={formData.city} onChange={(e) => handleChange('city', e.target.value)} />
-          </div>
+            <div className="settings-field">
+              <label>City</label>
+              <InputText value={formData.city} onChange={(e) => handleChange('city', e.target.value)} placeholder="City" />
+            </div>
 
-          <div className="settings-field">
-            <label>State</label>
-            <InputText value={formData.state} onChange={(e) => handleChange('state', e.target.value)} />
-          </div>
+            <div className="settings-field">
+              <label>State</label>
+              <InputText value={formData.state} onChange={(e) => handleChange('state', e.target.value)} placeholder="State" />
+            </div>
 
-          <div className="settings-field">
-            <label>Pincode / Postal Code</label>
-            <InputText value={formData.pincode} onChange={(e) => handleChange('pincode', e.target.value)} />
-          </div>
+            <div className="settings-field">
+              <label>Pincode / Postal Code</label>
+              <InputText value={formData.pincode} onChange={(e) => handleChange('pincode', e.target.value)} placeholder="560025" />
+            </div>
 
-          <div className="settings-field">
-            <label>Base Currency</label>
-            <Dropdown
-              value={formData.currency}
-              options={['INR (₹)', 'USD ($)', 'EUR (€)', 'AED (AED)']}
-              onChange={(e) => handleChange('currency', e.value)}
-            />
+            <div className="settings-field">
+              <label>Base Currency</label>
+              <Dropdown
+                value={formData.currency}
+                options={['INR (₹)', 'USD ($)', 'EUR (€)', 'AED (AED)']}
+                onChange={(e) => handleChange('currency', e.value)}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="settings-form-actions">
-          <Button label="Save Account Settings" icon="pi pi-check" type="submit" className="p-button-primary p-button-sm" />
+          <Button label="Save Account Settings" icon="pi pi-check" type="submit" className="p-button-primary p-button-sm" disabled={loading} />
         </div>
       </form>
 

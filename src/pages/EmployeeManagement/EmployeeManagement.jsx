@@ -752,7 +752,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                 return (
                   <div className="flex flex-wrap gap-1">
                     {roleList.map((r, i) => (
-                      <Tag key={i} value={r} severity="secondary" style={{ fontSize: '0.7rem' }} />
+                      <Tag key={i} value={r} severity="secondary" style={{ fontSize: '0.7rem' }} outlined />
                     ))}
                   </div>
                 )
@@ -765,7 +765,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
               sortable
               body={(rd) => {
                 if (!rd) return null
-                return <Tag value={rd.employmentType || 'Full Time'} severity="info" />
+                return <Tag value={rd.employmentType || 'Full Time'} severity="info" outlined />
               }}
             />
             <Column
@@ -791,6 +791,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                   <Tag
                     value={rd.status || 'Active'}
                     severity={rd.status === 'Active' ? 'success' : 'danger'}
+                    outlined
                   />
                 )
               }}
@@ -933,6 +934,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                       ? 'info'
                       : 'danger'
                   }
+                  outlined
                 />
               )}
             />
@@ -1018,6 +1020,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
                   severity={
                     rd.status === 'Approved' ? 'success' : rd.status === 'Pending' ? 'warning' : 'danger'
                   }
+                  outlined
                 />
               )}
             />
@@ -1106,7 +1109,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             <Column
               field="status"
               header="Status"
-              body={(rd) => <Tag value={rd.status} severity="success" />}
+              body={(rd) => <Tag value={rd.status} severity="success" outlined />}
             />
           </DataTable>
         </div>
@@ -1153,7 +1156,7 @@ export default function EmployeeManagement({ activeTab = 'employees', setActiveT
             <Column header="Grace Period" body={(rd) => `${rd.gracePeriod || 15} mins`} />
             <Column
               header="Overtime"
-              body={(rd) => (rd.overtimeEnabled ? <Tag value="Enabled" severity="success" /> : <Tag value="Disabled" severity="warning" />)}
+              body={(rd) => (rd.overtimeEnabled ? <Tag value="Enabled" severity="success" outlined /> : <Tag value="Disabled" severity="warning" outlined />)}
             />
           </DataTable>
         </div>

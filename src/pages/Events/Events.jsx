@@ -180,9 +180,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
   const crewBodyTemplate = (rowData) => (
     <div className="events-table__crew-tags">
       {rowData.crew.map((member, idx) => (
-        <span key={idx} className="events-table__crew-chip">
-          {member}
-        </span>
+        <Tag key={idx} value={member} severity="secondary" outlined />
       ))}
     </div>
   )
@@ -194,12 +192,22 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
     else if (status === 'Advance Paid' || status === 'Deposit Paid') severity = 'info'
     else if (status === 'Pending Deposit' || status === 'Pending') severity = 'danger'
 
-    return <Tag value={status} severity={severity} rounded />
+    return <Tag value={status} severity={severity} rounded outlined />
+  }
+
+  const getStatusSeverity = (status) => {
+    if (!status) return 'info'
+    const s = status.toLowerCase()
+    if (s.includes('delivered') || s.includes('completed') || s.includes('paid')) return 'success'
+    if (s.includes('check') || s.includes('editing') || s.includes('progress')) return 'info'
+    if (s.includes('schedule') || s.includes('todo') || s.includes('to do') || s.includes('pending')) return 'warning'
+    if (s.includes('cancel')) return 'danger'
+    return 'info'
   }
 
   const statusBodyTemplate = (rowData) => (
     <div className="events-table__status-box">
-      <Tag value={rowData.status} severity={rowData.statusSeverity} />
+      <Tag value={rowData.status} severity={getStatusSeverity(rowData.status)} outlined />
       <ProgressBar
         value={rowData.progress}
         showValue={false}

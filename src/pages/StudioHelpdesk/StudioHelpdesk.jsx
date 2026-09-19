@@ -370,10 +370,10 @@ export default function StudioHelpdesk({ onShowToast }) {
         >
           <Column field="id" header="Ticket ID" sortable style={{ minWidth: '110px' }} />
           <Column field="title" header="Title & Subject" sortable style={{ minWidth: '240px' }} />
-          <Column field="category" header="Category" body={(r) => <Tag value={r.category} severity="info" />} style={{ minWidth: '120px' }} />
-          <Column field="priority" header="Priority" body={(r) => <Tag value={r.priority} severity={prioritySeverity(r.priority)} />} sortable style={{ minWidth: '120px' }} />
+          <Column field="category" header="Category" body={(r) => <Tag value={r.category} severity="info" outlined />} style={{ minWidth: '120px' }} />
+          <Column field="priority" header="Priority" body={(r) => <Tag value={r.priority} severity={prioritySeverity(r.priority)} outlined />} sortable style={{ minWidth: '120px' }} />
           <Column field="assignedTo" header="Assigned To" style={{ minWidth: '150px' }} />
-          <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={statusSeverity(r.status)} />} sortable style={{ minWidth: '130px' }} />
+          <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={statusSeverity(r.status)} outlined />} sortable style={{ minWidth: '130px' }} />
           <Column
             header="Actions"
             body={(r) => (
@@ -399,8 +399,8 @@ export default function StudioHelpdesk({ onShowToast }) {
         >
           <div className="flex flex-column gap-3 text-xs">
             <div className="flex justify-content-between align-items-center">
-              <Tag value={selectedTicket.priority} severity={prioritySeverity(selectedTicket.priority)} />
-              <Tag value={selectedTicket.status} severity={statusSeverity(selectedTicket.status)} />
+              <Tag value={selectedTicket.priority} severity={prioritySeverity(selectedTicket.priority)} outlined />
+              <Tag value={selectedTicket.status} severity={statusSeverity(selectedTicket.status)} outlined />
             </div>
 
             <div className="bg-surface-ground p-3 border-round">

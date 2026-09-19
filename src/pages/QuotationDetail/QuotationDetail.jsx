@@ -86,7 +86,7 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
           </button>
           <h2 className="quote-detail-actions-bar__title">
             Quotation {currentQuotation.quotationNumber}
-            <Tag value={currentQuotation.status} severity={statusSeverity(currentQuotation.status)} style={{ marginLeft: '10px' }} />
+            <Tag value={currentQuotation.status} severity={statusSeverity(currentQuotation.status)} style={{ marginLeft: '10px' }} outlined />
           </h2>
         </div>
 
@@ -182,7 +182,7 @@ export default function QuotationDetail({ quotation, onNavigateBack, onNavigateE
               Valid Until: <strong>{currentQuotation.validUntil ? new Date(currentQuotation.validUntil).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '31 Aug 2026'}</strong>
             </div>
             <div className="quote-meta-row">
-              Status: <Tag value={currentQuotation.status} severity={statusSeverity(currentQuotation.status)} />
+              Status: <Tag value={currentQuotation.status} severity={statusSeverity(currentQuotation.status)} outlined />
             </div>
           </div>
         </div>

@@ -185,7 +185,7 @@ export default function CheckinWidget({ onToast }) {
                   <span className="text-600 text-sm"><i className="pi pi-clock mr-1 text-primary" />Shift: <strong>{shift.startTime || '09:00 AM'} – {shift.endTime || '06:00 PM'}</strong></span>
                 </div>
               </div>
-              <Tag value={statusLabel} severity={statusSeverity} className="px-3 py-2 text-sm font-semibold" />
+              <Tag value={statusLabel} severity={statusSeverity} className="px-3 py-2 text-sm font-semibold" outlined />
             </div>
 
             {/* Live Counter Display */}

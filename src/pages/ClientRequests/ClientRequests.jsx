@@ -190,9 +190,9 @@ export default function ClientRequests({ onShowToast }) {
           <Column field="id" header="Request ID" sortable style={{ minWidth: '110px' }} />
           <Column field="title" header="Request Summary" sortable style={{ minWidth: '240px' }} />
           <Column field="clientName" header="Client" sortable style={{ minWidth: '180px' }} />
-          <Column field="requestType" header="Type" body={(r) => <Tag value={r.requestType} severity="info" />} style={{ minWidth: '140px' }} />
+          <Column field="requestType" header="Type" body={(r) => <Tag value={r.requestType} severity="info" outlined />} style={{ minWidth: '140px' }} />
           <Column field="assignedTo" header="Assigned To" style={{ minWidth: '140px' }} />
-          <Column field="status" header="Workflow Stage" body={(r) => <Tag value={r.status} severity={statusSeverity(r.status)} />} sortable style={{ minWidth: '140px' }} />
+          <Column field="status" header="Workflow Stage" body={(r) => <Tag value={r.status} severity={statusSeverity(r.status)} outlined />} sortable style={{ minWidth: '140px' }} />
           <Column
             header="Actions"
             body={(r) => (
@@ -219,7 +219,7 @@ export default function ClientRequests({ onShowToast }) {
           <div className="flex flex-column gap-3 text-xs">
             <div className="flex justify-content-between align-items-center">
               <span className="font-bold text-700">Client: {selectedReq.clientName}</span>
-              <Tag value={selectedReq.status} severity={statusSeverity(selectedReq.status)} />
+              <Tag value={selectedReq.status} severity={statusSeverity(selectedReq.status)} outlined />
             </div>
 
             <div className="bg-surface-ground p-3 border-round">

@@ -332,7 +332,7 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
                 <Column field="quotationNumber" header="Quote #" style={{ minWidth: '110px' }} />
                 <Column field="clientName" header="Client" style={{ minWidth: '150px' }} />
                 <Column field="grandTotal" header="Total (₹)" body={(r) => `₹${(r.grandTotal || r.total || 0).toLocaleString()}`} style={{ minWidth: '100px' }} />
-                <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={quoteStatusSeverity(r.status)} />} style={{ minWidth: '100px' }} />
+                <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={quoteStatusSeverity(r.status)} outlined />} style={{ minWidth: '100px' }} />
               </DataTable>
             </div>
           </div>
@@ -355,7 +355,7 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
                 <Column field="invoiceNumber" header="Invoice #" style={{ minWidth: '110px' }} />
                 <Column field="clientName" header="Client" style={{ minWidth: '150px' }} />
                 <Column field="balance" header="Balance (₹)" body={(r) => <span className={r.balance > 0 ? 'text-red-600 font-bold' : 'text-green-600 font-bold'}>₹{(r.balance || 0).toLocaleString()}</span>} style={{ minWidth: '110px' }} />
-                <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={invoiceStatusSeverity(r.status)} />} style={{ minWidth: '100px' }} />
+                <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={invoiceStatusSeverity(r.status)} outlined />} style={{ minWidth: '100px' }} />
               </DataTable>
             </div>
           </div>
@@ -389,7 +389,7 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
               <Column field="eventName" header="Event Name" style={{ minWidth: '190px' }} />
               <Column field="grandTotal" header="Total (₹)" body={(r) => `₹${(r.grandTotal || r.total || 0).toLocaleString()}`} sortable style={{ minWidth: '130px' }} />
               <Column field="validUntil" header="Valid Until" style={{ minWidth: '120px' }} />
-              <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={quoteStatusSeverity(r.status)} />} sortable style={{ minWidth: '120px' }} />
+              <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={quoteStatusSeverity(r.status)} outlined />} sortable style={{ minWidth: '120px' }} />
               <Column
                 header="Actions"
                 body={(r) => (
@@ -477,7 +477,7 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
                 <Column field="totalPaid" header="Paid (₹)" body={(r) => `₹${(r.totalPaid || 0).toLocaleString()}`} style={{ minWidth: '110px' }} />
                 <Column field="balance" header="Balance (₹)" body={(r) => <span className={r.balance > 0 ? 'text-red-600 font-bold' : 'text-green-600 font-bold'}>₹{(r.balance || 0).toLocaleString()}</span>} sortable style={{ minWidth: '120px' }} />
                 <Column field="dueDate" header="Due Date" style={{ minWidth: '110px' }} />
-                <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={invoiceStatusSeverity(r.status)} />} sortable style={{ minWidth: '130px' }} />
+                <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={invoiceStatusSeverity(r.status)} outlined />} sortable style={{ minWidth: '130px' }} />
                 <Column
                   header="Actions"
                   body={(r) => (
@@ -552,7 +552,7 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
               <Column field="eventName" header="Event" sortable style={{ minWidth: '190px' }} />
               <Column field="amount" header="Amount (₹)" body={(r) => `₹${(r.amount || 0).toLocaleString()}`} sortable style={{ minWidth: '130px' }} />
               <Column field="paymentDate" header="Date" sortable style={{ minWidth: '120px' }} />
-              <Column field="paymentType" header="Type" body={(r) => <Tag value={r.paymentType} severity="info" />} style={{ minWidth: '130px' }} />
+              <Column field="paymentType" header="Type" body={(r) => <Tag value={r.paymentType} severity="info" outlined />} style={{ minWidth: '130px' }} />
               <Column field="paymentMethod" header="Method" style={{ minWidth: '120px' }} />
               <Column field="transactionRef" header="Ref Code" style={{ minWidth: '140px' }} />
             </DataTable>
@@ -583,7 +583,7 @@ export default function FinanceInvoices({ onShowToast, onNavigateCreateQuotation
             <Column field="totalPaid" header="Paid (₹)" body={(r) => `₹${(r.totalPaid || 0).toLocaleString()}`} style={{ minWidth: '110px' }} />
             <Column field="balance" header="Balance Due (₹)" body={(r) => <span className="font-bold text-red-600">₹{(r.balance || 0).toLocaleString()}</span>} style={{ minWidth: '130px' }} />
             <Column field="dueDate" header="Due Date" style={{ minWidth: '120px' }} />
-            <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={invoiceStatusSeverity(r.status)} />} style={{ minWidth: '130px' }} />
+            <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={invoiceStatusSeverity(r.status)} outlined />} style={{ minWidth: '130px' }} />
             <Column
               header="Action"
               body={(r) => (

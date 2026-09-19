@@ -135,6 +135,7 @@ export default function InvoicePage({ event, onNavigateEvents, onNavigateWorkflo
                 value={balanceDue === 0 ? 'PAID IN FULL' : 'DEPOSIT PAID'}
                 severity={balanceDue === 0 ? 'success' : 'warning'}
                 className="invoice-status-tag"
+                outlined
               />
             </div>
           </div>

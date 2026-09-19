@@ -451,7 +451,7 @@ export default function EditingDeliverables({ onShowToast }) {
                   {stageTasks.map((task) => (
                     <div key={task.id} className="kanban-card">
                       <div className="flex justify-content-between align-items-center mb-2">
-                        <Tag value={task.priority} severity={prioritySeverity(task.priority)} />
+                        <Tag value={task.priority} severity={prioritySeverity(task.priority)} outlined />
                         <span className="text-xs text-500 font-semibold">{task.id}</span>
                       </div>
 
@@ -534,7 +534,7 @@ export default function EditingDeliverables({ onShowToast }) {
               sortable
               style={{ minWidth: '140px' }}
             />
-            <Column field="status" header="Status Stage" body={(r) => <Tag value={r.status} severity="info" />} sortable style={{ minWidth: '130px' }} />
+            <Column field="status" header="Status Stage" body={(r) => <Tag value={r.status} severity="info" outlined />} sortable style={{ minWidth: '130px' }} />
             <Column
               header="Actions"
               body={(r) => (

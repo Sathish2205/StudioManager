@@ -257,7 +257,7 @@ export default function WorkflowManagement() {
     <div className="wf-table__event-box">
       <span className="wf-table__event-title">{rowData.eventName}</span>
       <div className="wf-table__event-meta">
-        <Tag value={rowData.eventType} severity="info" rounded style={{ fontSize: '0.7rem' }} />
+        <Tag value={rowData.eventType} severity="info" rounded outlined style={{ fontSize: '0.7rem' }} />
         <span>{rowData.eventDate ? new Date(rowData.eventDate).toLocaleDateString() : ''}</span>
       </div>
     </div>
@@ -300,6 +300,7 @@ export default function WorkflowManagement() {
         <Tag
           value={paymentStatus}
           severity={balanceDue === 0 ? 'success' : 'warning'}
+          outlined
           style={{ fontSize: '0.65rem', marginTop: '0.2rem', width: 'fit-content' }}
         />
       </div>
@@ -311,7 +312,7 @@ export default function WorkflowManagement() {
     if (rowData.overallStatus === 'Completed') severity = 'success'
     if (rowData.overallStatus === 'Editing') severity = 'warning'
     if (rowData.overallStatus === 'Delivered') severity = 'success'
-    return <Tag value={rowData.overallStatus} severity={severity} />
+    return <Tag value={rowData.overallStatus} severity={severity} outlined />
   }
 
   const actionBodyTemplate = (rowData) => (
@@ -622,7 +623,7 @@ export default function WorkflowManagement() {
               <div className="flex align-items-center justify-content-between mb-2">
                 <div className="flex align-items-center gap-2">
                   <span className="font-bold text-900 text-lg">{selectedWorkflow.eventName}</span>
-                  <Tag value={selectedWorkflow.eventType} severity="info" rounded />
+                  <Tag value={selectedWorkflow.eventType} severity="info" rounded outlined />
                 </div>
                 <Tag
                   value={selectedWorkflow.overallStatus}
@@ -633,6 +634,7 @@ export default function WorkflowManagement() {
                       ? 'warning'
                       : 'info'
                   }
+                  outlined
                 />
               </div>
 

@@ -59,9 +59,9 @@ export default function EventDetailDrawer({ event, visible, onHide, onEdit }) {
           <span className="drawer-header__id">{event.id}</span>
           <h2 className="drawer-header__couple">{event.couple}</h2>
           <div className="drawer-header__badges">
-            <Tag value={event.eventType} severity="info" className="drawer-tag" />
-            <Tag value={event.status} severity={getStatusSeverity(event.status)} className="drawer-tag" />
-            <Tag value={event.payment} severity={getPaymentSeverity(event.payment)} className="drawer-tag" />
+            <Tag value={event.eventType} severity="info" className="drawer-tag" outlined />
+            <Tag value={event.status} severity={getStatusSeverity(event.status)} className="drawer-tag" outlined />
+            <Tag value={event.payment} severity={getPaymentSeverity(event.payment)} className="drawer-tag" outlined />
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ export default function EventDetailDrawer({ event, visible, onHide, onEdit }) {
 
             <div className="drawer-field">
               <span className="field-label">Payment Status</span>
-              <Tag value={event.payment} severity={getPaymentSeverity(event.payment)} />
+              <Tag value={event.payment} severity={getPaymentSeverity(event.payment)} outlined />
             </div>
 
             <div className="drawer-field full-width">

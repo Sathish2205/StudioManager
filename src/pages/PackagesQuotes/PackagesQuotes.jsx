@@ -221,7 +221,7 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
               <div className="package-card">
                 <div className="flex justify-content-between align-items-center mb-2">
                   <span className="text-xs font-bold text-600">{pkg.id}</span>
-                  <Tag value={pkg.duration} severity="info" />
+                  <Tag value={pkg.duration} severity="info" outlined />
                 </div>
 
                 <h3 className="text-lg font-bold text-900 mb-1">{pkg.name}</h3>
@@ -289,7 +289,7 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
             <Column field="name" header="Add-on Service Name" sortable style={{ minWidth: '220px' }} />
             <Column field="description" header="Description" style={{ minWidth: '250px' }} />
             <Column field="price" header="Price (₹)" body={(r) => `₹${r.price.toLocaleString()}`} sortable style={{ minWidth: '130px' }} />
-            <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity="success" />} style={{ minWidth: '110px' }} />
+            <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity="success" outlined />} style={{ minWidth: '110px' }} />
           </DataTable>
         </div>
       )}
@@ -318,7 +318,7 @@ export default function PackagesQuotes({ onShowToast, onNavigateAddEvent, onNavi
             <Column field="eventName" header="Event" style={{ minWidth: '220px' }} />
             <Column field="total" header="Total (₹)" body={(r) => `₹${r.total.toLocaleString()}`} sortable style={{ minWidth: '130px' }} />
             <Column field="validUntil" header="Valid Until" style={{ minWidth: '120px' }} />
-            <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={quoteStatusSeverity(r.status)} />} style={{ minWidth: '120px' }} />
+            <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={quoteStatusSeverity(r.status)} outlined />} style={{ minWidth: '120px' }} />
             <Column
               header="Actions"
               body={(r) => (

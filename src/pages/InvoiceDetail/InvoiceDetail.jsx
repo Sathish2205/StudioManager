@@ -139,7 +139,7 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
           </button>
           <h2 className="invoice-detail-actions-bar__title">
             Invoice #{currentInvoice.invoiceNumber}
-            <Tag value={currentInvoice.status} severity={statusSeverity(currentInvoice.status)} style={{ marginLeft: '10px' }} />
+            <Tag value={currentInvoice.status} severity={statusSeverity(currentInvoice.status)} style={{ marginLeft: '10px' }} outlined />
           </h2>
         </div>
 
@@ -207,7 +207,7 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
               Due Date: <strong>{currentInvoice.dueDate ? new Date(currentInvoice.dueDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '25 Aug 2026'}</strong>
             </div>
             <div className="invoice-meta-row">
-              Status: <Tag value={currentInvoice.status} severity={statusSeverity(currentInvoice.status)} />
+              Status: <Tag value={currentInvoice.status} severity={statusSeverity(currentInvoice.status)} outlined />
             </div>
           </div>
         </div>

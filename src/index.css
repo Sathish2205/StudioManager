@@ -1249,3 +1249,61 @@ textarea.p-inputtext {
   font-weight: 500;
   font-size: var(--font-size-sm);
 }
+
+/* ══════════════════════════════════════════════════════════
+   OUTLINED LABELS & TAG SYSTEM DESIGN
+   ══════════════════════════════════════════════════════════ */
+.p-tag {
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  padding: 0.2rem 0.55rem !important;
+  border-radius: 6px !important;
+  letter-spacing: 0.01em !important;
+  background-color: transparent;
+}
+
+.p-tag.p-tag-outlined,
+.p-tag {
+  background-color: transparent;
+}
+
+/* Success severity outlined */
+.p-tag-success,
+.p-tag-outlined.p-tag-success {
+  color: #15803d !important;
+  background-color: #f0fdf4 !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+/* Info severity outlined */
+.p-tag-info,
+.p-tag-outlined.p-tag-info {
+  color: #0369a1 !important;
+  background-color: #f0f9ff !important;
+  border: 1px solid #bae6fd !important;
+}
+
+/* Warning severity outlined */
+.p-tag-warning,
+.p-tag-outlined.p-tag-warning {
+  color: #b45309 !important;
+  background-color: #fffbeb !important;
+  border: 1px solid #fde68a !important;
+}
+
+/* Danger / Error severity outlined */
+.p-tag-danger,
+.p-tag-outlined.p-tag-danger {
+  color: #b91c1c !important;
+  background-color: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+}
+
+/* Secondary severity outlined */
+.p-tag-secondary,
+.p-tag-outlined.p-tag-secondary {
+  color: #475569 !important;
+  background-color: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+}
+

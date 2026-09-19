@@ -296,6 +296,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
       value={rowData.status}
       severity={rowData.status === 'Active' ? 'success' : 'secondary'}
       rounded
+      outlined
     />
   )
 
@@ -848,7 +849,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
                 <Column field="package" header="Package" />
                 <Column field="photographer" header="Photographer" />
                 <Column field="amount" header="Amount (₹)" body={(r) => `₹${(r.amount || 0).toLocaleString()}`} />
-                <Column field="paymentStatus" header="Payment" body={(r) => <Tag value={r.paymentStatus || 'Completed'} severity="success" />} />
+                <Column field="paymentStatus" header="Payment" body={(r) => <Tag value={r.paymentStatus || 'Completed'} severity="success" outlined />} />
                 <Column field="rating" header="Rating" body={(r) => '⭐'.repeat(r.rating || 5)} />
               </DataTable>
             </div>
@@ -883,7 +884,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
                     <div key={r.id} className="bg-surface-card p-3 border-round-lg border-1 surface-border mb-2 text-xs">
                       <div className="flex justify-content-between font-bold mb-1">
                         <span>{r.type}</span>
-                        <Tag value={r.status} severity="warning" />
+                        <Tag value={r.status} severity="warning" outlined />
                       </div>
                       <div className="text-600 mb-2">{r.note}</div>
                       <Button label="Send Wish" icon="pi pi-send" className="p-button-xs p-button-outlined" onClick={() => showToast('Notification sent!')} />
@@ -898,7 +899,7 @@ export default function CustomerCRM({ onNavigateAddEvent }) {
                       <div className="font-bold text-900">{ref.name}</div>
                       <div className="text-500">{ref.mobile}</div>
                       <div className="mt-1 flex justify-content-between align-items-center">
-                        <Tag value={ref.status} severity="info" />
+                        <Tag value={ref.status} severity="info" outlined />
                         <span className="font-bold text-green-600">{ref.bonus}</span>
                       </div>
                     </div>

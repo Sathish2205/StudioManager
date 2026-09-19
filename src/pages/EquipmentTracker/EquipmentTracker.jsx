@@ -388,10 +388,10 @@ export default function EquipmentTracker({ onShowToast }) {
             >
               <Column field="id" header="Tag ID" sortable style={{ minWidth: '100px' }} />
               <Column field="name" header="Equipment Name & Model" sortable style={{ minWidth: '220px' }} />
-              <Column field="category" header="Category" body={(r) => <Tag value={r.category} severity="info" />} style={{ minWidth: '120px' }} />
+              <Column field="category" header="Category" body={(r) => <Tag value={r.category} severity="info" outlined />} style={{ minWidth: '120px' }} />
               <Column field="serialNo" header="Serial Number" style={{ minWidth: '150px' }} />
               <Column field="location" header="Location" style={{ minWidth: '160px' }} />
-              <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={statusSeverity(r.status)} />} style={{ minWidth: '120px' }} />
+              <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity={statusSeverity(r.status)} outlined />} style={{ minWidth: '120px' }} />
               <Column field="assignedToEvent" header="Assigned Event" style={{ minWidth: '200px' }} />
             </DataTable>
           </div>
@@ -449,7 +449,7 @@ export default function EquipmentTracker({ onShowToast }) {
             <Column field="name" header="Equipment Item" style={{ minWidth: '220px' }} />
             <Column field="lastMaintenance" header="Last Service" style={{ minWidth: '130px' }} />
             <Column field="nextMaintenance" header="Next Service Due" body={(r) => <span className="font-bold text-amber-600">{r.nextMaintenance}</span>} style={{ minWidth: '140px' }} />
-            <Column field="status" header="Current Status" body={(r) => <Tag value={r.status} severity={statusSeverity(r.status)} />} style={{ minWidth: '130px' }} />
+            <Column field="status" header="Current Status" body={(r) => <Tag value={r.status} severity={statusSeverity(r.status)} outlined />} style={{ minWidth: '130px' }} />
           </DataTable>
         </div>
       )}

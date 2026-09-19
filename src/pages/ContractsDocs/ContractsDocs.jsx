@@ -175,7 +175,7 @@ export default function ContractsDocs({ onShowToast }) {
               <Column field="eventName" header="Event" style={{ minWidth: '200px' }} />
               <Column field="contractType" header="Type" style={{ minWidth: '180px' }} />
               <Column field="amount" header="Amount (₹)" body={(r) => `₹${r.amount.toLocaleString()}`} sortable style={{ minWidth: '130px' }} />
-              <Column field="status" header="Signature Status" body={(r) => <Tag value={r.status} severity={contractStatusSeverity(r.status)} />} style={{ minWidth: '150px' }} />
+              <Column field="status" header="Signature Status" body={(r) => <Tag value={r.status} severity={contractStatusSeverity(r.status)} outlined />} style={{ minWidth: '150px' }} />
               <Column
                 header="Actions"
                 body={(r) => (
@@ -245,12 +245,12 @@ export default function ContractsDocs({ onShowToast }) {
               className="events-datatable"
             >
               <Column field="name" header="Document Name" sortable style={{ minWidth: '250px' }} />
-              <Column field="type" header="Type" body={(r) => <Tag value={r.type} severity="info" />} style={{ minWidth: '110px' }} />
+              <Column field="type" header="Type" body={(r) => <Tag value={r.type} severity="info" outlined />} style={{ minWidth: '110px' }} />
               <Column field="clientName" header="Client" style={{ minWidth: '180px' }} />
               <Column field="eventName" header="Event" style={{ minWidth: '190px' }} />
               <Column field="uploadedDate" header="Uploaded Date" style={{ minWidth: '130px' }} />
               <Column field="uploadedBy" header="Uploaded By" style={{ minWidth: '140px' }} />
-              <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity="success" />} style={{ minWidth: '110px' }} />
+              <Column field="status" header="Status" body={(r) => <Tag value={r.status} severity="success" outlined />} style={{ minWidth: '110px' }} />
               <Column
                 header="Actions"
                 body={(r) => (

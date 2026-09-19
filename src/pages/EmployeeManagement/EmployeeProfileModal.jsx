@@ -153,6 +153,7 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
               <Tag
                 value={profileData.status || 'Active'}
                 severity={profileData.status === 'Active' ? 'success' : 'warning'}
+                outlined
               />
             </div>
             <p className="m-0 text-600 text-sm mt-1">
@@ -288,7 +289,7 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
               <div className="account-info-row">
                 <span className="account-info-row__label">Role</span>
                 <span className="account-info-row__value">
-                  <Tag value={userAccount.role || 'N/A'} severity="info" />
+                  <Tag value={userAccount.role || 'N/A'} severity="info" outlined />
                 </span>
               </div>
 
@@ -298,6 +299,7 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
                   <Tag
                     value={userAccount.status === 'active' ? 'Active' : 'Inactive'}
                     severity={userAccount.status === 'active' ? 'success' : 'danger'}
+                    outlined
                   />
                 </span>
               </div>
@@ -423,6 +425,7 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
                       ? 'info'
                       : 'danger'
                   }
+                  outlined
                 />
               )}
             />
@@ -450,7 +453,7 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
             <Column
               field="status"
               header="Status"
-              body={(rowData) => <Tag value={rowData.status} severity="info" />}
+              body={(rowData) => <Tag value={rowData.status} severity="info" outlined />}
             />
           </DataTable>
         </TabPanel>
@@ -480,6 +483,7 @@ export default function EmployeeProfileModal({ visible, onHide, employeeId }) {
                 <Tag
                   value={rowData.status}
                   severity={rowData.status === 'Completed' ? 'success' : 'warning'}
+                  outlined
                 />
               )}
             />

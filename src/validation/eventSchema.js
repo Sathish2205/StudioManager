@@ -27,8 +27,8 @@ export const eventSchema = yup.object().shape({
   packagePrice: yup
     .number()
     .typeError('Package Price must be a number')
-    .required('Package Price is required')
-    .min(0, 'Price must be positive'),
+    .default(0)
+    .min(0, 'Price cannot be negative'),
   advancePaid: yup
     .number()
     .typeError('Advance Paid must be a number')

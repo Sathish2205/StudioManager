@@ -29,6 +29,61 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
   const [loadingData, setLoadingData] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Custom Services State
+  const [customServices, setCustomServices] = useState([])
+
+  const handleAddCustomService = () => {
+    setCustomServices((prev) => [
+      ...prev,
+      { id: `cs-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, name: '', price: 0 }
+    ])
+  }
+
+  const handleRemoveCustomService = (id) => {
+    setCustomServices((prev) => prev.filter((s) => s.id !== id))
+  }
+
+  const handleCustomServiceChange = (id, field, value) => {
+    setCustomServices((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, [field]: value } : s))
+    )
+  }
+
+  const customServicesTotal = customServices.reduce((sum, s) => sum + (Number(s.price) || 0), 0)
+
+  // Coverage add-on to custom service mapping
+  const coverageServiceMap = {
+    droneRequired: 'Drone Aerial Shoot',
+    liveStreaming: 'Live Youtube Stream',
+    albumRequired: 'Printed Canvera Album',
+    candidPhotography: 'Candid Photography',
+    traditionalPhotography: 'Traditional Photography',
+    traditionalVideo: 'Traditional Video'
+  }
+
+  // When a coverage checkbox is toggled, auto-add/remove from custom services list
+  const handleCoverageToggle = (fieldName, checked, fieldOnChange) => {
+    fieldOnChange(checked)
+    if (!isCustomMode) return
+
+    const serviceName = coverageServiceMap[fieldName]
+    if (!serviceName) return
+
+    if (checked) {
+      // Add only if not already in the list
+      const alreadyExists = customServices.some((s) => s.name === serviceName)
+      if (!alreadyExists) {
+        setCustomServices((prev) => [
+          ...prev,
+          { id: `cs-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, name: serviceName, price: 0 }
+        ])
+      }
+    } else {
+      // Remove from list
+      setCustomServices((prev) => prev.filter((s) => s.name !== serviceName))
+    }
+  }
+
   // Add Package Modal State
   const [isAddPackageOpen, setIsAddPackageOpen] = useState(false)
   const [newPkgName, setNewPkgName] = useState('')
@@ -180,9 +235,10 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
   // Derived Safe Numeric Calculations (Prevents NaN crashes)
   const safePkgPrice = typeof watchPackagePrice === 'number' ? watchPackagePrice : (parseFloat(watchPackagePrice) || 0)
   const safeAdvPaid = typeof watchAdvancePaid === 'number' ? watchAdvancePaid : (parseFloat(watchAdvancePaid) || 0)
-  const balanceAmount = Math.max(0, safePkgPrice - safeAdvPaid)
-  const gstAmount = Math.round(safePkgPrice * 0.18)
-  const totalValueWithGst = safePkgPrice + gstAmount
+  const combinedPrice = safePkgPrice + customServicesTotal
+  const balanceAmount = Math.max(0, combinedPrice - safeAdvPaid)
+  const gstAmount = Math.round(combinedPrice * 0.18)
+  const totalValueWithGst = combinedPrice + gstAmount
 
   // Pre-fill form when eventToEdit is passed
   useEffect(() => {
@@ -271,12 +327,31 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
     }
   }, [])
 
+  // Whether "Custom Services" is selected in the dropdown
+  const isCustomMode = watchPackageId === 'CUSTOM_SERVICES'
+
+  // Build dropdown options: real packages + "Custom Services" separator
+  const packageDropdownOptions = [
+    ...packages,
+    { id: 'CUSTOM_SERVICES', name: '✦ Add Custom Services' }
+  ]
+
   // Auto-fill Package Price when Package is selected
   const handlePackageChange = (selectedPkgId, onChange) => {
     onChange(selectedPkgId)
-    const selectedPkg = packages.find((p) => p.id === selectedPkgId)
-    if (selectedPkg) {
-      setValue('packagePrice', selectedPkg.price, { shouldValidate: true })
+    if (selectedPkgId === 'CUSTOM_SERVICES') {
+      setValue('packagePrice', 0, { shouldValidate: true })
+      // Auto-add one blank service row if none exist
+      if (customServices.length === 0) {
+        handleAddCustomService()
+      }
+    } else {
+      const selectedPkg = packages.find((p) => p.id === selectedPkgId)
+      if (selectedPkg) {
+        setValue('packagePrice', selectedPkg.price, { shouldValidate: true })
+      }
+      // Clear custom services when switching to a predefined package
+      setCustomServices([])
     }
   }
 
@@ -343,10 +418,11 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
         city: data.city || '',
         state: data.state || '',
         pincode: data.pincode || '',
-        package: selectedPkg ? selectedPkg.name : 'Custom Photography Package',
-        packageAmount: Number(data.packagePrice || 0),
+        package: selectedPkg ? selectedPkg.name : (customServices.length > 0 ? 'Custom Services' : 'Custom Photography Package'),
+        packageAmount: Number(data.packagePrice || 0) + customServicesTotal,
         advanceAmount: Number(data.advancePaid || 0),
-        balanceAmount: Math.max(0, Number(data.packagePrice || 0) - Number(data.advancePaid || 0)),
+        balanceAmount: Math.max(0, (Number(data.packagePrice || 0) + customServicesTotal) - Number(data.advancePaid || 0)),
+        customServices: customServices.filter((s) => s.name.trim()).map((s) => ({ name: s.name.trim(), price: Number(s.price) || 0 })),
         photographer: selectedPhotographerObj ? selectedPhotographerObj.name : 'Lead Photographer',
         videographer: selectedVideographerObj ? selectedVideographerObj.name : 'Lead Videographer',
         droneRequired: !!data.droneRequired,
@@ -736,7 +812,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                           <Checkbox
                             inputId="droneRequired"
                             checked={field.value}
-                            onChange={(e) => field.onChange(e.checked)}
+                            onChange={(e) => handleCoverageToggle('droneRequired', e.checked, field.onChange)}
                           />
                         )}
                       />
@@ -757,7 +833,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                           <Checkbox
                             inputId="liveStreaming"
                             checked={field.value}
-                            onChange={(e) => field.onChange(e.checked)}
+                            onChange={(e) => handleCoverageToggle('liveStreaming', e.checked, field.onChange)}
                           />
                         )}
                       />
@@ -778,7 +854,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                           <Checkbox
                             inputId="albumRequired"
                             checked={field.value}
-                            onChange={(e) => field.onChange(e.checked)}
+                            onChange={(e) => handleCoverageToggle('albumRequired', e.checked, field.onChange)}
                           />
                         )}
                       />
@@ -799,7 +875,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                           <Checkbox
                             inputId="candidPhotography"
                             checked={field.value}
-                            onChange={(e) => field.onChange(e.checked)}
+                            onChange={(e) => handleCoverageToggle('candidPhotography', e.checked, field.onChange)}
                           />
                         )}
                       />
@@ -820,7 +896,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                           <Checkbox
                             inputId="traditionalPhotography"
                             checked={field.value}
-                            onChange={(e) => field.onChange(e.checked)}
+                            onChange={(e) => handleCoverageToggle('traditionalPhotography', e.checked, field.onChange)}
                           />
                         )}
                       />
@@ -841,7 +917,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                           <Checkbox
                             inputId="traditionalVideo"
                             checked={field.value}
-                            onChange={(e) => field.onChange(e.checked)}
+                            onChange={(e) => handleCoverageToggle('traditionalVideo', e.checked, field.onChange)}
                           />
                         )}
                       />
@@ -878,7 +954,7 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
             <div className="ent-card-body">
               <div className="form-grid">
                 {/* Package Dropdown */}
-                <div className="col-12 md:col-6 field-col">
+                <div className={`${isCustomMode ? 'col-12' : 'col-12 md:col-6'} field-col`}>
                   <div className="flex align-items-center justify-content-between mb-1">
                     <label className="field-label mb-0">
                       Photography Package <span className="req-star">*</span>
@@ -897,11 +973,11 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                     render={({ field }) => (
                       <Dropdown
                         value={field.value}
-                        options={packages}
+                        options={packageDropdownOptions}
                         optionLabel="name"
                         optionValue="id"
                         onChange={(e) => handlePackageChange(e.value, field.onChange)}
-                        placeholder={loadingData ? 'Loading Packages...' : 'Select Package'}
+                        placeholder={loadingData ? 'Loading Packages...' : 'Select Package or Custom Services'}
                         showClear
                         className={`w-full ${errors.packageId ? 'p-invalid' : ''}`}
                         disabled={loadingData}
@@ -913,32 +989,34 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                   )}
                 </div>
 
-                {/* Package Price */}
-                <div className="col-12 md:col-6 field-col">
-                  <label className="field-label">
-                    Package Base Price (₹) <span className="req-star">*</span>
-                  </label>
-                  <Controller
-                    name="packagePrice"
-                    control={control}
-                    render={({ field }) => (
-                      <InputNumber
-                        id={field.name}
-                        value={field.value}
-                        onValueChange={(e) => field.onChange(e.value)}
-                        mode="currency"
-                        currency="INR"
-                        locale="en-IN"
-                        placeholder="e.g. ₹8,50,000"
-                        className={`w-full ${errors.packagePrice ? 'p-invalid' : ''}`}
-                        inputClassName="p-inputtext w-full"
-                      />
+                {/* Package Price - Only show when NOT in custom mode */}
+                {!isCustomMode && (
+                  <div className="col-12 md:col-6 field-col">
+                    <label className="field-label">
+                      Package Base Price (₹) <span className="req-star">*</span>
+                    </label>
+                    <Controller
+                      name="packagePrice"
+                      control={control}
+                      render={({ field }) => (
+                        <InputNumber
+                          id={field.name}
+                          value={field.value}
+                          onValueChange={(e) => field.onChange(e.value)}
+                          mode="currency"
+                          currency="INR"
+                          locale="en-IN"
+                          placeholder="e.g. ₹8,50,000"
+                          className={`w-full ${errors.packagePrice ? 'p-invalid' : ''}`}
+                          inputClassName="p-inputtext w-full"
+                        />
+                      )}
+                    />
+                    {errors.packagePrice && (
+                      <small className="p-error">{errors.packagePrice.message}</small>
                     )}
-                  />
-                  {errors.packagePrice && (
-                    <small className="p-error">{errors.packagePrice.message}</small>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Advance Paid */}
                 <div className="col-12 md:col-4 field-col">
@@ -1000,6 +1078,91 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
                   />
                 </div>
 
+                {/* ── Custom Services Section (only shown when Custom Services selected) ── */}
+                {isCustomMode && (
+                  <div className="col-12 field-col">
+                    <div className="ent-custom-services">
+                      <div className="ent-custom-services__header">
+                        <div className="ent-custom-services__title">
+                          <div className="ent-custom-services__icon">
+                            <i className="pi pi-list" />
+                          </div>
+                          <div>
+                            <strong>Custom Services & Pricing</strong>
+                            <span>Add each service with its own price — total is calculated automatically</span>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          label="Add Service"
+                          icon="pi pi-plus"
+                          className="p-button-sm p-button-primary"
+                          onClick={handleAddCustomService}
+                        />
+                      </div>
+
+                      {customServices.length > 0 && (
+                        <div className="ent-custom-services__list">
+                          <div className="ent-custom-services__list-header">
+                            <span className="ent-cs-col-num">#</span>
+                            <span className="ent-cs-col-name">Service Name</span>
+                            <span className="ent-cs-col-price">Price (₹)</span>
+                            <span className="ent-cs-col-action"></span>
+                          </div>
+                          {customServices.map((svc, idx) => (
+                            <div key={svc.id} className="ent-custom-service-row">
+                              <span className="ent-custom-service-row__num">{idx + 1}</span>
+                              <div className="ent-custom-service-row__name-wrap">
+                                <InputText
+                                  value={svc.name}
+                                  onChange={(e) => handleCustomServiceChange(svc.id, 'name', e.target.value)}
+                                  placeholder="e.g. Candid Photography, Drone Shoot, LED Screen"
+                                  className="w-full"
+                                />
+                              </div>
+                              <div className="ent-custom-service-row__price-wrap">
+                                <InputNumber
+                                  value={svc.price}
+                                  onValueChange={(e) => handleCustomServiceChange(svc.id, 'price', e.value)}
+                                  mode="currency"
+                                  currency="INR"
+                                  locale="en-IN"
+                                  placeholder="₹ 0"
+                                  className="w-full"
+                                  inputClassName="w-full"
+                                />
+                              </div>
+                              <Button
+                                type="button"
+                                icon="pi pi-trash"
+                                className="p-button-text p-button-plain p-button-sm ent-custom-service-row__del"
+                                onClick={() => handleRemoveCustomService(svc.id)}
+                                tooltip="Remove service"
+                                tooltipOptions={{ position: 'top' }}
+                              />
+                            </div>
+                          ))}
+
+                          <div className="ent-custom-services-total">
+                            <div className="ent-custom-services-total__label">
+                              <i className="pi pi-calculator" />
+                              <span>Total ({customServices.length} service{customServices.length !== 1 ? 's' : ''})</span>
+                            </div>
+                            <strong>₹{customServicesTotal.toLocaleString('en-IN')}</strong>
+                          </div>
+                        </div>
+                      )}
+
+                      {customServices.length === 0 && (
+                        <div className="ent-custom-services__empty">
+                          <i className="pi pi-info-circle" />
+                          <span>Click "Add Service" to start adding custom services with individual pricing.</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Special Instructions & Notes */}
                 <div className="col-12 field-col">
                   <label className="field-label">Special Instructions & Client Preferences</label>
@@ -1059,22 +1222,45 @@ export default function EventForm({ eventToEdit, prefillDate, onSuccess, onCance
               {/* Package & Financial Breakdown */}
               <div className="ent-summary-item">
                 <span className="ent-summary-lbl">Selected Package</span>
-                <strong className="ent-summary-val text-primary">{selectedPackageObj?.name || 'Custom Booking'}</strong>
+                <strong className="ent-summary-val text-primary">
+                  {isCustomMode ? 'Custom Services' : (selectedPackageObj?.name || 'Not Selected')}
+                </strong>
               </div>
 
-              <div className="ent-summary-item">
-                <span className="ent-summary-lbl">Package Base Price</span>
-                <span className="ent-summary-val">₹{safePkgPrice.toLocaleString()}</span>
-              </div>
+              {/* Show package price when NOT in custom mode */}
+              {!isCustomMode && (
+                <div className="ent-summary-item">
+                  <span className="ent-summary-lbl">Package Base Price</span>
+                  <span className="ent-summary-val">₹{safePkgPrice.toLocaleString('en-IN')}</span>
+                </div>
+              )}
+
+              {/* Show custom services breakdown when in custom mode */}
+              {isCustomMode && customServices.length > 0 && (
+                <>
+                  {customServices.filter((s) => s.name.trim()).map((svc) => (
+                    <div className="ent-summary-item text-xs" key={svc.id}>
+                      <span className="ent-summary-lbl" style={{ maxWidth: '55%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <i className="pi pi-check-circle text-xs mr-1" style={{ color: '#16a34a' }} />{svc.name}
+                      </span>
+                      <span className="ent-summary-val">₹{(Number(svc.price) || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                  ))}
+                  <div className="ent-summary-item" style={{ borderTop: '1px dashed var(--color-border)', paddingTop: '4px', marginTop: '2px' }}>
+                    <span className="ent-summary-lbl font-semibold">Services Total</span>
+                    <strong className="ent-summary-val text-primary">₹{customServicesTotal.toLocaleString('en-IN')}</strong>
+                  </div>
+                </>
+              )}
 
               <div className="ent-summary-item text-xs text-muted">
                 <span className="ent-summary-lbl">Est. GST (18%)</span>
-                <span>₹{gstAmount.toLocaleString()}</span>
+                <span>₹{gstAmount.toLocaleString('en-IN')}</span>
               </div>
 
               <div className="ent-summary-item">
                 <span className="ent-summary-lbl font-semibold">Advance Amount Paid</span>
-                <span className="ent-summary-val text-green-600 font-bold">₹{safeAdvPaid.toLocaleString()}</span>
+                <span className="ent-summary-val text-green-600 font-bold">₹{safeAdvPaid.toLocaleString('en-IN')}</span>
               </div>
 
               {/* Highlighted Balance Box */}

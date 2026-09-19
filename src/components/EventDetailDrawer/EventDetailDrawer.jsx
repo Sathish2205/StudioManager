@@ -12,14 +12,21 @@ export default function EventDetailDrawer({ event, visible, onHide, onEdit }) {
   // Helpers for Badge Severities
   const getStatusSeverity = (status) => {
     switch (status) {
-      case 'Shooting Today':
-        return 'danger'
+      case 'To Do':
+        return 'secondary'
+      case 'Culling':
+      case 'Editing':
+      case 'Quality Check':
+      case 'Final Approval':
+      case 'Production':
+        return 'warning'
+      case 'Ready for Delivery':
+        return 'info'
+      case 'Delivered':
+      case 'Completed':
+        return 'success'
       case 'Confirmed':
         return 'info'
-      case 'In Post-Production':
-        return 'warning'
-      case 'Delivered':
-        return 'success'
       default:
         return 'info'
     }

@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut, apiDelete } from './apiClient'
+import { apiGet, apiPost, apiPut, apiPatch, apiDelete } from './apiClient'
 
 // GET /api/events
 export const getEvents = async () => {
@@ -40,6 +40,30 @@ export const updateEvent = async (id, eventData) => {
     throw new Error(result.message)
   }
   throw new Error('Failed to update event document')
+}
+
+// PATCH /api/events/:id/workflow/stage
+export const updateEventWorkflowStage = async (id, stage) => {
+  const result = await apiPatch(`/events/${id}/workflow/stage`, { stage })
+  if (result && result.success) {
+    return result.data
+  }
+  if (result && result.message) {
+    throw new Error(result.message)
+  }
+  throw new Error('Failed to update workflow stage')
+}
+
+// PATCH /api/events/:id/workflow
+export const updateEventWorkflow = async (id, workflow) => {
+  const result = await apiPatch(`/events/${id}/workflow`, { workflow })
+  if (result && result.success) {
+    return result.data
+  }
+  if (result && result.message) {
+    throw new Error(result.message)
+  }
+  throw new Error('Failed to update event workflow')
 }
 
 // DELETE /api/events/:id

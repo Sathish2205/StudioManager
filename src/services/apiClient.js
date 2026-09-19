@@ -1,12 +1,14 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'https://student-data-manager-ruc1.onrender.com/api'
+import { resolveApiBaseUrl } from './apiConfig'
 
 export const getOrFetchToken = async () => {
   let token = localStorage.getItem('token')
   if (token) return token
 
+  const apiBase = await resolveApiBaseUrl()
+
   // Default auto-login attempt if no token stored yet
   try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
+    const res = await fetch(`${apiBase}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -34,15 +36,16 @@ export const getOrFetchToken = async () => {
 
 export const apiGet = async (endpoint) => {
   try {
+    const apiBase = await resolveApiBaseUrl()
     const token = await getOrFetchToken()
     const headers = token ? { Authorization: `Bearer ${token}` } : {}
-    const res = await fetch(`${API_BASE}${endpoint}`, { headers })
+    const res = await fetch(`${apiBase}${endpoint}`, { headers })
 
     if (res.status === 401) {
       localStorage.removeItem('token')
       const newToken = await getOrFetchToken()
       if (newToken) {
-        const retryRes = await fetch(`${API_BASE}${endpoint}`, {
+        const retryRes = await fetch(`${apiBase}${endpoint}`, {
           headers: { Authorization: `Bearer ${newToken}` }
         })
         if (retryRes.ok) return await retryRes.json()
@@ -59,13 +62,14 @@ export const apiGet = async (endpoint) => {
 
 export const apiPost = async (endpoint, body) => {
   try {
+    const apiBase = await resolveApiBaseUrl()
     const token = await getOrFetchToken()
     const headers = {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     }
 
-    const res = await fetch(`${API_BASE}${endpoint}`, {
+    const res = await fetch(`${apiBase}${endpoint}`, {
       method: 'POST',
       headers,
       body: JSON.stringify(body)
@@ -75,7 +79,7 @@ export const apiPost = async (endpoint, body) => {
       localStorage.removeItem('token')
       const newToken = await getOrFetchToken()
       if (newToken) {
-        const retryRes = await fetch(`${API_BASE}${endpoint}`, {
+        const retryRes = await fetch(`${apiBase}${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -97,13 +101,14 @@ export const apiPost = async (endpoint, body) => {
 
 export const apiPut = async (endpoint, body) => {
   try {
+    const apiBase = await resolveApiBaseUrl()
     const token = await getOrFetchToken()
     const headers = {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     }
 
-    const res = await fetch(`${API_BASE}${endpoint}`, {
+    const res = await fetch(`${apiBase}${endpoint}`, {
       method: 'PUT',
       headers,
       body: JSON.stringify(body)
@@ -117,11 +122,51 @@ export const apiPut = async (endpoint, body) => {
   }
 }
 
+export const apiPatch = async (endpoint, body) => {
+  try {
+    const apiBase = await resolveApiBaseUrl()
+    const token = await getOrFetchToken()
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    }
+
+    const res = await fetch(`${apiBase}${endpoint}`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(body)
+    })
+
+    if (res.status === 401) {
+      localStorage.removeItem('token')
+      const newToken = await getOrFetchToken()
+      if (newToken) {
+        const retryRes = await fetch(`${apiBase}${endpoint}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${newToken}`
+          },
+          body: JSON.stringify(body)
+        })
+        return await retryRes.json()
+      }
+    }
+
+    const data = await res.json()
+    return data
+  } catch (err) {
+    console.warn(`API PATCH ${endpoint} error:`, err.message)
+    return { success: false, message: err.message, data: null }
+  }
+}
+
 export const apiDelete = async (endpoint) => {
   try {
+    const apiBase = await resolveApiBaseUrl()
     const token = await getOrFetchToken()
     const headers = token ? { Authorization: `Bearer ${token}` } : {}
-    const res = await fetch(`${API_BASE}${endpoint}`, {
+    const res = await fetch(`${apiBase}${endpoint}`, {
       method: 'DELETE',
       headers
     })

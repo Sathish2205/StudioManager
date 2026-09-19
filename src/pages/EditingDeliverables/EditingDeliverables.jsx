@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -9,29 +9,19 @@ import { ProgressBar } from 'primereact/progressbar'
 import { Dialog } from 'primereact/dialog'
 import { InputNumber } from 'primereact/inputnumber'
 
-import { getTasks, createTask, updateTask, deleteTask } from '../../services/taskService'
 import { getStaff } from '../../services/staffService'
 import { useAuth } from '../../context/AuthContext'
+import { useEvents, normalizeWorkflowStage } from '../../context/EventsContext'
 import PageLoader from '../../components/PageLoader/PageLoader'
 import './EditingDeliverables.css'
 
-const KANBAN_STAGES = [
-  'To Do',
-  'Culling',
-  'Editing & Album Design',
-  'Quality Check',
-  'Final Approval',
-  'Production',
-  'Ready for Delivery',
-  'Delivered'
-]
-
 export default function EditingDeliverables({ onShowToast }) {
   const { user } = useAuth()
-  const [tasks, setTasks] = useState([])
+  const { events, loading, updateWorkflowStage, WORKFLOW_STAGES } = useEvents()
   const [activeTab, setActiveTab] = useState('kanban') // 'kanban' or 'deliverables'
-  const [loading, setLoading] = useState(true)
   const [editorOptions, setEditorOptions] = useState([])
+
+  const KANBAN_STAGES = WORKFLOW_STAGES
 
   useEffect(() => {
     const fetchEditors = async () => {
@@ -66,105 +56,41 @@ export default function EditingDeliverables({ onShowToast }) {
     fetchEditors()
   }, [user])
 
-  const loadTasks = async () => {
-    setLoading(true)
-    const data = await getTasks()
-    if (data && data.length > 0) {
-      const mapped = data.map((t) => {
-        const eventName = t.eventName || t.eventId?.eventName || t.eventId?.couple || t.title || 'Studio Deliverable'
-        const clientName = t.clientName || t.title || 'Client'
-        const deliverableType = t.deliverableType || t.description || 'Edited Photos'
-        const defaultOwnerName = user?.name ? `${user.name} (${user.role || 'owner'})` : 'Sathish (owner)'
-        const assignedEditor = t.assignedEditor || t.assignedTo?.name || defaultOwnerName
-        
-        let status = t.status || 'To Do'
-        if (status === 'New') status = 'To Do'
-        if (status === 'Shoot Completed') status = 'Culling'
-        if (status === 'In Progress' || status === 'Editing Completed') status = 'Editing & Album Design'
-        if (status === 'On Hold') status = 'Quality Check'
-        if (status === 'Review') status = 'Final Approval'
-        if (status === 'Approved' || status === 'Completed') status = 'Delivered'
-        if (!KANBAN_STAGES.includes(status)) status = 'To Do'
+  // Map events from EventsContext to Kanban tasks/deliverables
+  const tasks = useMemo(() => {
+    if (!events || events.length === 0) return []
 
-        const progress = typeof t.progress === 'number' ? t.progress : (status === 'Delivered' ? 100 : status === 'Ready for Delivery' ? 90 : status === 'Production' ? 80 : status === 'Final Approval' ? 70 : status === 'Quality Check' ? 60 : status === 'Editing & Album Design' ? 45 : status === 'Culling' ? 20 : 0)
+    return events.map((evt) => {
+      const clientName = evt.clientId
+        ? `${evt.clientId.firstName || ''} ${evt.clientId.lastName || ''}`.trim()
+        : evt.eventName || 'Client'
 
-        return {
-          _id: t._id,
-          id: t._id ? `TASK-${t._id.slice(-4).toUpperCase()}` : `TASK-${Date.now()}`,
-          eventName,
-          clientName,
-          deliverableType,
-          assignedEditor,
-          progress,
-          status,
-          deadline: t.dueDate ? new Date(t.dueDate).toISOString().split('T')[0] : (t.deadline || '2026-08-20'),
-          priority: t.priority || 'Medium',
-          notes: t.notes || t.description || ''
-        }
-      })
-      mapped.sort((a, b) => String(b.id || b._id).localeCompare(String(a.id || a._id)))
-      setTasks(mapped)
-    } else {
       const defaultOwnerName = user?.name ? `${user.name} (${user.role || 'owner'})` : 'Sathish (owner)'
-      // Default initial tasks if database is empty (sorted by last created first)
-      const initialDefaultTasks = [
-        {
-          id: 'TSK-104',
-          eventName: 'Pooja Hegde Portrait Shoot',
-          clientName: 'Pooja Hegde',
-          assignedEditor: defaultOwnerName,
-          deliverableType: 'Highlight Video',
-          progress: 70,
-          deadline: '2026-08-25',
-          priority: 'Medium',
-          status: 'Final Approval',
-          notes: 'Awaiting client approval on draft video edit.'
-        },
-        {
-          id: 'TSK-103',
-          eventName: 'Gokulnath Royal Wedding',
-          clientName: 'Gokulnath',
-          assignedEditor: defaultOwnerName,
-          deliverableType: 'Album',
-          progress: 30,
-          deadline: '2026-08-28',
-          priority: 'Medium',
-          status: 'Culling',
-          notes: 'Album culling in progress.'
-        },
-        {
-          id: 'TSK-102',
-          eventName: 'Harish Engagement Shoot',
-          clientName: 'Harish',
-          assignedEditor: defaultOwnerName,
-          deliverableType: 'Teaser',
-          progress: 100,
-          deadline: '2026-08-20',
-          priority: 'Urgent',
-          status: 'Delivered',
-          notes: 'Teaser video delivered to client on WhatsApp.'
-        },
-        {
-          id: 'TSK-101',
-          eventName: 'Ananya & Vikram Wedding',
-          clientName: 'Ananya Sharma',
-          assignedEditor: defaultOwnerName,
-          deliverableType: 'Edited Photos',
-          progress: 85,
-          deadline: '2026-08-22',
-          priority: 'High',
-          status: 'Editing & Album Design',
-          notes: 'Color grading requested for sunset couple portraits.'
-        }
-      ]
-      setTasks(initialDefaultTasks)
-    }
-    setLoading(false)
-  }
+      const editors = (evt.assignedEditors || []).map((e) => e.name).join(', ')
+      const assignedEditor = editors || defaultOwnerName
 
-  useEffect(() => {
-    loadTasks()
-  }, [])
+      const rawStage = evt.workflow?.currentStage || evt.status || 'To Do'
+      const currentStage = normalizeWorkflowStage(rawStage)
+      const stageIdx = KANBAN_STAGES.indexOf(currentStage) >= 0 ? KANBAN_STAGES.indexOf(currentStage) : 0
+      const progress = Math.round(((stageIdx + 1) / KANBAN_STAGES.length) * 100)
+
+      return {
+        _id: evt._id,
+        id: evt._id ? `EVT-${evt._id.slice(-4).toUpperCase()}` : `EVT-${Date.now()}`,
+        eventId: evt._id,
+        eventName: evt.eventName || 'Special Event',
+        clientName,
+        deliverableType: evt.eventType || 'Edited Photos',
+        assignedEditor,
+        progress,
+        status: currentStage,
+        deadline: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '2026-08-20',
+        priority: evt.priority || 'Medium',
+        notes: evt.notes || evt.venue || '',
+        rawEvent: evt
+      }
+    })
+  }, [events, user, KANBAN_STAGES])
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('')
@@ -271,64 +197,27 @@ export default function EditingDeliverables({ onShowToast }) {
     }
 
     if (editingTask) {
-      const targetId = editingTask._id || editingTask.id
-      if (editingTask._id) {
-        await updateTask(editingTask._id, payload)
+      const eventId = editingTask.eventId || editingTask._id || editingTask.id
+      try {
+        await updateWorkflowStage(eventId, formStage)
+        triggerToast(`Event workflow stage updated to "${formStage}"!`, 'success')
+      } catch (err) {
+        triggerToast(`Failed to update stage: ${err.message}`, 'error')
       }
-      setTasks((prev) =>
-        prev.map((t) =>
-          (t.id === targetId || t._id === targetId)
-            ? {
-                ...t,
-                eventName: formEventName,
-                clientName: formClientName,
-                deliverableType: formType,
-                assignedEditor: formEditor,
-                progress: formProgress,
-                status: formStage,
-                deadline: formDeadline,
-                priority: formPriority,
-                notes: formNotes
-              }
-            : t
-        )
-      )
-      triggerToast(`Editing task ${targetId} updated successfully!`, 'success')
-    } else {
-      const res = await createTask(payload)
-      const newT = {
-        _id: res?._id,
-        id: res?._id ? `TASK-${res._id.slice(-4).toUpperCase()}` : `TSK-${Date.now()}`,
-        eventName: formEventName,
-        clientName: formClientName,
-        assignedEditor: formEditor,
-        deliverableType: formType,
-        progress: formProgress,
-        deadline: formDeadline,
-        priority: formPriority,
-        status: formStage,
-        notes: formNotes || 'New task created.'
-      }
-      setTasks([newT, ...tasks])
-      triggerToast(`New editing task ${newT.id} created & saved!`, 'success')
     }
     setIsDialogOpen(false)
   }
 
   const handleMoveStage = async (taskId, nextStage) => {
-    const taskObj = tasks.find((t) => t.id === taskId || t._id === taskId)
-
-    // Update state locally for responsive UI
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId || t._id === taskId ? { ...t, status: nextStage } : t))
-    )
-
-    // Persist status change to API
-    if (taskObj && taskObj._id) {
-      await updateTask(taskObj._id, { status: nextStage })
+    try {
+      const taskObj = tasks.find((t) => t.id === taskId || t._id === taskId)
+      const eventId = taskObj?.eventId || taskObj?._id || taskId
+      await updateWorkflowStage(eventId, nextStage)
+      triggerToast(`Event moved to stage "${nextStage}"!`, 'success')
+    } catch (err) {
+      console.error('Failed to move stage:', err)
+      triggerToast(`Failed to update stage: ${err.message || 'Error occurred'}`, 'error')
     }
-
-    triggerToast(`Task ${taskId} moved to ${nextStage}!`, 'success')
   }
 
   const filteredTasks = tasks.filter((t) => {

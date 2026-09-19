@@ -5,18 +5,20 @@
  * the Render free-tier instance warm and prevent it from spinning down.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://student-data-manager-ruc1.onrender.com/api'
+import { resolveApiBaseUrl } from './apiConfig'
+
 const HEALTH_CHECK_INTERVAL = 10 * 60 * 1000 // 10 minutes in milliseconds
 
 let intervalId = null
 
 const pingHealth = async () => {
   try {
-    const res = await fetch(`${API_BASE}/health`, { method: 'GET' })
+    const apiBase = await resolveApiBaseUrl()
+    const res = await fetch(`${apiBase}/health`, { method: 'GET' })
     if (res.ok) {
       const data = await res.json()
       console.log(
-        `[HealthCheck] ✅ Backend alive — ${data.message} (${new Date().toLocaleTimeString()})`
+        `[HealthCheck] ✅ Backend alive (${apiBase}) — ${data.message} (${new Date().toLocaleTimeString()})`
       )
     } else {
       console.warn(`[HealthCheck] ⚠️ Backend responded with status ${res.status}`)

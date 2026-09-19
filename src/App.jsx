@@ -24,6 +24,7 @@ import EmployeeManagement from './pages/EmployeeManagement/EmployeeManagement'
 import AddEmployeePage from './pages/AddEmployeePage/AddEmployeePage'
 
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { EventsProvider } from './context/EventsContext'
 import Login from './pages/Login/Login'
 import AppLayout from './components/AppLayout'
 import AccessDenied from './components/AccessDenied/AccessDenied'
@@ -440,7 +441,11 @@ function MainApp() {
     return <Login />
   }
 
-  return <AppContent />
+  return (
+    <EventsProvider>
+      <AppContent />
+    </EventsProvider>
+  )
 }
 
 export default function App() {

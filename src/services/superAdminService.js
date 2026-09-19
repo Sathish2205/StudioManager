@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'https://student-data-manager-ruc1.onrender.com/api'
+import { resolveApiBaseUrl } from './apiConfig'
 
 const getToken = () => sessionStorage.getItem('sa_token')
 
@@ -23,73 +23,79 @@ const handleResponse = async (res) => {
   return data
 }
 
+const saFetch = async (path, options = {}) => {
+  const apiBase = await resolveApiBaseUrl()
+  const res = await fetch(`${apiBase}${path}`, options)
+  return handleResponse(res)
+}
+
 // ── Auth ──
 export const saLogin = (username, password) =>
-  fetch(`${API_BASE}/super-admin/auth/login`, {
+  saFetch(`/super-admin/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password }),
-  }).then(handleResponse)
+  })
 
 export const saGetMe = () =>
-  fetch(`${API_BASE}/super-admin/auth/me`, {
+  saFetch(`/super-admin/auth/me`, {
     headers: authHeaders(),
-  }).then(handleResponse)
+  })
 
 export const saChangePassword = (currentPassword, newPassword, confirmNewPassword) =>
-  fetch(`${API_BASE}/super-admin/auth/change-password`, {
+  saFetch(`/super-admin/auth/change-password`, {
     method: 'PUT',
     headers: authHeaders(),
     body: JSON.stringify({ currentPassword, newPassword, confirmNewPassword }),
-  }).then(handleResponse)
+  })
 
 export const saLogout = () =>
-  fetch(`${API_BASE}/super-admin/auth/logout`, {
+  saFetch(`/super-admin/auth/logout`, {
     method: 'POST',
     headers: authHeaders(),
-  }).then(handleResponse)
+  })
 
 // ── Dashboard ──
 export const saGetDashboardStats = () =>
-  fetch(`${API_BASE}/super-admin/dashboard`, {
+  saFetch(`/super-admin/dashboard`, {
     headers: authHeaders(),
-  }).then(handleResponse)
+  })
 
 // ── Tenants ──
 export const saGetTenants = (params = {}) => {
   const query = new URLSearchParams(params).toString()
-  return fetch(`${API_BASE}/super-admin/tenants?${query}`, {
+  return saFetch(`/super-admin/tenants?${query}`, {
     headers: authHeaders(),
-  }).then(handleResponse)
+  })
 }
 
 export const saGetTenantById = (id) =>
-  fetch(`${API_BASE}/super-admin/tenants/${id}`, {
+  saFetch(`/super-admin/tenants/${id}`, {
     headers: authHeaders(),
-  }).then(handleResponse)
+  })
 
 export const saCreateTenant = (data) =>
-  fetch(`${API_BASE}/super-admin/tenants`, {
+  saFetch(`/super-admin/tenants`, {
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify(data),
-  }).then(handleResponse)
+  })
 
 export const saUpdateTenant = (id, data) =>
-  fetch(`${API_BASE}/super-admin/tenants/${id}`, {
+  saFetch(`/super-admin/tenants/${id}`, {
     method: 'PUT',
     headers: authHeaders(),
     body: JSON.stringify(data),
-  }).then(handleResponse)
+  })
 
 export const saActivateTenant = (id) =>
-  fetch(`${API_BASE}/super-admin/tenants/${id}/activate`, {
+  saFetch(`/super-admin/tenants/${id}/activate`, {
     method: 'PATCH',
     headers: authHeaders(),
-  }).then(handleResponse)
+  })
 
 export const saDeactivateTenant = (id) =>
-  fetch(`${API_BASE}/super-admin/tenants/${id}/deactivate`, {
+  saFetch(`/super-admin/tenants/${id}/deactivate`, {
     method: 'PATCH',
     headers: authHeaders(),
-  }).then(handleResponse)
+  })

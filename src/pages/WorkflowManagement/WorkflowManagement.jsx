@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react'
+import React, { useState, useMemo } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Tag } from 'primereact/tag'
@@ -8,15 +8,12 @@ import { Dialog } from 'primereact/dialog'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 
-import { ALL_STAGES } from './mockWorkflowData'
-import { fetchWorkflowSummaries, updateWorkflowByEvent } from '../../services/workflowService'
 import PageLoader from '../../components/PageLoader/PageLoader'
+import { useEvents, normalizeWorkflowStage } from '../../context/EventsContext'
 import './WorkflowManagement.css'
 
 export default function WorkflowManagement() {
-  // Master Workflows State
-  const [workflows, setWorkflows] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { events, loading, updateWorkflowStage, WORKFLOW_STAGES } = useEvents()
 
   // Filters State
   const [searchQuery, setSearchQuery] = useState('')
@@ -41,55 +38,65 @@ export default function WorkflowManagement() {
   const [paymentInput, setPaymentInput] = useState('')
   const [toastMsg, setToastMsg] = useState(null)
 
-  // Load workflows from API on mount
-  const loadWorkflows = useCallback(async () => {
-    setLoading(true)
-    try {
-      const data = await fetchWorkflowSummaries()
-      if (data && data.length > 0) {
-        // Map API data to match component's expected shape
-        const mapped = data.map((wf) => ({
-          ...wf,
-          id: wf._id || wf.workflowId || wf.id,
-          currentStageIndex: wf.currentStageIndex || 0,
-          overallStatus: wf.overallStatus || 'Booking',
-          assignedEditor: wf.assignedEditor || 'Unassigned',
-          paymentSummary: wf.paymentSummary || {
-            totalAmount: 0,
-            advancePaid: 0,
-            balanceDue: 0,
-            paymentStatus: 'Pending',
-          },
-          // Keep empty arrays for fields the API doesn't return
-          activityLog: wf.activityLog || [],
-          tasks: wf.tasks || [],
-          deliverables: wf.deliverables || [],
-        }))
-        mapped.sort((a, b) => String(b.id || b._id).localeCompare(String(a.id || a._id)))
-        setWorkflows(mapped)
-      } else {
-        setWorkflows([])
-      }
-    } catch (err) {
-      console.warn('Failed to load workflows from API:', err)
-      setWorkflows([])
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  // Map events from EventsContext to workflow rows
+  const workflows = useMemo(() => {
+    if (!events || events.length === 0) return []
 
-  useEffect(() => {
-    loadWorkflows()
-  }, [loadWorkflows])
+    return events.map((evt) => {
+      const clientName = evt.clientId
+        ? `${evt.clientId.firstName || ''} ${evt.clientId.lastName || ''}`.trim()
+        : evt.eventName || 'Client'
+      const clientPhone = evt.clientId?.phone || ''
+      const clientEmail = evt.clientId?.email || ''
+
+      const photographers = (evt.assignedPhotographers || []).map((p) => p.name).join(', ')
+      const editors = (evt.assignedEditors || []).map((e) => e.name).join(', ')
+
+      const totalAmount = evt.packageAmount || 0
+      const advancePaid = evt.totalPaid || 0
+      const balanceDue = evt.remainingAmount || Math.max(0, totalAmount - advancePaid)
+
+      let paymentStatus = 'Pending'
+      if (balanceDue === 0 && totalAmount > 0) paymentStatus = 'Fully Paid'
+      else if (advancePaid > 0) paymentStatus = 'Advance Received'
+
+      const rawStage = evt.workflow?.currentStage || evt.status || 'To Do'
+      const currentStage = normalizeWorkflowStage(rawStage)
+      const currentStageIndex = WORKFLOW_STAGES.indexOf(currentStage) >= 0
+        ? WORKFLOW_STAGES.indexOf(currentStage)
+        : 0
+
+      return {
+        _id: evt._id,
+        id: evt._id ? `WF-${evt._id.slice(-4).toUpperCase()}` : `WF-${Date.now()}`,
+        eventId: evt._id,
+        eventName: evt.eventName || 'Special Event',
+        clientName,
+        clientPhone,
+        clientEmail,
+        venue: evt.venue || '',
+        eventType: evt.eventType || 'Wedding',
+        eventDate: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '',
+        photographer: photographers || 'Lead Photographer',
+        assignedEditor: editors || 'Unassigned',
+        overallStatus: currentStage,
+        currentStageIndex,
+        paymentSummary: {
+          totalAmount,
+          advancePaid,
+          balanceDue,
+          paymentStatus
+        },
+        rawEvent: evt
+      }
+    })
+  }, [events, WORKFLOW_STAGES])
 
   // Filter Options
-  const statusOptions = [
+  const statusOptions = useMemo(() => [
     { label: 'All Statuses', value: null },
-    { label: 'Booking', value: 'Booking' },
-    { label: 'Editing', value: 'Editing' },
-    { label: 'Delivered', value: 'Delivered' },
-    { label: 'Completed', value: 'Completed' }
-  ]
+    ...WORKFLOW_STAGES.map((s) => ({ label: s, value: s }))
+  ], [WORKFLOW_STAGES])
 
   const eventTypeOptions = [
     { label: 'All Event Types', value: null },
@@ -101,11 +108,11 @@ export default function WorkflowManagement() {
   ]
 
   const stageOptions = useMemo(() => {
-    return ALL_STAGES.map((stage, idx) => ({
-      label: `Stage ${idx + 1} of 20: ${stage}`,
+    return WORKFLOW_STAGES.map((stage, idx) => ({
+      label: `Stage ${idx + 1} of ${WORKFLOW_STAGES.length}: ${stage}`,
       value: idx
     }))
-  }, [])
+  }, [WORKFLOW_STAGES])
 
   // Filtered Workflows List
   const filteredWorkflows = useMemo(() => {
@@ -127,13 +134,13 @@ export default function WorkflowManagement() {
   // Workflow KPI Metrics Calculation
   const workflowMetrics = useMemo(() => {
     const totalWorkflows = workflows.length
-    const inProgressCount = workflows.filter((w) => w.overallStatus === 'Editing' || w.overallStatus === 'Booking').length
-    const completedCount = workflows.filter((w) => w.overallStatus === 'Completed' || w.overallStatus === 'Delivered').length
+    const inProgressCount = workflows.filter((w) => w.overallStatus !== 'Delivered').length
+    const completedCount = workflows.filter((w) => w.overallStatus === 'Delivered').length
     const avgProgress = totalWorkflows > 0
-      ? Math.round(workflows.reduce((acc, w) => acc + Math.round(((w.currentStageIndex + 1) / ALL_STAGES.length) * 100), 0) / totalWorkflows)
+      ? Math.round(workflows.reduce((acc, w) => acc + Math.round(((w.currentStageIndex + 1) / WORKFLOW_STAGES.length) * 100), 0) / totalWorkflows)
       : 0
     return { totalWorkflows, inProgressCount, completedCount, avgProgress }
-  }, [workflows])
+  }, [workflows, WORKFLOW_STAGES])
 
   // Mobile Filter Handlers
   const handleOpenMobileFilter = () => {
@@ -178,56 +185,22 @@ export default function WorkflowManagement() {
     setIsStatusDialogOpen(true)
   }
 
-  // Save Status & Stage Changes — NOW PERSISTS TO DATABASE
+  // Save Status & Stage Changes — NOW PERSISTS TO EVENTS API
   const handleSaveWorkflowChanges = async () => {
     if (!selectedWorkflow) return
 
     setSaving(true)
     try {
-      // Determine the eventId for the API call
-      const eventId = selectedWorkflow.eventId || selectedWorkflow.id
+      const eventId = selectedWorkflow.eventId || selectedWorkflow._id
+      const newStageName = WORKFLOW_STAGES[editingStageIndex] || WORKFLOW_STAGES[0]
 
-      // Call the backend API to persist the changes
-      const result = await updateWorkflowByEvent(eventId, {
-        overallStatus: editingStatus,
-        currentStageIndex: editingStageIndex,
-        assignedEditor: editingEditor || selectedWorkflow.assignedEditor,
-      })
+      await updateWorkflowStage(eventId, newStageName)
 
-      if (result) {
-        // API call succeeded — update local state to reflect changes
-        setWorkflows((prev) =>
-          prev.map((w) => {
-            if ((w.eventId || w.id) !== eventId) return w
-            return {
-              ...w,
-              currentStageIndex: editingStageIndex,
-              overallStatus: editingStatus,
-              assignedEditor: editingEditor || w.assignedEditor,
-            }
-          })
-        )
-        setIsStatusDialogOpen(false)
-        showToast(`Workflow updated & saved to database successfully!`)
-      } else {
-        // API call failed — still update local state but warn user
-        setWorkflows((prev) =>
-          prev.map((w) => {
-            if ((w.eventId || w.id) !== eventId) return w
-            return {
-              ...w,
-              currentStageIndex: editingStageIndex,
-              overallStatus: editingStatus,
-              assignedEditor: editingEditor || w.assignedEditor,
-            }
-          })
-        )
-        setIsStatusDialogOpen(false)
-        showToast(`⚠️ Changes saved locally but may not have persisted to database.`)
-      }
+      setIsStatusDialogOpen(false)
+      showToast(`Workflow stage updated to "${newStageName}" successfully!`)
     } catch (err) {
       console.error('Failed to save workflow changes:', err)
-      showToast(`❌ Error saving workflow changes. Please try again.`)
+      showToast(`❌ Error saving workflow changes: ${err.message || 'Please try again.'}`)
     } finally {
       setSaving(false)
     }
@@ -302,8 +275,8 @@ export default function WorkflowManagement() {
   )
 
   const progressBodyTemplate = (rowData) => {
-    const percent = Math.round(((rowData.currentStageIndex + 1) / ALL_STAGES.length) * 100)
-    const stageName = ALL_STAGES[rowData.currentStageIndex]
+    const percent = Math.round(((rowData.currentStageIndex + 1) / WORKFLOW_STAGES.length) * 100)
+    const stageName = WORKFLOW_STAGES[rowData.currentStageIndex] || 'To Do'
     return (
       <div className="wf-table__progress-box">
         <div className="wf-table__progress-info">
@@ -687,7 +660,7 @@ export default function WorkflowManagement() {
                     appendTo="self"
                   />
                   <span className="text-xs text-600 block">
-                    Current Stage: <strong className="text-primary">Stage {editingStageIndex + 1} of 20 ({ALL_STAGES[editingStageIndex]})</strong>
+                    Current Stage: <strong className="text-primary">Stage {editingStageIndex + 1} of {WORKFLOW_STAGES.length} ({WORKFLOW_STAGES[editingStageIndex]})</strong>
                   </span>
                 </div>
 
@@ -696,17 +669,17 @@ export default function WorkflowManagement() {
                   <div className="flex justify-content-between text-xs font-semibold mb-2">
                     <span className="text-700">Overall Workflow Completion</span>
                     <span className="text-primary font-bold text-sm">
-                      {Math.round(((editingStageIndex + 1) / ALL_STAGES.length) * 100)}%
+                      {Math.round(((editingStageIndex + 1) / WORKFLOW_STAGES.length) * 100)}%
                     </span>
                   </div>
                   <ProgressBar
-                    value={Math.round(((editingStageIndex + 1) / ALL_STAGES.length) * 100)}
+                    value={Math.round(((editingStageIndex + 1) / WORKFLOW_STAGES.length) * 100)}
                     showValue={false}
                     style={{ height: '8px' }}
                   />
                   <div className="flex justify-content-between text-xs text-500 mt-2">
-                    <span>Est. Delivery: {selectedWorkflow.estimatedDeliveryDate}</span>
-                    <span>Target: Completed</span>
+                    <span>Est. Delivery: {selectedWorkflow.estimatedDeliveryDate || 'N/A'}</span>
+                    <span>Target: Delivered</span>
                   </div>
                 </div>
 
@@ -792,7 +765,7 @@ export default function WorkflowManagement() {
                     <button
                       className="wf-btn-advance w-full"
                       onClick={() => {
-                        if (editingStageIndex < ALL_STAGES.length - 1) {
+                        if (editingStageIndex < WORKFLOW_STAGES.length - 1) {
                           setEditingStageIndex((prev) => prev + 1)
                           showToast('Advanced to next workflow stage!')
                         }
@@ -803,9 +776,9 @@ export default function WorkflowManagement() {
                     <button
                       className="wf-btn-complete w-full"
                       onClick={() => {
-                        setEditingStageIndex(19)
-                        setEditingStatus('Completed')
-                        showToast('Workflow set to Completed & Delivered!')
+                        setEditingStageIndex(WORKFLOW_STAGES.length - 1)
+                        setEditingStatus('Delivered')
+                        showToast('Workflow set to Delivered!')
                       }}
                     >
                       <i className="pi pi-check-circle" /> Mark Delivered & Completed

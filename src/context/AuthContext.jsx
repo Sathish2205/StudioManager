@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { getPermissionsForRole, DEFAULT_ROLE_PERMISSIONS, isOwnerOrAdmin } from '../constants/roles'
-
-const API_BASE = import.meta.env.VITE_API_URL || 'https://student-data-manager-ruc1.onrender.com/api'
+import { resolveApiBaseUrl } from '../services/apiConfig'
 
 const AuthContext = createContext()
 
@@ -39,7 +38,8 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const res = await fetch(`${API_BASE}/auth/me`, {
+        const apiBase = await resolveApiBaseUrl()
+        const res = await fetch(`${apiBase}/auth/me`, {
           headers: { Authorization: `Bearer ${storedToken}` }
         })
 
@@ -76,7 +76,8 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   const login = async (username, password) => {
-    const res = await fetch(`${API_BASE}/auth/login`, {
+    const apiBase = await resolveApiBaseUrl()
+    const res = await fetch(`${apiBase}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })

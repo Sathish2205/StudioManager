@@ -6,69 +6,60 @@ import { Dialog } from 'primereact/dialog'
 import { Tooltip } from 'primereact/tooltip'
 import { Tag } from 'primereact/tag'
 import EventDetailDrawer from '../../components/EventDetailDrawer/EventDetailDrawer'
-import { getEvents } from '../../services/eventService'
+import { useEvents } from '../../context/EventsContext'
 import PageLoader from '../../components/PageLoader/PageLoader'
 import './ShootCalendar.css'
 
 export default function ShootCalendar({ onNavigateAddEvent, onShowToast }) {
+  const { events, loading, WORKFLOW_STAGES } = useEvents()
+
   // Calendar Navigation State
   const [currentDate, setCurrentDate] = useState(new Date(2026, 7, 1)) // August 2026
   const [calendarView, setCalendarView] = useState('month') // 'month', 'week', 'day'
 
-  // Events Dataset
-  const [eventsList, setEventsList] = useState([])
-  const [loading, setLoading] = useState(true)
+  // Events Dataset mapped from EventsContext
+  const eventsList = useMemo(() => {
+    if (!events || events.length === 0) return []
 
-  useEffect(() => {
-    async function loadCalendarEvents() {
-      setLoading(true)
-      try {
-      const data = await getEvents()
-      if (data && data.length > 0) {
-        const mapped = data.map((evt) => {
-          const clientName = evt.clientId
-            ? `${evt.clientId.firstName || ''} ${evt.clientId.lastName || ''}`.trim()
-            : evt.eventName || 'Client'
-          const photographers = (evt.assignedPhotographers || []).map(p => p.name)
-          const editors = (evt.assignedEditors || []).map(e => e.name)
-          const crew = [...photographers, ...editors]
-          const total = evt.packageAmount || 0
-          const paid = evt.totalPaid || 0
+    return events.map((evt) => {
+      const clientName = evt.clientId
+        ? `${evt.clientId.firstName || ''} ${evt.clientId.lastName || ''}`.trim()
+        : evt.eventName || 'Client'
+      const photographers = (evt.assignedPhotographers || []).map(p => p.name)
+      const editors = (evt.assignedEditors || []).map(e => e.name)
+      const crew = [...photographers, ...editors]
+      const total = evt.packageAmount || 0
+      const paid = evt.totalPaid || 0
 
-          return {
-            _id: evt._id,
-            id: evt._id ? `EVT-${evt._id.slice(-4).toUpperCase()}` : `EVT-${Date.now()}`,
-            eventName: evt.eventName || 'Event',
-            clientName,
-            couple: clientName,
-            eventType: evt.eventType || 'Wedding',
-            date: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '',
-            startDate: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '',
-            endDate: evt.endDate ? new Date(evt.endDate).toISOString().split('T')[0] : (evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : ''),
-            time: `${evt.startTime || '09:00 AM'} - ${evt.endTime || '10:00 PM'}`,
-            startTime: evt.startTime || '09:00 AM',
-            endTime: evt.endTime || '10:00 PM',
-            venue: evt.venue || '',
-            package: evt.package || 'Custom Package',
-            amount: `₹${total.toLocaleString()}`,
-            crew: crew.length > 0 ? crew : ['Photographer'],
-            payment: paid >= total && total > 0 ? 'Paid in Full' : paid > 0 ? 'Advance Paid' : 'Pending',
-            paymentSeverity: paid >= total && total > 0 ? 'success' : paid > 0 ? 'warning' : 'danger',
-            status: evt.status || 'Confirmed',
-            statusSeverity: evt.status === 'In Progress' ? 'danger' : evt.status === 'Confirmed' ? 'info' : 'success',
-            progress: 0,
-            notes: evt.notes || ''
-          }
-        })
-        setEventsList(mapped)
+      const currentStage = evt.workflow?.currentStage || evt.status || 'To Do'
+
+      return {
+        _id: evt._id,
+        id: evt._id ? `EVT-${evt._id.slice(-4).toUpperCase()}` : `EVT-${Date.now()}`,
+        eventName: evt.eventName || 'Event',
+        clientName,
+        couple: clientName,
+        eventType: evt.eventType || 'Wedding',
+        date: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '',
+        startDate: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '',
+        endDate: evt.endDate ? new Date(evt.endDate).toISOString().split('T')[0] : (evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : ''),
+        time: `${evt.startTime || '09:00 AM'} - ${evt.endTime || '10:00 PM'}`,
+        startTime: evt.startTime || '09:00 AM',
+        endTime: evt.endTime || '10:00 PM',
+        venue: evt.venue || '',
+        package: evt.package || 'Custom Package',
+        amount: `₹${total.toLocaleString()}`,
+        crew: crew.length > 0 ? crew : ['Photographer'],
+        payment: paid >= total && total > 0 ? 'Paid in Full' : paid > 0 ? 'Advance Paid' : 'Pending',
+        paymentSeverity: paid >= total && total > 0 ? 'success' : paid > 0 ? 'warning' : 'danger',
+        status: currentStage,
+        statusSeverity: currentStage === 'Delivered' ? 'success' : currentStage === 'To Do' ? 'info' : 'warning',
+        progress: 0,
+        notes: evt.notes || '',
+        rawEvent: evt
       }
-      } catch (err) {
-        console.warn('[ShootCalendar] Failed to load events:', err)
-      }
-      setLoading(false)
-    }
-    loadCalendarEvents()
-  }, [])
+    })
+  }, [events])
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('')

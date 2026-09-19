@@ -1,24 +1,12 @@
 export const ALL_STAGES = [
-  'Booking',
-  'Advance Payment',
-  'Event Assigned',
-  'Event Completed',
-  'Photo Backup',
-  'Photo Selection',
-  'Photo Editing',
-  'Client Review',
-  'Revision (Optional)',
+  'To Do',
+  'Culling',
+  'Editing',
+  'Quality Check',
   'Final Approval',
-  'Album Design',
-  'Album Approval',
-  'Album Printing',
-  'Frame Printing (Optional)',
-  'Video Editing',
-  'Video Rendering',
-  'Deliverables Ready',
-  'Balance Payment',
-  'Delivered',
-  'Completed'
+  'Production',
+  'Ready for Delivery',
+  'Delivered'
 ]
 
 export const MOCK_SUMMARY_METRICS = {

@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-
-const API_BASE = import.meta.env.VITE_API_URL || 'https://student-data-manager-ruc1.onrender.com/api'
+import { resolveApiBaseUrl } from '../services/apiConfig'
 
 const SuperAdminAuthContext = createContext()
 
@@ -21,7 +20,8 @@ export const SuperAdminAuthProvider = ({ children }) => {
       }
 
       try {
-        const res = await fetch(`${API_BASE}/super-admin/auth/me`, {
+        const apiBase = await resolveApiBaseUrl()
+        const res = await fetch(`${apiBase}/super-admin/auth/me`, {
           headers: { Authorization: `Bearer ${storedToken}` }
         })
 
@@ -46,7 +46,8 @@ export const SuperAdminAuthProvider = ({ children }) => {
   }, [])
 
   const login = async (username, password) => {
-    const res = await fetch(`${API_BASE}/super-admin/auth/login`, {
+    const apiBase = await resolveApiBaseUrl()
+    const res = await fetch(`${apiBase}/super-admin/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
@@ -71,7 +72,8 @@ export const SuperAdminAuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       if (token) {
-        await fetch(`${API_BASE}/super-admin/auth/logout`, {
+        const apiBase = await resolveApiBaseUrl()
+        await fetch(`${apiBase}/super-admin/auth/logout`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` }
         })

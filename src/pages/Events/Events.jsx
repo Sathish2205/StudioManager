@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
@@ -12,10 +12,12 @@ import DashboardHeader from '../../components/DashboardHeader'
 import EventDetailDrawer from '../../components/EventDetailDrawer'
 import './Events.css'
 
-import { getEvents, deleteEvent } from '../../services/eventService'
+import { deleteEvent } from '../../services/eventService'
 import PageLoader from '../../components/PageLoader/PageLoader'
+import { useEvents, normalizeWorkflowStage } from '../../context/EventsContext'
 
 export default function Events({ activeTab = 'events', setActiveTab, onNavigateInvoice, onNavigateEditEvent }) {
+  const { events, loading, error: fetchError, refreshEvents, WORKFLOW_STAGES } = useEvents()
   const [globalFilter, setGlobalFilter] = useState('')
   const [selectedStatus, setSelectedStatus] = useState(null)
   const [selectedType, setSelectedType] = useState(null)
@@ -29,79 +31,58 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
   const [draftStatus, setDraftStatus] = useState(null)
   const [draftType, setDraftType] = useState(null)
 
-  // PhotoStudio Shoots & Events Dataset
-  const [initialEvents, setInitialEvents] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [fetchError, setFetchError] = useState(false)
+  // PhotoStudio Shoots & Events Dataset mapped from context
+  const initialEvents = useMemo(() => {
+    if (!events || events.length === 0) return []
 
-  const loadEvents = async () => {
-    setLoading(true)
-    setFetchError(false)
-    try {
-    const data = await getEvents()
-    if (data && data.length > 0) {
-      const mapped = data.map((evt) => {
-        const clientName = evt.clientId
-          ? `${evt.clientId.firstName || ''} ${evt.clientId.lastName || ''}`.trim()
-          : evt.eventName || 'Client'
+    const mapped = events.map((evt) => {
+      const clientName = evt.clientId
+        ? `${evt.clientId.firstName || ''} ${evt.clientId.lastName || ''}`.trim()
+        : evt.eventName || 'Client'
 
-        const photographers = (evt.assignedPhotographers || []).map((p) => p.name || 'Photographer')
-        const editors = (evt.assignedEditors || []).map((e) => e.name || 'Editor')
-        const crew = [...photographers, ...editors]
+      const photographers = (evt.assignedPhotographers || []).map((p) => p.name || 'Photographer')
+      const editors = (evt.assignedEditors || []).map((e) => e.name || 'Editor')
+      const crew = [...photographers, ...editors]
 
-        const total = evt.packageAmount || 0
-        const paid = evt.totalPaid || 0
-        const balance = evt.remainingAmount || Math.max(0, total - paid)
-        const paymentProgress = total > 0 ? Math.round((paid / total) * 100) : 0
+      const total = evt.packageAmount || 0
+      const paid = evt.totalPaid || 0
+      const balance = evt.remainingAmount || Math.max(0, total - paid)
+      const paymentProgress = total > 0 ? Math.round((paid / total) * 100) : 0
 
-        let paymentStatus = 'Pending Deposit'
-        if (balance === 0 && total > 0) paymentStatus = 'Paid in Full'
-        else if (paid > 0) paymentStatus = 'Advance Paid'
+      let paymentStatus = 'Pending Deposit'
+      if (balance === 0 && total > 0) paymentStatus = 'Paid in Full'
+      else if (paid > 0) paymentStatus = 'Advance Paid'
 
-        return {
-          _id: evt._id,
-          id: evt._id ? `EVT-${evt._id.slice(-4).toUpperCase()}` : `EVT-${Date.now()}`,
-          couple: clientName || evt.eventName || 'Special Event',
-          eventType: evt.eventType || 'Wedding Shoot',
-          date: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '',
-          time: `${evt.startTime || '09:00 AM'} - ${evt.endTime || '10:00 PM'}`,
-          venue: evt.venue || '',
-          package: evt.package || 'Custom Package',
-          totalAmount: `₹${total.toLocaleString()}`,
-          paidAmount: `₹${paid.toLocaleString()}`,
-          balanceAmount: `₹${balance.toLocaleString()}`,
-          paymentProgress,
-          paymentStatus,
-          crew: crew.length > 0 ? crew : ['Lead Photographer'],
-          status: evt.status || 'Confirmed',
-          rawEvent: evt
-        }
-      })
-        mapped.sort((a, b) => String(b._id || b.id).localeCompare(String(a._id || a.id)))
-        setInitialEvents(mapped)
-      } else {
-        setInitialEvents([])
+      const rawStage = evt.workflow?.currentStage || evt.status || 'To Do'
+      const currentStage = normalizeWorkflowStage(rawStage)
+
+      return {
+        _id: evt._id,
+        id: evt._id ? `EVT-${evt._id.slice(-4).toUpperCase()}` : `EVT-${Date.now()}`,
+        couple: clientName || evt.eventName || 'Special Event',
+        eventType: evt.eventType || 'Wedding Shoot',
+        date: evt.eventDate ? new Date(evt.eventDate).toISOString().split('T')[0] : '',
+        time: `${evt.startTime || '09:00 AM'} - ${evt.endTime || '10:00 PM'}`,
+        venue: evt.venue || '',
+        package: evt.package || 'Custom Package',
+        totalAmount: `₹${total.toLocaleString()}`,
+        paidAmount: `₹${paid.toLocaleString()}`,
+        balanceAmount: `₹${balance.toLocaleString()}`,
+        paymentProgress,
+        paymentStatus,
+        crew: crew.length > 0 ? crew : ['Lead Photographer'],
+        status: currentStage,
+        rawEvent: evt
       }
-    } catch (err) {
-      console.warn('[Events] Failed to load events:', err)
-      setFetchError(true)
-      setInitialEvents([])
-    }
-    setLoading(false)
-  }
+    })
 
-  useEffect(() => {
-    loadEvents()
-  }, [])
+    return mapped.sort((a, b) => String(b._id || b.id).localeCompare(String(a._id || a.id)))
+  }, [events])
 
   // Status Filter Options
   const statusOptions = [
     { label: 'All Statuses', value: 'All Statuses' },
-    { label: 'Shooting Today', value: 'Shooting Today' },
-    { label: 'Confirmed', value: 'Confirmed' },
-    { label: 'In Post-Production', value: 'In Post-Production' },
-    { label: 'Delivered', value: 'Delivered' },
-    { label: 'Pending Deposit', value: 'Pending Deposit' }
+    ...WORKFLOW_STAGES.map((stage) => ({ label: stage, value: stage }))
   ]
 
   // Event Type Filter Options

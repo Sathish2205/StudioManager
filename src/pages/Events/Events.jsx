@@ -225,7 +225,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
         severity="secondary"
         aria-label="View"
         tooltip="View Details"
-        tooltipOptions={{ position: 'top', appendTo: 'body' }}
+        tooltipOptions={{ position: 'top' }}
         onClick={() => handleRowSelect(rowData)}
       />
       <Button
@@ -235,7 +235,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
         severity="info"
         aria-label="Edit"
         tooltip="Edit Event"
-        tooltipOptions={{ position: 'top', appendTo: 'body' }}
+        tooltipOptions={{ position: 'top' }}
         onClick={(e) => {
           e.stopPropagation()
           if (onNavigateEditEvent) onNavigateEditEvent(rowData)
@@ -248,7 +248,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
         severity="success"
         aria-label="Invoice"
         tooltip="Print Invoice"
-        tooltipOptions={{ position: 'top', appendTo: 'body' }}
+        tooltipOptions={{ position: 'top' }}
         onClick={() => onNavigateInvoice && onNavigateInvoice(rowData)}
       />
     </div>

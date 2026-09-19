@@ -1307,3 +1307,41 @@ textarea.p-inputtext {
   border: 1px solid #cbd5e1 !important;
 }
 
+/* ══════════════════════════════════════════════════════════
+   GLOBAL PRIME-REACT TOOLTIP FIX & ENTERPRISE STYLING
+   ══════════════════════════════════════════════════════════ */
+.p-tooltip {
+  z-index: 100000 !important;
+  pointer-events: none !important;
+  opacity: 0.95 !important;
+}
+
+.p-tooltip .p-tooltip-text {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22) !important;
+  letter-spacing: 0.01em !important;
+  white-space: nowrap !important;
+}
+
+.p-tooltip-top .p-tooltip-arrow {
+  border-top-color: #0f172a !important;
+}
+
+.p-tooltip-bottom .p-tooltip-arrow {
+  border-bottom-color: #0f172a !important;
+}
+
+.p-tooltip-left .p-tooltip-arrow {
+  border-left-color: #0f172a !important;
+}
+
+.p-tooltip-right .p-tooltip-arrow {
+  border-right-color: #0f172a !important;
+}
+
+

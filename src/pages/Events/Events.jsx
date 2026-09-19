@@ -218,7 +218,16 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
 
   const actionBodyTemplate = (rowData) => (
     <div className="events-table__actions" onClick={(e) => e.stopPropagation()}>
-      <Button icon="pi pi-eye" rounded text severity="secondary" aria-label="View" tooltip="View Details" onClick={() => handleRowSelect(rowData)} />
+      <Button
+        icon="pi pi-eye"
+        rounded
+        text
+        severity="secondary"
+        aria-label="View"
+        tooltip="View Details"
+        tooltipOptions={{ position: 'top', appendTo: 'body' }}
+        onClick={() => handleRowSelect(rowData)}
+      />
       <Button
         icon="pi pi-pencil"
         rounded
@@ -226,6 +235,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
         severity="info"
         aria-label="Edit"
         tooltip="Edit Event"
+        tooltipOptions={{ position: 'top', appendTo: 'body' }}
         onClick={(e) => {
           e.stopPropagation()
           if (onNavigateEditEvent) onNavigateEditEvent(rowData)
@@ -238,6 +248,7 @@ export default function Events({ activeTab = 'events', setActiveTab, onNavigateI
         severity="success"
         aria-label="Invoice"
         tooltip="Print Invoice"
+        tooltipOptions={{ position: 'top', appendTo: 'body' }}
         onClick={() => onNavigateInvoice && onNavigateInvoice(rowData)}
       />
     </div>

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════
-   ENTERPRISE PORTAL HEADER
+   ENTERPRISE PORTAL HEADER & USER AVATAR POPOVER
    ══════════════════════════════════════════════════════════ */
 
 .portal-header {
@@ -72,7 +72,8 @@
 .portal-header__right {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  position: relative;
 }
 
 .portal-header__icon-btn {
@@ -85,9 +86,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
   transition: all var(--transition-fast);
 }
 
@@ -98,8 +99,8 @@
 
 .portal-header__dot {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 6px;
+  right: 6px;
   width: 7px;
   height: 7px;
   background: var(--color-error);
@@ -107,19 +108,181 @@
   border: 1.5px solid var(--color-surface);
 }
 
-.portal-header__user-avatar {
-  width: 30px;
-  height: 30px;
+/* ── Circular Avatar Button ── */
+.portal-header__user-menu-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.portal-header__avatar-btn {
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--color-primary);
   color: var(--color-text-inverse);
-  font-size: var(--font-size-xs);
+  font-size: 0.875rem;
   font-weight: 700;
+  border: 2px solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-left: var(--space-1);
+  transition: all var(--transition-fast);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.portal-header__avatar-btn:hover,
+.portal-header__avatar-btn:focus-visible {
+  border-color: var(--color-primary-border, #bfdbfe);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ── Polished Enterprise SaaS Popover Dropdown Menu ── */
+.portal-header__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  padding: 8px 0;
+  z-index: 10000;
+  animation: headerDropdownFade 0.15s ease-out;
+}
+
+@keyframes headerDropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.portal-header__dropdown-user-card {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.portal-header__dropdown-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.portal-header__dropdown-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.portal-header__dropdown-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.portal-header__dropdown-role-badge {
+  margin-top: 2px;
+  display: inline-flex;
+}
+
+.portal-header__dropdown-role-badge span {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #bfdbfe;
+}
+
+.portal-header__dropdown-email {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.portal-header__dropdown-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 6px 0;
+}
+
+.portal-header__dropdown-section {
+  display: flex;
+  flex-direction: column;
+  padding: 0 4px;
+}
+
+.portal-header__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  text-align: left;
+}
+
+.portal-header__dropdown-item i {
+  font-size: 0.95rem;
+  color: #64748b;
+  transition: color 0.12s ease;
+}
+
+.portal-header__dropdown-item:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.portal-header__dropdown-item:hover i {
+  color: var(--color-primary);
+}
+
+.portal-header__dropdown-item.is-logout {
+  color: #dc2626;
+}
+
+.portal-header__dropdown-item.is-logout i {
+  color: #dc2626;
+}
+
+.portal-header__dropdown-item.is-logout:hover {
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
 /* ── Mobile Hamburger ── */
@@ -160,6 +323,11 @@
   .portal-header__breadcrumb {
     font-size: var(--font-size-xs);
     gap: var(--space-1);
+  }
+
+  .portal-header__dropdown {
+    right: -8px;
+    width: 240px;
   }
 }
 

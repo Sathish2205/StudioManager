@@ -1344,4 +1344,30 @@ textarea.p-inputtext {
   border-right-color: #0f172a !important;
 }
 
+/* ══════════════════════════════════════════════════════════
+   GLOBAL PRINT MEDIA OVERRIDES
+   ══════════════════════════════════════════════════════════ */
+@media print {
+  header,
+  .portal-header,
+  .portal-header__left,
+  .portal-header__right,
+  .portal-header__breadcrumb,
+  .dashboard-header,
+  .portal-sidebar,
+  .sidebar,
+  .add-event-breadcrumb,
+  .sa-header__breadcrumb,
+  .no-print,
+  .ent-invoice-actions-bar,
+  .invoice-actions-bar {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+}
+
 

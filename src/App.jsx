@@ -23,6 +23,10 @@ import InvoiceDetail from './pages/InvoiceDetail/InvoiceDetail'
 import EmployeeManagement from './pages/EmployeeManagement/EmployeeManagement'
 import AddEmployeePage from './pages/AddEmployeePage/AddEmployeePage'
 
+import UserProfile from './pages/UserProfile/UserProfile'
+import AccountSettings from './pages/AccountSettings/AccountSettings'
+import UserPreferences from './pages/UserPreferences/UserPreferences'
+
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { EventsProvider } from './context/EventsContext'
 import Login from './pages/Login/Login'
@@ -58,7 +62,10 @@ const ROUTE_MAP = {
   '/requests': 'requests',
   '/create-quotation': 'create-quotation',
   '/quotation-detail': 'quotation-detail',
-  '/invoice-detail': 'invoice-detail'
+  '/invoice-detail': 'invoice-detail',
+  '/profile': 'profile',
+  '/settings': 'settings',
+  '/preferences': 'preferences'
 }
 
 const TAB_TO_PATH = {
@@ -81,7 +88,10 @@ const TAB_TO_PATH = {
   'requests': '/requests',
   'create-quotation': '/create-quotation',
   'quotation-detail': '/quotation-detail',
-  'invoice-detail': '/invoice-detail'
+  'invoice-detail': '/invoice-detail',
+  'profile': '/profile',
+  'settings': '/settings',
+  'preferences': '/preferences'
 }
 
 function getTabFromUrl() {
@@ -420,6 +430,27 @@ function AppContent() {
       {activeTab === 'requests' && (
         <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
           <ClientRequests onShowToast={showGlobalToast} />
+        </AppLayout>
+      )}
+
+      {/* ── USER PROFILE ── */}
+      {activeTab === 'profile' && (
+        <AppLayout activeTab="home" setActiveTab={setActiveTab}>
+          <UserProfile onShowToast={showGlobalToast} />
+        </AppLayout>
+      )}
+
+      {/* ── ACCOUNT SETTINGS ── */}
+      {activeTab === 'settings' && (
+        <AppLayout activeTab="home" setActiveTab={setActiveTab}>
+          <AccountSettings onShowToast={showGlobalToast} />
+        </AppLayout>
+      )}
+
+      {/* ── USER PREFERENCES ── */}
+      {activeTab === 'preferences' && (
+        <AppLayout activeTab="home" setActiveTab={setActiveTab}>
+          <UserPreferences onShowToast={showGlobalToast} />
         </AppLayout>
       )}
     </>

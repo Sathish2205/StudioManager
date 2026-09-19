@@ -1,13 +1,38 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Dialog } from 'primereact/dialog'
 import SmartReminders from '../SmartReminders/SmartReminders'
 import { useAuth } from '../../context/AuthContext'
 import './DashboardHeader.css'
 
 export default function DashboardHeader({ activeTab = 'home', setActiveTab, onToggleSidebar }) {
-  const { user, tenant, logout } = useAuth()
+  const { user, logout } = useAuth()
   const [isRemindersOpen, setIsRemindersOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [toastMsg, setToastMsg] = useState(null)
+
+  const userMenuRef = useRef(null)
+
+  // Click outside and keydown listeners for user menu dropdown
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false)
+      }
+    }
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setIsUserMenuOpen(false)
+      }
+    }
+    if (isUserMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleKeyDown)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isUserMenuOpen])
 
   const showToast = (msg) => {
     setToastMsg(msg)
@@ -72,6 +97,12 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab, onTo
         return [{ label: 'Studio Helpdesk', active: true }]
       case 'requests':
         return [{ label: 'Client Requests', active: true }]
+      case 'profile':
+        return [{ label: 'User Profile', active: true }]
+      case 'settings':
+        return [{ label: 'Account & Studio Settings', active: true }]
+      case 'preferences':
+        return [{ label: 'User Preferences', active: true }]
       case 'home':
       default:
         return [{ label: 'Dashboard', active: true }]
@@ -80,10 +111,36 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab, onTo
 
   const breadcrumbs = getBreadcrumbs()
 
-  const tenantName = tenant?.companyName || 'PhotoStudio Pro'
-  const userName = user?.name || user?.username || 'User'
-  const userRole = user?.role || 'admin'
-  const avatarLetter = userName.charAt(0).toUpperCase()
+  const userName = user?.name || user?.fullName || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : null) || user?.username || 'ABC Studio Owner'
+  const userRole = user?.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Owner'
+  const userEmail = user?.email || 'owner@photostudiopro.com'
+  const avatarLetter = userName.trim().charAt(0).toUpperCase()
+
+  const handleMenuAction = (action) => {
+    setIsUserMenuOpen(false)
+    switch (action) {
+      case 'profile':
+        if (setActiveTab) setActiveTab('profile')
+        break
+      case 'settings':
+        if (setActiveTab) setActiveTab('settings')
+        break
+      case 'preferences':
+        if (setActiveTab) setActiveTab('preferences')
+        break
+      case 'notifications':
+        setIsRemindersOpen(true)
+        break
+      case 'help':
+        if (setActiveTab) setActiveTab('helpdesk')
+        break
+      case 'logout':
+        logout()
+        break
+      default:
+        break
+    }
+  }
 
   return (
     <>
@@ -135,16 +192,6 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab, onTo
 
         {/* Right Controls */}
         <div className="portal-header__right flex align-items-center gap-3">
-          {/* Active Tenant Company Badge */}
-          <div
-            className="flex align-items-center gap-2 px-3 py-1 border-round-lg surface-card surface-border border-1 text-xs"
-            title={`Active Tenant: ${tenantName} (${tenant?.tenantId || ''})`}
-            style={{ background: 'rgba(99, 102, 241, 0.1)', borderColor: 'rgba(99, 102, 241, 0.3)' }}
-          >
-            <i className="pi pi-building text-primary font-bold text-sm" />
-            <span className="font-bold text-primary">{tenantName}</span>
-          </div>
-
           <button
             className="portal-header__icon-btn"
             aria-label="Notifications"
@@ -155,23 +202,105 @@ export default function DashboardHeader({ activeTab = 'home', setActiveTab, onTo
             <span className="portal-header__dot" />
           </button>
 
-          {/* User Profile & Logout */}
-          <div className="flex align-items-center gap-2">
-            <div className="portal-header__user-avatar" title={`${userName} (${userRole})`}>
-              {avatarLetter}
-            </div>
-            <div className="hidden md:flex flex-column">
-              <span className="text-xs font-bold line-height-1 text-900">{userName}</span>
-              <span className="text-xs text-500 uppercase line-height-1 mt-1">{userRole}</span>
-            </div>
+          {/* Single Circular Avatar Button with Dropdown Menu */}
+          <div className="portal-header__user-menu-wrapper" ref={userMenuRef}>
             <button
-              onClick={logout}
-              className="p-button p-component p-button-text p-button-danger p-button-sm ml-2"
-              title="Sign Out"
-              style={{ padding: '0.4rem 0.6rem' }}
+              className="portal-header__avatar-btn"
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              aria-expanded={isUserMenuOpen}
+              aria-haspopup="true"
+              title={`${userName} (${userRole})`}
             >
-              <i className="pi pi-sign-out" />
+              {avatarLetter}
             </button>
+
+            {/* Polished Enterprise Popover Dropdown Menu */}
+            {isUserMenuOpen && (
+              <div className="portal-header__dropdown" role="menu">
+                {/* User Info Header Card */}
+                <div className="portal-header__dropdown-user-card">
+                  <div className="portal-header__dropdown-avatar">
+                    {avatarLetter}
+                  </div>
+                  <div className="portal-header__dropdown-user-info">
+                    <div className="portal-header__dropdown-name">{userName}</div>
+                    <div className="portal-header__dropdown-role-badge">
+                      <span>{userRole}</span>
+                    </div>
+                    <div className="portal-header__dropdown-email">{userEmail}</div>
+                  </div>
+                </div>
+
+                <div className="portal-header__dropdown-divider" />
+
+                {/* Main Action Links */}
+                <div className="portal-header__dropdown-section">
+                  <button
+                    className="portal-header__dropdown-item"
+                    onClick={() => handleMenuAction('profile')}
+                    role="menuitem"
+                  >
+                    <i className="pi pi-user" />
+                    <span>Profile</span>
+                  </button>
+
+                  <button
+                    className="portal-header__dropdown-item"
+                    onClick={() => handleMenuAction('settings')}
+                    role="menuitem"
+                  >
+                    <i className="pi pi-cog" />
+                    <span>Account Settings</span>
+                  </button>
+
+                  <button
+                    className="portal-header__dropdown-item"
+                    onClick={() => handleMenuAction('preferences')}
+                    role="menuitem"
+                  >
+                    <i className="pi pi-sliders-h" />
+                    <span>Preferences</span>
+                  </button>
+
+                  <button
+                    className="portal-header__dropdown-item"
+                    onClick={() => handleMenuAction('notifications')}
+                    role="menuitem"
+                  >
+                    <i className="pi pi-bell" />
+                    <span>Notifications</span>
+                  </button>
+                </div>
+
+                <div className="portal-header__dropdown-divider" />
+
+                {/* Support Section */}
+                <div className="portal-header__dropdown-section">
+                  <button
+                    className="portal-header__dropdown-item"
+                    onClick={() => handleMenuAction('help')}
+                    role="menuitem"
+                  >
+                    <i className="pi pi-question-circle" />
+                    <span>Help & Support</span>
+                  </button>
+                </div>
+
+                <div className="portal-header__dropdown-divider" />
+
+                {/* Logout Action */}
+                <div className="portal-header__dropdown-section">
+                  <button
+                    className="portal-header__dropdown-item is-logout"
+                    onClick={() => handleMenuAction('logout')}
+                    role="menuitem"
+                  >
+                    <i className="pi pi-power-off" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>

@@ -9,50 +9,101 @@ import { recordPayment } from '../../services/financeService'
 import { updateInvoice } from '../../services/invoiceService'
 import { downloadPdfFromElement } from '../../utils/generatePdf'
 import { useAuth } from '../../context/AuthContext'
+import '../InvoicePage/InvoicePage.css'
 import './InvoiceDetail.css'
 
 export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) {
   const { tenant, user } = useAuth ? useAuth() : {}
-  const studioName = tenant?.companyName || user?.studioName || invoice?.studioName || 'ABC Photography'
+  const studioName = tenant?.companyName || user?.studioName || invoice?.studioName || 'STUDIO SALFORD & CO.'
+
   const [currentInvoice, setCurrentInvoice] = useState(invoice || {
-    invoiceNumber: 'INV-2026-001',
-    clientName: 'Sophia & James Sterling',
-    clientPhone: '+91 98765 43210',
-    clientEmail: 'sophia.sterling@example.com',
-    eventName: 'Wedding & Reception',
-    eventDate: '2026-08-12',
-    venue: 'The Grand Chateau, Bengaluru',
-    date: '2026-08-01',
-    dueDate: '2026-08-25',
+    invoiceNumber: '01234',
+    clientName: 'ARON LOEB',
+    clientPhone: '+123-456-7890',
+    clientEmail: 'hello@reallygreatsite.com',
+    venue: '123 Anywhere St., Any City, ST 12345',
+    date: '12/07/2025',
     services: [
-      { name: 'Candid Cinematic Photography', category: 'Photography', qty: 1, unitPrice: 5000, discount: 0, total: 5000 },
-      { name: 'Traditional Stage Photography', category: 'Photography', qty: 1, unitPrice: 3000, discount: 0, total: 3000 },
-      { name: 'Traditional Video Recording', category: 'Videography', qty: 1, unitPrice: 4000, discount: 500, total: 3500 },
-      { name: 'Lead Photographer', category: 'Staffing', qty: 1, unitPrice: 1000, discount: 0, total: 1000 }
+      { name: 'Candid Cinematic Photography Coverage', description: 'Full Day Coverage, 4K Cinema Camera', qty: 1, unitPrice: 120, total: 120 },
+      { name: 'Traditional Stage Photography & Portraits', description: 'High-res Deliverables, Studio Lighting', qty: 4, unitPrice: 100, total: 400 },
+      { name: 'High-Definition Video Recording & Editing', description: 'Full Feature Edited Film + Teaser', qty: 2, unitPrice: 220, total: 440 },
+      { name: '4K Drone Aerial Shoot Coverage', description: 'Aerial Coverage of Venue', qty: 5, unitPrice: 55, total: 275 },
+      { name: 'Canvera Flush Mount Premium Album', description: 'Custom Leatherette Printed Book', qty: 2, unitPrice: 250, total: 500 }
     ],
-    subtotal: 13000,
-    discount: 500,
-    taxPercent: 18,
-    taxAmount: 2250,
-    grandTotal: 14750,
-    totalPaid: 5000,
-    balance: 9750,
-    status: 'Partially Paid',
-    payments: [
-      { id: 'PAY-1001', date: '2026-08-02', type: 'Advance Payment', method: 'UPI', ref: 'UPI981247', amount: 5000 }
-    ]
+    subtotal: 1735,
+    taxAmount: 55,
+    grandTotal: 1680,
+    totalPaid: 0,
+    balance: 1680,
+    status: 'Unpaid'
   })
+
+  // Add Custom Service Modal State
+  const [isAddSvcOpen, setIsAddSvcOpen] = useState(false)
+  const [svcName, setSvcName] = useState('')
+  const [svcDesc, setSvcDesc] = useState('')
+  const [svcQty, setSvcQty] = useState(1)
+  const [svcPrice, setSvcPrice] = useState(100)
 
   // Record Payment Dialog State
   const [isPayModalOpen, setIsPayModalOpen] = useState(false)
-  const [payAmount, setPayAmount] = useState(currentInvoice.balance || 2500)
-  const [payMethod, setPayMethod] = useState('UPI')
+  const [payAmount, setPayAmount] = useState(currentInvoice.balance || 500)
+  const [payMethod, setPayMethod] = useState('UPI / Bank')
   const [payType, setPayType] = useState('Part Payment')
   const [payDate, setPayDate] = useState(() => new Date().toISOString().split('T')[0])
   const [payRef, setPayRef] = useState('')
 
   const triggerToast = (msg, sev = 'info') => {
     if (onShowToast) onShowToast(msg, sev)
+  }
+
+  // Recalculate invoice totals when services change
+  const recalculateInvoice = (updatedServices) => {
+    const subtotal = updatedServices.reduce((sum, s) => sum + (s.qty * s.unitPrice), 0)
+    const taxAmount = currentInvoice.taxAmount || 55
+    const grandTotal = Math.max(0, subtotal + taxAmount - (currentInvoice.discount || 0))
+    const balance = Math.max(0, grandTotal - (currentInvoice.totalPaid || 0))
+
+    const updated = {
+      ...currentInvoice,
+      services: updatedServices,
+      subtotal,
+      grandTotal,
+      balance
+    }
+    setCurrentInvoice(updated)
+    updateInvoice(currentInvoice._id || currentInvoice.id, updated).catch(() => {})
+  }
+
+  const handleAddServiceItem = () => {
+    if (!svcName.trim()) {
+      triggerToast('Please enter a service name', 'error')
+      return
+    }
+
+    const newItem = {
+      id: `svc-${Date.now()}`,
+      name: svcName.trim(),
+      description: svcDesc.trim(),
+      qty: Number(svcQty) || 1,
+      unitPrice: Number(svcPrice) || 0,
+      total: (Number(svcQty) || 1) * (Number(svcPrice) || 0)
+    }
+
+    const updatedServices = [...(currentInvoice.services || []), newItem]
+    recalculateInvoice(updatedServices)
+    setIsAddSvcOpen(false)
+    setSvcName('')
+    setSvcDesc('')
+    setSvcQty(1)
+    setSvcPrice(100)
+    triggerToast(`Added service "${newItem.name}"`, 'success')
+  }
+
+  const handleRemoveServiceItem = (index) => {
+    const updatedServices = (currentInvoice.services || []).filter((_, i) => i !== index)
+    recalculateInvoice(updatedServices)
+    triggerToast('Removed service line item', 'info')
   }
 
   const handleRecordPayment = async () => {
@@ -105,7 +156,7 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
     await updateInvoice(currentInvoice._id || currentInvoice.id, updatedInvoiceObj)
     setCurrentInvoice(updatedInvoiceObj)
     setIsPayModalOpen(false)
-    triggerToast(`Recorded payment of ₹${payAmount.toLocaleString('en-IN')} via ${payMethod}!`, 'success')
+    triggerToast(`Recorded payment of $${payAmount.toLocaleString()}!`, 'success')
   }
 
   const handleDownloadPdf = () => {
@@ -125,47 +176,46 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
       case 'DEPOSIT PAID': return 'info'
       case 'Issued':
       case 'Pending': return 'warning'
-      case 'Overdue': return 'danger'
-      default: return 'secondary'
+      default: return 'danger'
     }
   }
 
-  // Derive services breakdown if services is not array or single custom item
-  const rawServices = Array.isArray(currentInvoice.services) && currentInvoice.services.length > 0
-    ? currentInvoice.services
-    : [
-        { name: 'Candid Cinematic Photography', category: 'Photography', qty: 1, unitPrice: 5000, discount: 0, total: 5000 },
-        { name: 'Traditional Stage Photography', category: 'Photography', qty: 1, unitPrice: 3000, discount: 0, total: 3000 },
-        { name: 'Traditional Video Recording', category: 'Videography', qty: 1, unitPrice: 4000, discount: 0, total: 4000 },
-        { name: 'Lead Photographer', category: 'Staffing', qty: 1, unitPrice: 1000, discount: 0, total: 1000 }
-      ]
+  const servicesList = currentInvoice.services || []
 
   return (
     <div className="ent-invoice-container">
       {/* Actions Bar */}
-      <div className="ent-invoice-actions-bar no-print">
+      <div className="ref-actions-bar no-print">
         <div className="flex align-items-center gap-3">
-          <Button
-            icon="pi pi-arrow-left"
-            className="p-button-outlined p-button-secondary p-button-sm"
-            onClick={onNavigateBack}
-          />
+          {onNavigateBack && (
+            <Button
+              icon="pi pi-arrow-left"
+              className="p-button-outlined p-button-secondary p-button-sm"
+              onClick={onNavigateBack}
+            />
+          )}
           <div>
             <div className="flex align-items-center gap-2">
-              <h2 className="ent-invoice-actions-bar__title">
+              <h2 className="ref-actions-bar__title">
                 Invoice #{currentInvoice.invoiceNumber}
               </h2>
-              <Tag value={currentInvoice.status} severity={statusSeverity(currentInvoice.status)} outlined />
+              <Tag value={currentInvoice.status || 'UNPAID'} severity={statusSeverity(currentInvoice.status)} outlined />
             </div>
-            <p className="ent-invoice-actions-bar__subtitle">Client: {currentInvoice.clientName}</p>
+            <p className="ref-actions-bar__subtitle">Client: {currentInvoice.clientName}</p>
           </div>
         </div>
 
-        <div className="ent-invoice-actions-bar__btn-group">
-          {currentInvoice.balance > 0 && (
+        <div className="ref-actions-bar__btn-group">
+          <Button
+            label="Add Service Line"
+            icon="pi pi-plus"
+            className="p-button-outlined p-button-primary p-button-sm"
+            onClick={() => setIsAddSvcOpen(true)}
+          />
+          {(currentInvoice.balance || 0) > 0 && (
             <Button
               label="Record Payment"
-              icon="pi pi-plus-circle"
+              icon="pi pi-dollar"
               className="p-button-outlined p-button-success p-button-sm"
               onClick={() => {
                 setPayAmount(currentInvoice.balance)
@@ -176,7 +226,7 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
           <Button
             label="Download PDF"
             icon="pi pi-download"
-            className="p-button-outlined p-button-primary p-button-sm"
+            className="p-button-outlined p-button-secondary p-button-sm"
             onClick={handleDownloadPdf}
           />
           <Button
@@ -188,206 +238,219 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
         </div>
       </div>
 
-      {/* Printable Enterprise A4 Card */}
-      <div className="ent-invoice-card" id="printable-invoice-detail-card">
-        {/* Header */}
-        <div className="ent-invoice-header">
-          <div className="ent-invoice-brand">
-            <div className="ent-invoice-brand__logo">
-              <span className="ent-brand-text">{studioName}</span>
-              <sup className="ent-brand-reg">®</sup>
-            </div>
-            <div className="ent-invoice-brand__tagline">PREMIUM CINEMATIC PHOTOGRAPHY & ALBUMS</div>
-            <div className="ent-invoice-studio-details">
-              Studio #42, Luxury Plaza, Residency Road, Bengaluru, Karnataka — 560025
-              <br />
-              <strong>GSTIN:</strong> 29AAACP9988C1Z4 &nbsp;|&nbsp; <strong>Contact:</strong> +91 98450 12345 &nbsp;|&nbsp; info@photostudiopro.com
-            </div>
+      {/* Off-White Paper Printable Card */}
+      <div className="ref-invoice-paper" id="printable-invoice-detail-card">
+        
+        {/* 1. Header Row */}
+        <div className="ref-header">
+          <div className="ref-header-left">
+            <h1 className="ref-studio-name">{studioName.toUpperCase()}</h1>
           </div>
-
-          <div className="ent-invoice-meta-box">
-            <div className="ent-invoice-meta__title">TAX INVOICE</div>
-            <div className="ent-invoice-meta__row">
-              <span>Invoice No:</span>
-              <strong>{currentInvoice.invoiceNumber}</strong>
-            </div>
-            <div className="ent-invoice-meta__row">
-              <span>Invoice Date:</span>
-              <strong>{currentInvoice.date || '01 Aug 2026'}</strong>
-            </div>
-            <div className="ent-invoice-meta__row">
-              <span>Due Date:</span>
-              <strong>{currentInvoice.dueDate || '25 Aug 2026'}</strong>
-            </div>
-            <div className="ent-invoice-meta__row">
-              <span>Status:</span>
-              <Tag value={currentInvoice.status} severity={statusSeverity(currentInvoice.status)} outlined />
-            </div>
+          <div className="ref-header-right">
+            <h2 className="ref-invoice-title">INVOICE</h2>
+            <div className="ref-invoice-no">Invoice No: {currentInvoice.invoiceNumber}</div>
           </div>
         </div>
 
-        {/* Info Grid */}
-        <div className="ent-invoice-info-grid">
-          <div className="ent-info-card">
-            <div className="ent-info-card__header">
-              <i className="pi pi-user text-primary mr-2" />
-              <span>BILLED TO CLIENT</span>
-            </div>
-            <div className="ent-info-card__title">{currentInvoice.clientName || 'Client Name'}</div>
-            <div className="ent-info-card__details">
-              <div><strong>Phone:</strong> {currentInvoice.clientPhone || '+91 98765 43210'}</div>
-              <div><strong>Email:</strong> {currentInvoice.clientEmail || 'client@example.com'}</div>
+        <div className="ref-divider-heavy" />
+
+        {/* 2. Invoice To & Date / Total Due Grid */}
+        <div className="ref-info-grid">
+          <div className="ref-info-left">
+            <div className="ref-label">INVOICE TO :</div>
+            <div className="ref-client-name">{currentInvoice.clientName || 'ARON LOEB'}</div>
+            <div className="ref-client-details">
+              {currentInvoice.clientPhone && <div>{currentInvoice.clientPhone}</div>}
+              {currentInvoice.clientEmail && <div>{currentInvoice.clientEmail}</div>}
+              {currentInvoice.venue && <div>{currentInvoice.venue}</div>}
             </div>
           </div>
 
-          <div className="ent-info-card">
-            <div className="ent-info-card__header">
-              <i className="pi pi-calendar text-primary mr-2" />
-              <span>EVENT & VENUE DETAILS</span>
+          <div className="ref-vertical-divider" />
+
+          <div className="ref-info-right">
+            <div className="ref-date-row">
+              Date: {currentInvoice.date || '12/07/2025'}
             </div>
-            <div className="ent-info-card__title">{currentInvoice.eventName || 'Wedding & Reception'}</div>
-            <div className="ent-info-card__details">
-              <div><strong>Event Date:</strong> {currentInvoice.eventDate || '12 Aug 2026'}</div>
-              <div><strong>Venue:</strong> {currentInvoice.venue || 'The Grand Chateau'}</div>
-            </div>
+            <div className="ref-date-bar" />
+            <div className="ref-total-due-label">TOTAL DUE</div>
+            <div className="ref-total-due-amount">${(currentInvoice.balance ?? currentInvoice.grandTotal ?? 1680).toLocaleString('en-US')}</div>
           </div>
         </div>
 
-        {/* Individual Line Items Table */}
-        <div className="ent-invoice-table-wrapper">
-          <div className="ent-table-section-title">
-            <i className="pi pi-list text-primary mr-2" />
-            <span>INCLUDED SERVICES & LINE ITEMS</span>
-          </div>
-
-          <table className="ent-invoice-table">
+        {/* 3. Services Table with Wide 62% Service Column */}
+        <div className="ref-table-container">
+          <table className="ref-services-table">
             <thead>
               <tr>
-                <th className="text-left" style={{ width: '40%' }}>Service / Item Description</th>
-                <th className="text-center" style={{ width: '15%' }}>Category</th>
-                <th className="text-center" style={{ width: '8%' }}>Qty</th>
-                <th className="text-right" style={{ width: '15%' }}>Unit Price</th>
-                <th className="text-right" style={{ width: '22%' }}>Total (₹)</th>
+                <th className="ref-col-service">SERVICE</th>
+                <th className="ref-col-qty">QTY</th>
+                <th className="ref-col-price">PRICE</th>
+                <th className="ref-col-total">TOTAL</th>
               </tr>
             </thead>
             <tbody>
-              {rawServices.map((s, idx) => (
-                <tr key={idx}>
-                  <td>
-                    <div className="ent-item-name">{s.name}</div>
-                    <div className="ent-item-sub">{s.description || 'Full HD/4K coverage, edited deliverables'}</div>
+              {servicesList.map((item, index) => (
+                <tr key={index}>
+                  <td className="ref-cell-service">
+                    <div className="flex align-items-center justify-content-between">
+                      <div>
+                        <div className="ref-service-title">{item.name}</div>
+                        {item.description && <div className="ref-service-desc">{item.description}</div>}
+                      </div>
+                      <button
+                        type="button"
+                        className="ref-cell-action-btn no-print"
+                        title="Remove Service"
+                        onClick={() => handleRemoveServiceItem(index)}
+                      >
+                        <i className="pi pi-trash" />
+                      </button>
+                    </div>
                   </td>
-                  <td className="text-center">
-                    <span className="ent-category-pill">{s.category || 'Photography'}</span>
-                  </td>
-                  <td className="text-center font-semibold">{s.qty || 1}</td>
-                  <td className="text-right">₹{(s.unitPrice || s.price || 0).toLocaleString('en-IN')}</td>
-                  <td className="text-right font-bold text-primary">₹{(s.total || (s.qty || 1) * (s.unitPrice || s.price || 0)).toLocaleString('en-IN')}</td>
+                  <td className="ref-cell-qty">{item.qty || 1}</td>
+                  <td className="ref-cell-price">${(item.unitPrice || item.price || 0).toLocaleString('en-US')}</td>
+                  <td className="ref-cell-total">${((item.qty || 1) * (item.unitPrice || item.price || 0)).toLocaleString('en-US')}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          {/* Quick Add Button */}
+          <div className="no-print mt-2 text-right">
+            <button
+              type="button"
+              className="p-button p-button-link p-button-sm text-xs"
+              onClick={() => setIsAddSvcOpen(true)}
+            >
+              + Add another service line
+            </button>
+          </div>
         </div>
 
-
-
-        {/* Summary Grid */}
-        <div className="ent-invoice-summary-grid">
-          <div className="ent-terms-column">
-            <div className="ent-payment-info-box">
-              <div className="ent-box-title">Bank Transfer & UPI Details</div>
-              <div className="ent-box-content text-xs">
-                <div>Bank: State Bank of India</div>
-                <div>Account No: <strong>1234 5678 9012</strong> | IFSC: <strong>SBIN0001234</strong></div>
-                <div>UPI ID: <code>photostudiopro@sbi</code></div>
-              </div>
+        {/* 4. Payment Method & Pricing Summary Grid */}
+        <div className="ref-bottom-grid">
+          <div className="ref-bottom-left">
+            <div className="ref-payment-label">Payment Method :</div>
+            <div className="ref-bank-details">
+              <div className="ref-bank-name">{tenant?.bankName || user?.bankName || studioName}</div>
+              <div>Bank Code / IFSC : {tenant?.ifscCode || tenant?.bankCode || user?.bankCode || '1234'}</div>
+              <div>Account No : {tenant?.accountNumber || user?.accountNumber || '0123 4567 8901'}</div>
             </div>
-
-            {currentInvoice.payments && currentInvoice.payments.length > 0 && (
-              <div className="ent-history-box">
-                <div className="ent-box-title">Payment History Log</div>
-                <table className="ent-history-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Type</th>
-                      <th>Method</th>
-                      <th className="text-right">Paid</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentInvoice.payments.map((p, idx) => (
-                      <tr key={idx}>
-                        <td>{p.date}</td>
-                        <td className="font-medium">{p.type}</td>
-                        <td className="text-muted">{p.method}</td>
-                        <td className="text-right font-bold text-emerald-700">₹{(p.amount || 0).toLocaleString('en-IN')}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
           </div>
 
-          <div className="ent-totals-card">
-            <div className="ent-totals-header">PRICING SUMMARY</div>
+          <div className="ref-vertical-divider" />
 
-            <div className="ent-totals-row">
-              <span>Subtotal</span>
-              <span>₹{(currentInvoice.subtotal || 0).toLocaleString('en-IN')}</span>
+          <div className="ref-bottom-right">
+            <div className="ref-summary-row">
+              <span>Sub-total :</span>
+              <span>${(currentInvoice.subtotal || 0).toLocaleString('en-US')}</span>
             </div>
-
             {currentInvoice.discount > 0 && (
-              <div className="ent-totals-row text-emerald-600">
-                <span>Discount</span>
-                <span>- ₹{(currentInvoice.discount || 0).toLocaleString('en-IN')}</span>
+              <div className="ref-summary-row">
+                <span>Discount :</span>
+                <span>- ${(currentInvoice.discount || 0).toLocaleString('en-US')}</span>
               </div>
             )}
-
-
-
-            <div className="ent-totals-row">
-              <span>GST ({currentInvoice.taxPercent || 18}%)</span>
-              <span>₹{(currentInvoice.taxAmount || 0).toLocaleString('en-IN')}</span>
+            <div className="ref-summary-row">
+              <span>Tax :</span>
+              <span>${(currentInvoice.taxAmount || 55).toLocaleString('en-US')}</span>
             </div>
-
-            <div className="ent-totals-row is-grand-total">
-              <span>Grand Total</span>
-              <span>₹{(currentInvoice.grandTotal || 0).toLocaleString('en-IN')}</span>
+            <div className="ref-summary-line" />
+            <div className="ref-summary-row ref-summary-total">
+              <span>Total :</span>
+              <span>${(currentInvoice.grandTotal || 1680).toLocaleString('en-US')}</span>
             </div>
-
-            <div className="ent-totals-row is-paid">
-              <span>Total Paid</span>
-              <span>- ₹{(currentInvoice.totalPaid || 0).toLocaleString('en-IN')}</span>
-            </div>
-
-            <div className={`ent-totals-row is-balance-due ${currentInvoice.balance === 0 ? 'is-settled' : ''}`}>
-              <span>Balance Due</span>
-              <span>₹{(currentInvoice.balance || 0).toLocaleString('en-IN')}</span>
-            </div>
+            {(currentInvoice.totalPaid || 0) > 0 && (
+              <div className="ref-summary-row ref-summary-paid mt-1">
+                <span>Paid Deposit :</span>
+                <span>- ${(currentInvoice.totalPaid || 0).toLocaleString('en-US')}</span>
+              </div>
+            )}
+            {(currentInvoice.totalPaid || 0) > 0 && (
+              <div className="ref-summary-row ref-summary-balance mt-1">
+                <span>Balance Due :</span>
+                <span>${(currentInvoice.balance || 0).toLocaleString('en-US')}</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="ent-invoice-footer">
-          <div className="ent-footer-note">
-            Thank you for trusting <strong>{studioName}</strong> with your wedding memories!
-            <br />
-            <span className="text-xs text-muted">This is an official computer-generated GST tax invoice. No signature required.</span>
+        {/* 5. Footer */}
+        <div className="ref-footer">
+          <div className="ref-footer-thankyou">
+            Thank you for trusting {studioName}!
           </div>
 
-          <div className="ent-signature-box">
-            <div className="ent-signature-line" />
-            <div className="ent-signature-title">Authorized Signatory</div>
-            <div className="ent-signature-sub">{studioName} Management</div>
+          <div className="ref-footer-signature">
+            <div className="ref-sig-name">{user?.name || user?.username || 'Matt Zhang'}</div>
+            <div className="ref-sig-role">Administrator</div>
           </div>
         </div>
+
       </div>
+
+      {/* Dialog: Add New Custom Service */}
+      <Dialog
+        header="Add New Service Line"
+        visible={isAddSvcOpen}
+        style={{ width: '500px' }}
+        onHide={() => setIsAddSvcOpen(false)}
+        footer={
+          <div className="flex justify-content-end gap-2">
+            <Button label="Cancel" className="p-button-text p-button-sm" onClick={() => setIsAddSvcOpen(false)} />
+            <Button label="Add Service" icon="pi pi-check" className="p-button-primary p-button-sm" onClick={handleAddServiceItem} />
+          </div>
+        }
+      >
+        <div className="flex flex-column gap-3 py-2 text-xs">
+          <div>
+            <label className="block font-bold mb-1">Service Name / Title *</label>
+            <InputText
+              value={svcName}
+              onChange={(e) => setSvcName(e.target.value)}
+              placeholder="e.g. Drone Aerial Coverage"
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold mb-1">Detailed Service Description (Optional)</label>
+            <InputText
+              value={svcDesc}
+              onChange={(e) => setSvcDesc(e.target.value)}
+              placeholder="e.g. Includes licensed pilot & 4K footage deliverable"
+              className="w-full"
+            />
+          </div>
+
+          <div className="grid">
+            <div className="col-6">
+              <label className="block font-bold mb-1">Quantity *</label>
+              <InputNumber
+                value={svcQty}
+                onValueChange={(e) => setSvcQty(e.value)}
+                className="w-full"
+                min={1}
+              />
+            </div>
+
+            <div className="col-6">
+              <label className="block font-bold mb-1">Price per Unit ($) *</label>
+              <InputNumber
+                value={svcPrice}
+                onValueChange={(e) => setSvcPrice(e.value)}
+                className="w-full"
+                min={0}
+              />
+            </div>
+          </div>
+        </div>
+      </Dialog>
 
       {/* Record Payment Dialog */}
       <Dialog
-        header="Record Invoice Payment"
+        header="Record Payment"
         visible={isPayModalOpen}
         style={{ width: '450px' }}
         onHide={() => setIsPayModalOpen(false)}
@@ -400,7 +463,7 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
       >
         <div className="flex flex-column gap-3 py-2 text-xs">
           <div>
-            <label className="block font-bold mb-1">Payment Amount (₹) *</label>
+            <label className="block font-bold mb-1">Payment Amount ($) *</label>
             <InputNumber value={payAmount} onValueChange={(e) => setPayAmount(e.value)} className="w-full" min={1} max={currentInvoice.balance || 1000000} />
           </div>
 
@@ -409,7 +472,7 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
               <label className="block font-bold mb-1">Payment Method *</label>
               <Dropdown
                 value={payMethod}
-                options={['UPI', 'Cash', 'Bank Transfer', 'Cheque']}
+                options={['UPI / Bank', 'Cash', 'Credit Card', 'Cheque']}
                 onChange={(e) => setPayMethod(e.value)}
                 className="w-full"
               />
@@ -419,7 +482,7 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
               <label className="block font-bold mb-1">Payment Type</label>
               <Dropdown
                 value={payType}
-                options={['Advance Payment', 'Second Payment', 'Final Balance', 'Part Payment']}
+                options={['Advance Deposit', 'Part Payment', 'Final Balance']}
                 onChange={(e) => setPayType(e.value)}
                 className="w-full"
               />
@@ -433,8 +496,8 @@ export default function InvoiceDetail({ invoice, onNavigateBack, onShowToast }) 
             </div>
 
             <div className="col-6">
-              <label className="block font-bold mb-1">Transaction / Ref No</label>
-              <InputText value={payRef} onChange={(e) => setPayRef(e.target.value)} placeholder="e.g. UPI123456" className="w-full" />
+              <label className="block font-bold mb-1">Transaction Ref No</label>
+              <InputText value={payRef} onChange={(e) => setPayRef(e.target.value)} placeholder="e.g. TXN123456" className="w-full" />
             </div>
           </div>
         </div>

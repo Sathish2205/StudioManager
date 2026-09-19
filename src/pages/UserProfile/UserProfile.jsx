@@ -104,9 +104,9 @@ export default function UserProfile({ onShowToast }) {
         bio: formData.bio
       }
 
-      let res = await apiPut('/users/profile', payload)
+      let res = await apiPut('/auth/profile', payload)
       if (!res || !res.success) {
-        res = await apiPut('/users/me', payload)
+        res = await apiPut('/users/profile', payload)
       }
 
       if (res && res.success) {
@@ -124,7 +124,7 @@ export default function UserProfile({ onShowToast }) {
     }
   }
 
-  const handleChangePassword = (e) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault()
     if (!formData.currentPassword) {
       triggerToast('Please enter your current password', 'error')
@@ -134,8 +134,22 @@ export default function UserProfile({ onShowToast }) {
       triggerToast('New password and confirm password do not match', 'error')
       return
     }
-    triggerToast('Password updated successfully!', 'success')
-    setFormData((prev) => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }))
+
+    try {
+      const res = await apiPut('/auth/password', {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword
+      })
+
+      if (res && res.success) {
+        triggerToast('Password updated successfully in database!', 'success')
+        setFormData((prev) => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }))
+      } else {
+        triggerToast(res?.message || 'Unable to update password. Please check your current password.', 'error')
+      }
+    } catch (err) {
+      triggerToast(err.message || 'Unable to update password. Please check your current password.', 'error')
+    }
   }
 
   return (

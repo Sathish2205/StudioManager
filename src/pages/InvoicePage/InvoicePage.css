@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════
-   ENTERPRISE INVOICE PAGE STYLES (SINGLE-PAGE A4 & GST PRINT)
+   REFERENCE INVOICE STYLES (OFF-WHITE PAPER AESTHETIC)
    ══════════════════════════════════════════════════════════ */
 
 .ent-invoice-container {
@@ -7,517 +7,374 @@
   flex-direction: column;
   gap: 16px;
   width: 100%;
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
-/* ── Actions Header Bar ── */
-.ent-invoice-actions-bar {
+/* ── Top Action Bar (Hidden when Printing) ── */
+.ref-actions-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: var(--radius-lg, 12px);
-  padding: 12px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.ent-invoice-actions-bar__title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0;
-  display: flex;
-  align-items: center;
-}
-
-.ent-invoice-actions-bar__subtitle {
-  font-size: 0.75rem;
-  color: #64748b;
-  margin: 2px 0 0 0;
-}
-
-.ent-invoice-actions-bar__btn-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-/* ── Enterprise Single-Page A4 Printable Document Card ── */
-.ent-invoice-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.05);
-  max-width: 900px;
+  padding: 14px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.ref-actions-bar__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.ref-actions-bar__subtitle {
+  font-size: 0.8rem;
+  color: #666666;
+  margin: 2px 0 0 0;
+}
+
+.ref-actions-bar__btn-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ── Main Off-White Paper Printable Card ── */
+.ref-invoice-paper {
+  background-color: #f6f4ee; /* Off-white elegant paper color from reference image */
+  color: #1a1a1a;
+  border: 1.5px solid #3a3a3a;
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   width: 100%;
-  margin: 0 auto;
-  padding: 24px 32px;
+  padding: 44px 52px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  color: #1e293b;
-  font-family: inherit;
+  gap: 24px;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   box-sizing: border-box;
 }
 
-/* Header Branding & Invoice Meta Box */
-.ent-invoice-header {
+/* ── 1. Top Header ── */
+.ref-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #f1f5f9;
+  width: 100%;
 }
 
-.ent-invoice-brand {
-  flex: 1;
-}
-
-.ent-invoice-brand__logo {
-  font-size: 1.45rem;
+.ref-studio-name {
+  font-size: 1.75rem;
   font-weight: 800;
-  color: #0f172a;
-  letter-spacing: -0.025em;
-  display: flex;
-  align-items: center;
-  line-height: 1.2;
-}
-
-.ent-brand-text {
-  color: #0f172a;
-}
-
-.ent-brand-icon {
-  color: #2563eb;
-  margin: 0 3px;
-  font-size: 1.15rem;
-}
-
-.ent-brand-pro {
-  color: #2563eb;
-  font-weight: 900;
-}
-
-.ent-brand-reg {
-  font-size: 0.6rem;
-  font-weight: 600;
-  margin-left: 2px;
-  color: #94a3b8;
-}
-
-.ent-invoice-brand__tagline {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #2563eb;
-  margin-top: 2px;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
+  margin: 0;
   text-transform: uppercase;
+  font-family: inherit;
 }
 
-.ent-invoice-studio-details {
-  font-size: 0.75rem;
-  color: #475569;
+.ref-invoice-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #1a1a1a;
+  margin: 0;
+  text-align: right;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.ref-invoice-no {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #444444;
+  text-align: right;
   margin-top: 6px;
-  line-height: 1.4;
 }
 
-/* Tax Invoice Meta Box */
-.ent-invoice-meta-box {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 10px 14px;
-  min-width: 230px;
+.ref-divider-heavy {
+  width: 100%;
+  height: 2px;
+  background-color: #2b2b2b;
+  margin: 0;
+}
+
+/* ── 2. Client & Total Due Grid ── */
+.ref-info-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 240px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.ref-info-left {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.ent-invoice-meta__title {
+.ref-label {
   font-size: 0.85rem;
   font-weight: 800;
-  color: #1e40af;
-  letter-spacing: 0.08em;
-  border-bottom: 1px dashed #cbd5e1;
-  padding-bottom: 4px;
-  margin-bottom: 2px;
+  letter-spacing: 0.06em;
+  color: #1a1a1a;
+  text-transform: uppercase;
 }
 
-.ent-invoice-meta__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.75rem;
+.ref-client-name {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
 }
 
-.ent-invoice-meta__row span {
-  color: #64748b;
+.ref-client-details {
+  font-size: 0.85rem;
+  color: #444444;
+  line-height: 1.5;
+  margin-top: 4px;
 }
 
-.ent-invoice-meta__row strong {
-  color: #0f172a;
+.ref-vertical-divider {
+  width: 1.5px;
+  background-color: #3a3a3a;
+  align-self: stretch;
 }
 
-.ent-meta-status-tag {
-  font-size: 10px !important;
-  padding: 1px 6px !important;
-}
-
-/* ── Client & Event Info Section ── */
-.ent-invoice-info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.ent-info-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 10px 14px;
+.ref-info-right {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  align-items: flex-end;
+  justify-content: flex-start;
+  text-align: right;
+  gap: 4px;
 }
 
-.ent-info-card__header {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #475569;
-  display: flex;
-  align-items: center;
-  margin-bottom: 2px;
+.ref-date-row {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444444;
 }
 
-.ent-info-card__title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 2px;
+.ref-date-bar {
+  width: 36px;
+  height: 3px;
+  background-color: #2b2b2b;
+  margin: 8px 0 12px 0;
 }
 
-.ent-info-card__details {
+.ref-total-due-label {
   font-size: 0.75rem;
-  color: #475569;
-  line-height: 1.5;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #444444;
+  text-transform: uppercase;
 }
 
-/* ── Table Section ── */
-.ent-invoice-table-wrapper {
+.ref-total-due-amount {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* ── 3. Services Table ── */
+.ref-table-container {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.ref-services-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border: 1.5px solid #3a3a3a;
+}
+
+/* SERVICE Column width set to 62% giving generous room for added services! */
+.ref-col-service {
+  width: 62%;
+}
+.ref-col-qty {
+  width: 10%;
+}
+.ref-col-price {
+  width: 14%;
+}
+.ref-col-total {
+  width: 14%;
+}
+
+.ref-services-table th {
+  background-color: transparent;
+  color: #1a1a1a;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px 14px;
+  border: 1.5px solid #3a3a3a;
+  text-align: left;
+}
+
+.ref-services-table th.ref-col-qty,
+.ref-services-table td.ref-cell-qty {
+  text-align: center;
+}
+
+.ref-services-table th.ref-col-price,
+.ref-services-table td.ref-cell-price,
+.ref-services-table th.ref-col-total,
+.ref-services-table td.ref-cell-total {
+  text-align: right;
+}
+
+.ref-services-table td {
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  color: #2b2b2b;
+  border: 1.5px solid #3a3a3a;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+.ref-service-title {
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.4;
+}
+
+.ref-service-desc {
+  font-size: 0.78rem;
+  color: #555555;
+  margin-top: 2px;
+}
+
+.ref-cell-action-btn {
+  opacity: 0.3;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 2px 4px;
+}
+.ref-cell-action-btn:hover {
+  opacity: 1;
+  color: #dc2626;
+}
+
+/* ── 4. Payment Method & Summary Grid ── */
+.ref-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 280px;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.ref-bottom-left {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.ent-table-section-title {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #475569;
-  display: flex;
-  align-items: center;
-}
-
-.ent-invoice-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.ent-invoice-table th {
-  background: #f1f5f9;
-  color: #334155;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 7px 10px;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.ent-invoice-table td {
-  padding: 8px 10px;
-  font-size: 0.8rem;
-  color: #1e293b;
-  border-bottom: 1px solid #f1f5f9;
-  vertical-align: middle;
-}
-
-.ent-invoice-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.ent-invoice-table tbody tr:hover {
-  background: #f8fafc;
-}
-
-.ent-item-name {
-  font-weight: 700;
-  color: #0f172a;
-  font-size: 0.8rem;
-}
-
-.ent-item-sub {
-  font-size: 0.7rem;
-  color: #64748b;
-  margin-top: 1px;
-}
-
-.ent-category-pill {
-  font-size: 10px;
-  font-weight: 600;
-  background: #eff6ff;
-  color: #1d4ed8;
-  padding: 2px 6px;
-  border-radius: 10px;
-  border: 1px solid #bfdbfe;
-  display: inline-block;
-}
-
-/* ── Complimentary Items Section ── */
-.ent-complimentary-card {
-  background: #f0fdf4;
-  border: 1px dashed #86efac;
-  border-radius: 8px;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ent-complimentary-card__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.75rem;
-}
-
-.ent-complimentary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 8px;
-}
-
-.ent-complimentary-item {
-  background: #ffffff;
-  border: 1px solid #bbf7d0;
-  border-radius: 6px;
-  padding: 6px 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.ent-comp-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: #dcfce7;
-  color: #16a34a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  flex-shrink: 0;
-}
-
-.ent-comp-name {
-  font-weight: 700;
-  font-size: 0.75rem;
-  color: #0f172a;
-}
-
-.ent-comp-desc {
-  font-size: 0.6875rem;
-  color: #64748b;
-}
-
-.ent-comp-badge {
-  margin-left: auto;
-  font-size: 9px;
-  font-weight: 700;
-  color: #15803d;
-  background: #dcfce7;
-  padding: 1px 5px;
-  border-radius: 4px;
-  flex-shrink: 0;
-}
-
-/* ── Summary & Payment Info Grid ── */
-.ent-invoice-summary-grid {
-  display: grid;
-  grid-template-columns: 1fr 310px;
-  gap: 14px;
-  align-items: start;
-}
-
-.ent-terms-column {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ent-payment-info-box,
-.ent-history-box,
-.ent-policy-box {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 8px 12px;
-}
-
-.ent-box-title {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #334155;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-}
-
-.ent-box-content {
-  color: #475569;
-  line-height: 1.5;
-  font-size: 0.72rem;
-}
-
-.ent-history-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.7rem;
-  margin-top: 2px;
-}
-
-.ent-history-table th {
-  text-align: left;
-  color: #64748b;
-  font-weight: 600;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 2px;
-}
-
-.ent-history-table td {
-  padding: 3px 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.ent-policy-list {
-  margin: 0;
-  padding-left: 14px;
-  font-size: 0.7rem;
-  color: #64748b;
-  line-height: 1.5;
-}
-
-/* Right Totals Box */
-.ent-totals-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.ent-totals-header {
-  font-size: 0.7rem;
+.ref-payment-label {
+  font-size: 0.9rem;
   font-weight: 800;
-  letter-spacing: 0.05em;
-  color: #334155;
-  border-bottom: 1px solid #cbd5e1;
+  color: #1a1a1a;
+}
+
+.ref-bank-details {
+  font-size: 0.85rem;
+  color: #444444;
+  line-height: 1.6;
+}
+
+.ref-bank-name {
+  font-weight: 700;
+  color: #1a1a1a;
+  font-size: 0.95rem;
+}
+
+.ref-bottom-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: right;
+}
+
+.ref-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  color: #444444;
+}
+
+.ref-summary-line {
+  width: 100%;
+  height: 1.5px;
+  background-color: #3a3a3a;
+  margin: 4px 0;
+}
+
+.ref-summary-total {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #1a1a1a;
+  border-bottom: 3px double #1a1a1a;
   padding-bottom: 4px;
-  margin-bottom: 2px;
 }
 
-.ent-totals-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #475569;
-  padding: 1px 0;
-}
-
-.ent-totals-row.is-grand-total {
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: #1e40af;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 6px;
-  padding: 6px 10px;
-  margin: 3px 0;
-}
-
-.ent-totals-row.is-paid {
-  color: #16a34a;
+.ref-summary-paid {
+  font-size: 0.88rem;
+  color: #166534;
   font-weight: 600;
 }
 
-.ent-totals-row.is-balance-due {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  padding: 6px 10px;
-  color: #991b1b;
+.ref-summary-balance {
+  font-size: 1.05rem;
   font-weight: 800;
-  font-size: 0.85rem;
+  color: #991b1b;
 }
 
-.ent-totals-row.is-balance-due.is-settled {
-  background: #f0fdf4;
-  border-color: #bbf7d0;
-  color: #166534;
-}
-
-/* Footer Signoff */
-.ent-invoice-footer {
+/* ── 5. Footer Section ── */
+.ref-footer {
   display: flex;
-  align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
+  align-items: flex-end;
+  margin-top: 24px;
   padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
 }
 
-.ent-footer-note {
-  font-size: 0.75rem;
-  color: #475569;
-  line-height: 1.4;
-  max-width: 460px;
-}
-
-.ent-signature-box {
-  text-align: center;
-  min-width: 180px;
-}
-
-.ent-signature-line {
-  border-top: 1px dashed #94a3b8;
-  margin-bottom: 4px;
-  width: 100%;
-}
-
-.ent-signature-title {
-  font-size: 0.75rem;
+.ref-footer-thankyou {
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #1a1a1a;
 }
 
-.ent-signature-sub {
-  font-size: 10px;
-  color: #64748b;
+.ref-footer-signature {
+  text-align: right;
+}
+
+.ref-sig-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.ref-sig-role {
+  font-size: 0.8rem;
+  color: #555555;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -539,16 +396,11 @@
   .no-print,
   header,
   .portal-header,
-  .portal-header__left,
-  .portal-header__right,
-  .portal-header__breadcrumb,
   .dashboard-header,
   .portal-sidebar,
   .sidebar,
-  .add-event-breadcrumb,
-  .sa-header__breadcrumb,
-  .ent-invoice-actions-bar,
-  .invoice-actions-bar {
+  .ref-actions-bar,
+  .ent-invoice-actions-bar {
     display: none !important;
     height: 0 !important;
     margin: 0 !important;
@@ -557,38 +409,21 @@
     visibility: hidden !important;
   }
 
-  .portal-main,
-  .portal-body,
   .ent-invoice-container {
     margin: 0 !important;
     padding: 0 !important;
+    max-width: 100% !important;
   }
 
-  .ent-invoice-card {
+  .ref-invoice-paper {
+    background-color: #ffffff !important; /* Printable crisp white background */
     border: none !important;
     box-shadow: none !important;
     max-width: 100% !important;
     padding: 0 !important;
-    gap: 10px !important;
+    gap: 16px !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-  }
-
-  .ent-invoice-header {
-    padding-bottom: 8px !important;
-  }
-
-  .ent-invoice-table th,
-  .ent-invoice-table td {
-    padding: 4px 8px !important;
-  }
-
-  .ent-complimentary-card,
-  .ent-payment-info-box,
-  .ent-history-box,
-  .ent-policy-box,
-  .ent-totals-card {
-    padding: 6px 10px !important;
   }
 }
 
@@ -596,17 +431,27 @@
    RESPONSIVE
    ══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .ent-invoice-info-grid,
-  .ent-invoice-summary-grid,
-  .ent-invoice-header,
-  .ent-invoice-footer {
+  .ref-info-grid,
+  .ref-bottom-grid {
     grid-template-columns: 1fr;
-    flex-direction: column;
-    align-items: flex-start;
+    gap: 16px;
   }
 
-  .ent-totals-card,
-  .ent-signature-box {
-    width: 100%;
+  .ref-vertical-divider {
+    display: none;
+  }
+
+  .ref-info-right,
+  .ref-bottom-right {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .ref-date-bar {
+    align-self: flex-start;
+  }
+
+  .ref-invoice-paper {
+    padding: 24px 20px;
   }
 }
